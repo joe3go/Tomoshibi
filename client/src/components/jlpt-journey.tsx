@@ -15,19 +15,33 @@ interface JLPTJourneyProps {
 }
 
 const jlptLevels: JLPTLevel[] = [
-  { level: "N5", name: "Beginner", color: "#10B981", status: "complete", xp: 500 },
-  { level: "N4", name: "Elementary", color: "#3B82F6", status: "current", progress: 68, xp: 680 },
-  { level: "N3", name: "Intermediate", color: "#F59E0B", status: "locked" },
-  { level: "N2", name: "Upper Inter.", color: "#EF4444", status: "locked" },
-  { level: "N1", name: "Advanced", color: "#8B5CF6", status: "locked" },
+  { level: "N5", name: "初心者", color: "hsl(var(--jlpt-n5))", status: "complete", xp: 500 },
+  { level: "N4", name: "基礎", color: "hsl(var(--jlpt-n4))", status: "current", progress: 68, xp: 680 },
+  { level: "N3", name: "中級", color: "hsl(var(--jlpt-n3))", status: "locked" },
+  { level: "N2", name: "上級", color: "hsl(var(--jlpt-n2))", status: "locked" },
+  { level: "N1", name: "熟達", color: "hsl(var(--jlpt-n1))", status: "locked" },
 ];
 
 export default function JLPTJourney({ currentLevel, progress }: JLPTJourneyProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-gray-900">JLPT Progress Journey</h3>
-        <div className="text-sm text-gray-500">Current Level: {currentLevel}</div>
+    <div className="bg-gradient-to-br from-washi via-white to-sakura/5 rounded-2xl shadow-lg border border-sakura/20 p-8 relative overflow-hidden">
+      {/* Decorative background pattern */}
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <path d="M50 10 L90 50 L50 90 L10 50 Z" fill="currentColor"/>
+          <circle cx="50" cy="50" r="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      </div>
+      
+      <div className="flex items-center justify-between mb-8 relative z-10">
+        <div>
+          <h3 className="text-2xl font-bold text-sumi mb-1">JLPT 進歩の旅路</h3>
+          <p className="text-momiji font-medium">Japanese Proficiency Journey</p>
+        </div>
+        <div className="text-right">
+          <div className="text-sm text-momiji font-medium">現在のレベル</div>
+          <div className="text-lg font-bold text-sumi">{currentLevel}</div>
+        </div>
       </div>
       
       <div className="relative">

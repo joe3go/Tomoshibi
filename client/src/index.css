@@ -121,14 +121,33 @@
 .text-achievement-gold { color: hsl(var(--achievement-gold)); }
 .border-achievement { border-color: hsl(var(--achievement)); }
 
-/* Custom animations for achievements */
+/* Custom animations for achievements and Japanese aesthetics */
 @keyframes celebrate {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05) rotate(1deg); }
+  75% { transform: scale(1.05) rotate(-1deg); }
+}
+
+@keyframes sakura-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 .animate-celebrate {
-  animation: celebrate 0.6s ease-in-out;
+  animation: celebrate 0.8s ease-in-out;
+}
+
+.animate-sakura {
+  animation: sakura-float 4s ease-in-out infinite;
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 3s ease-in-out infinite;
 }
 
 /* Smooth transitions for interactive elements */
