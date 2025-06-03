@@ -186,34 +186,34 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Kanji Learned</span>
-                  <span className="font-bold text-gray-900">
+                  <span className="japanese-text text-muted-foreground">漢字習得</span>
+                  <span className="font-bold text-matcha japanese-text">
                     {progress?.wanikaniData?.subjects?.kanji || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Vocabulary</span>
-                  <span className="font-bold text-gray-900">
+                  <span className="japanese-text text-muted-foreground">語彙</span>
+                  <span className="font-bold text-matcha japanese-text">
                     {progress?.wanikaniData?.subjects?.vocabulary || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Current Level</span>
-                  <span className="font-bold text-blue-500">
+                  <span className="japanese-text text-muted-foreground">現在のレベル</span>
+                  <span className="font-bold text-primary japanese-text">
                     {progress?.wanikaniData?.level || 1}
                   </span>
                 </div>
                 
                 <div className="mt-4">
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-600">Reviews Available</span>
-                    <span className="text-gray-900">
+                    <span className="japanese-text text-muted-foreground">復習待ち</span>
+                    <span className="text-foreground japanese-text">
                       {progress?.wanikaniData?.reviewsAvailable || 0}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div 
-                      className="bg-blue-500 h-2 rounded-full" 
+                      className="matcha-gradient h-2 rounded-full transition-all" 
                       style={{ width: `${Math.min((progress?.wanikaniData?.reviewsAvailable || 0) / 50 * 100, 100)}%` }}
                     ></div>
                   </div>
