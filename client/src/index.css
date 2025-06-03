@@ -5,11 +5,11 @@
 
 :root {
   /* Japanese-inspired calming color palette */
-  --background: 43 50% 97%; /* Soft washi paper beige */
+  --background: 43 45% 93%; /* Warm washi paper beige */
   --foreground: 30 20% 25%; /* Dark charcoal sumi ink */
-  --card: 45 60% 98%; /* Light cream card */
+  --card: 45 50% 95%; /* Soft cream card */
   --card-foreground: 30 20% 25%;
-  --popover: 45 60% 98%;
+  --popover: 45 50% 95%;
   --popover-foreground: 30 20% 25%;
   
   /* Primary colors - muted sage green */
@@ -99,15 +99,17 @@
   }
 
   body {
-    @apply antialiased bg-background text-foreground;
+    @apply antialiased text-foreground;
     font-family: 'Inter', 'Noto Sans JP', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
     background: linear-gradient(135deg, 
-      hsl(45, 60%, 98%) 0%, 
-      hsl(43, 50%, 96%) 25%, 
-      hsl(45, 55%, 97%) 50%, 
-      hsl(44, 52%, 95%) 100%);
+      hsl(43, 50%, 94%) 0%, 
+      hsl(45, 45%, 92%) 25%, 
+      hsl(44, 48%, 93%) 50%, 
+      hsl(43, 52%, 91%) 75%,
+      hsl(45, 50%, 94%) 100%);
+    background-attachment: fixed;
     min-height: 100vh;
   }
 }
@@ -180,10 +182,10 @@
 /* Washi paper texture effect */
 .washi-texture {
   background: linear-gradient(135deg, 
-    hsl(45, 60%, 98%) 0%, 
-    hsl(43, 50%, 96%) 25%, 
-    hsl(45, 55%, 97%) 50%, 
-    hsl(44, 52%, 95%) 100%);
+    hsl(43, 45%, 93%) 0%, 
+    hsl(45, 40%, 91%) 25%, 
+    hsl(44, 43%, 92%) 50%, 
+    hsl(43, 47%, 90%) 100%);
   position: relative;
 }
 
@@ -195,10 +197,10 @@
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(circle at 25% 25%, hsl(45, 50%, 96%) 0%, transparent 2%),
-    radial-gradient(circle at 75% 75%, hsl(43, 45%, 94%) 0%, transparent 1.5%),
-    radial-gradient(circle at 50% 100%, hsl(44, 48%, 95%) 0%, transparent 1%);
-  opacity: 0.4;
+    radial-gradient(circle at 25% 25%, hsl(45, 35%, 89%) 0%, transparent 2%),
+    radial-gradient(circle at 75% 75%, hsl(43, 30%, 87%) 0%, transparent 1.5%),
+    radial-gradient(circle at 50% 100%, hsl(44, 33%, 88%) 0%, transparent 1%);
+  opacity: 0.6;
   pointer-events: none;
 }
 
