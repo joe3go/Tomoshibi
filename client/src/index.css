@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  
+  /* JLPT Level Colors */
+  --jlpt-n5: 142 76% 36%; /* #10B981 */
+  --jlpt-n4: 213 94% 68%; /* #3B82F6 */
+  --jlpt-n3: 43 96% 56%; /* #F59E0B */
+  --jlpt-n2: 0 84% 60%; /* #EF4444 */
+  --jlpt-n1: 262 83% 58%; /* #8B5CF6 */
+  
+  /* Achievement Colors */
+  --achievement: 25 95% 53%; /* #F97316 */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom utility classes for JLPT colors */
+.bg-jlpt-n5 { background-color: #10B981; }
+.bg-jlpt-n4 { background-color: #3B82F6; }
+.bg-jlpt-n3 { background-color: #F59E0B; }
+.bg-jlpt-n2 { background-color: #EF4444; }
+.bg-jlpt-n1 { background-color: #8B5CF6; }
+
+.text-jlpt-n5 { color: #10B981; }
+.text-jlpt-n4 { color: #3B82F6; }
+.text-jlpt-n3 { color: #F59E0B; }
+.text-jlpt-n2 { color: #EF4444; }
+.text-jlpt-n1 { color: #8B5CF6; }
+
+.border-jlpt-n5 { border-color: #10B981; }
+.border-jlpt-n4 { border-color: #3B82F6; }
+.border-jlpt-n3 { border-color: #F59E0B; }
+.border-jlpt-n2 { border-color: #EF4444; }
+.border-jlpt-n1 { border-color: #8B5CF6; }
+
+/* Achievement color */
+.bg-achievement { background-color: #F97316; }
+.text-achievement { color: #F97316; }
+.border-achievement { border-color: #F97316; }
+
+/* Custom animations for achievements */
+@keyframes celebrate {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.animate-celebrate {
+  animation: celebrate 0.6s ease-in-out;
+}
+
+/* Smooth transitions for interactive elements */
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
