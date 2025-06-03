@@ -346,7 +346,10 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(userAchievements)
       .where(
-        eq(userAchievements.userId, userId)
+        and(
+          eq(userAchievements.userId, userId),
+          eq(userAchievements.achievementId, achievementId)
+        )
       )
       .limit(1);
     return !!existing;
@@ -361,17 +364,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]> {
-    let query = db
+    if (limit) {
+      return await db
+        .select()
+        .from(studySessions)
+        .where(eq(studySessions.userId, userId))
+        .orderBy(desc(studySessions.date))
+        .limit(limit);
+    }
+
+    return await db
       .select()
       .from(studySessions)
       .where(eq(studySessions.userId, userId))
-      .orderBy(studySessions.date);
-
-    if (limit) {
-      query = query.limit(limit);
-    }
-
-    return await query;
+      .orderBy(desc(studySessions.date));
   }
 
   async getUserProgress(userId: number): Promise<UserProgress | undefined> {
