@@ -41,22 +41,22 @@ export default function Achievements() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-washi via-gray-50 to-sakura/5">
       <Sidebar />
       
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto lg:ml-0">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-8 py-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Achievements</h2>
-            <p className="text-gray-600 mt-1">
+        <header className="bg-gradient-to-r from-washi via-white to-sakura/10 border-b border-sakura/30 px-4 lg:px-8 py-6 lg:py-8 pt-20 lg:pt-8 relative overflow-hidden">
+          <div className="text-center lg:text-left">
+            <h2 className="text-2xl lg:text-3xl font-bold text-sumi">実績 (Achievements)</h2>
+            <p className="text-momiji font-medium mt-1">
               Track your progress and unlock rewards for your dedication
             </p>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="p-8">
+        <main className="p-4 lg:p-8">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>

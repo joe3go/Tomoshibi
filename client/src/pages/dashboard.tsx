@@ -117,9 +117,9 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-gradient-to-br from-washi via-gray-50 to-sakura/5">
       <Sidebar user={user} />
       
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto lg:ml-0">
         {/* Header */}
-        <header className="bg-gradient-to-r from-washi via-white to-sakura/10 border-b border-sakura/30 px-8 py-8 relative overflow-hidden">
+        <header className="bg-gradient-to-r from-washi via-white to-sakura/10 border-b border-sakura/30 px-4 lg:px-8 py-6 lg:py-8 pt-20 lg:pt-8 relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-24 h-24 opacity-5">
             <svg viewBox="0 0 100 100" className="w-full h-full text-momiji">
@@ -129,45 +129,45 @@ export default function Dashboard() {
             </svg>
           </div>
           
-          <div className="flex items-center justify-between relative z-10">
-            <div>
-              <h2 className="text-3xl font-bold text-sumi mb-2">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between relative z-10 gap-6 lg:gap-0">
+            <div className="text-center lg:text-left">
+              <h2 className="text-2xl lg:text-3xl font-bold text-sumi mb-2">
                 おかえりなさい, {user?.displayName?.split(' ')[0] || 'Student'}さん!
               </h2>
               <p className="text-momiji font-medium">Ready to continue your Japanese learning journey?</p>
             </div>
             
             {/* Quick Stats */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center justify-center lg:justify-end gap-6 lg:gap-8">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-achievement-gold to-achievement rounded-full flex items-center justify-center mb-2 shadow-lg">
-                  <span className="text-white text-lg font-bold">{user?.totalXP || 0}</span>
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-achievement-gold to-achievement rounded-full flex items-center justify-center mb-2 shadow-lg mx-auto">
+                  <span className="text-white text-base lg:text-lg font-bold">{user?.totalXP || 0}</span>
                 </div>
-                <div className="text-sm text-sumi font-medium">Total XP</div>
+                <div className="text-xs lg:text-sm text-sumi font-medium">Total XP</div>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-momiji to-ume rounded-full flex items-center justify-center mb-2 shadow-lg">
-                  <span className="text-white text-lg font-bold">{user?.currentStreak || 0}</span>
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-momiji to-ume rounded-full flex items-center justify-center mb-2 shadow-lg mx-auto">
+                  <span className="text-white text-base lg:text-lg font-bold">{user?.currentStreak || 0}</span>
                 </div>
-                <div className="text-sm text-sumi font-medium">連続日数</div>
+                <div className="text-xs lg:text-sm text-sumi font-medium">連続日数</div>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo to-take rounded-full flex items-center justify-center mb-2 shadow-lg">
-                  <span className="text-white text-lg font-bold">{achievements?.length || 0}</span>
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-indigo to-take rounded-full flex items-center justify-center mb-2 shadow-lg mx-auto">
+                  <span className="text-white text-base lg:text-lg font-bold">{achievements?.length || 0}</span>
                 </div>
-                <div className="text-sm text-sumi font-medium">実績</div>
+                <div className="text-xs lg:text-sm text-sumi font-medium">実績</div>
               </div>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="p-8">
+        <main className="p-4 lg:p-8">
           {/* JLPT Progress Journey */}
           <JLPTJourney currentLevel={user?.currentJLPTLevel || "N5"} progress={progress} />
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 mt-6 lg:mt-8">
             {/* WaniKani Integration */}
             <Card>
               <CardHeader>
