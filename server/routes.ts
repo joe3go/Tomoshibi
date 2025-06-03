@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, DatabaseStorage } from "./storage";
 import { apiKeySetupSchema, insertStudySessionSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -149,6 +149,10 @@ async function checkAchievements(userId: number) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize database with achievements
+  if (storage instanceof DatabaseStorage) {
+    await storage.seedAchievements();
+  }
   // Get user dashboard data
   app.get("/api/dashboard", async (req, res) => {
     try {

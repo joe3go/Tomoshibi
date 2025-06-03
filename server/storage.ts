@@ -15,6 +15,8 @@ import {
   type UserProgress,
   type InsertUserProgress
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -277,4 +279,222 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// DatabaseStorage implementation using PostgreSQL
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getAllAchievements(): Promise<Achievement[]> {
+    return await db.select().from(achievements);
+  }
+
+  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
+    const [newAchievement] = await db
+      .insert(achievements)
+      .values(achievement)
+      .returning();
+    return newAchievement;
+  }
+
+  async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
+    const userAchievementsWithDetails = await db
+      .select()
+      .from(userAchievements)
+      .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
+      .where(eq(userAchievements.userId, userId));
+
+    return userAchievementsWithDetails.map(row => ({
+      ...row.user_achievements,
+      achievement: row.achievements
+    }));
+  }
+
+  async unlockAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    const [newUserAchievement] = await db
+      .insert(userAchievements)
+      .values(userAchievement)
+      .returning();
+    return newUserAchievement;
+  }
+
+  async hasUserAchievement(userId: number, achievementId: number): Promise<boolean> {
+    const [existing] = await db
+      .select()
+      .from(userAchievements)
+      .where(
+        eq(userAchievements.userId, userId)
+      )
+      .limit(1);
+    return !!existing;
+  }
+
+  async createStudySession(session: InsertStudySession): Promise<StudySession> {
+    const [newSession] = await db
+      .insert(studySessions)
+      .values(session)
+      .returning();
+    return newSession;
+  }
+
+  async getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]> {
+    let query = db
+      .select()
+      .from(studySessions)
+      .where(eq(studySessions.userId, userId))
+      .orderBy(studySessions.date);
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    return await query;
+  }
+
+  async getUserProgress(userId: number): Promise<UserProgress | undefined> {
+    const [progress] = await db
+      .select()
+      .from(userProgress)
+      .where(eq(userProgress.userId, userId));
+    return progress || undefined;
+  }
+
+  async updateUserProgress(userId: number, progressData: InsertUserProgress): Promise<UserProgress> {
+    // Try to update existing progress first
+    const [updated] = await db
+      .update(userProgress)
+      .set(progressData)
+      .where(eq(userProgress.userId, userId))
+      .returning();
+
+    if (updated) {
+      return updated;
+    }
+
+    // If no existing progress, create new
+    const [created] = await db
+      .insert(userProgress)
+      .values(progressData)
+      .returning();
+    return created;
+  }
+
+  // Seed default achievements in database
+  async seedAchievements(): Promise<void> {
+    const defaultAchievements: InsertAchievement[] = [
+      {
+        name: "First Steps",
+        description: "Complete your first study session",
+        icon: "fas fa-baby",
+        xpReward: 25,
+        category: "milestone",
+        threshold: 1
+      },
+      {
+        name: "Kanji Apprentice", 
+        description: "Learn 50 kanji characters",
+        icon: "fas fa-language",
+        xpReward: 100,
+        category: "kanji",
+        threshold: 50
+      },
+      {
+        name: "Kanji Master",
+        description: "Learn 300 kanji characters", 
+        icon: "fas fa-medal",
+        xpReward: 500,
+        category: "kanji",
+        threshold: 300
+      },
+      {
+        name: "Vocabulary Builder",
+        description: "Learn 500 vocabulary words",
+        icon: "fas fa-book", 
+        xpReward: 200,
+        category: "vocabulary",
+        threshold: 500
+      },
+      {
+        name: "Grammar Guru",
+        description: "Master 100 grammar points",
+        icon: "fas fa-graduation-cap",
+        xpReward: 300,
+        category: "grammar", 
+        threshold: 100
+      },
+      {
+        name: "Streak Starter",
+        description: "Study for 3 days in a row",
+        icon: "fas fa-fire",
+        xpReward: 50,
+        category: "streak",
+        threshold: 3
+      },
+      {
+        name: "Streak Master", 
+        description: "Study for 10 days in a row",
+        icon: "fas fa-fire",
+        xpReward: 150,
+        category: "streak",
+        threshold: 10
+      },
+      {
+        name: "Dedication",
+        description: "Study for 30 days in a row",
+        icon: "fas fa-crown", 
+        xpReward: 500,
+        category: "streak",
+        threshold: 30
+      },
+      {
+        name: "N5 Champion",
+        description: "Complete JLPT N5 level",
+        icon: "fas fa-trophy",
+        xpReward: 1000,
+        category: "jlpt",
+        threshold: 5
+      },
+      {
+        name: "N4 Warrior", 
+        description: "Complete JLPT N4 level",
+        icon: "fas fa-shield-alt",
+        xpReward: 1500,
+        category: "jlpt",
+        threshold: 4
+      }
+    ];
+
+    // Check if achievements already exist to avoid duplicates
+    const existingAchievements = await this.getAllAchievements();
+    if (existingAchievements.length === 0) {
+      for (const achievement of defaultAchievements) {
+        await this.createAchievement(achievement);
+      }
+    }
+  }
+}
+
+export const storage = new DatabaseStorage();
