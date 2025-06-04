@@ -3,24 +3,89 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force dark theme globally */
-* {
+/* Force dark theme globally - mobile first */
+html, body {
   background-color: hsl(220, 20%, 11%) !important;
   color: hsl(45, 25%, 90%) !important;
 }
 
-/* Override specific elements */
-div, main, section, article, aside, header, footer, nav {
-  background-color: hsl(220, 20%, 11%) !important;
-  color: hsl(45, 25%, 90%) !important;
+/* Target mobile viewport specifically */
+@media screen and (max-width: 1024px) {
+  html, body, #root, [data-reactroot] {
+    background-color: hsl(220, 20%, 11%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+}
+
+/* Force all containers */
+*, *::before, *::after {
+  background-color: inherit !important;
+  color: inherit !important;
 }
 
 /* Mobile responsive fixes - dark theme only */
 @media (max-width: 768px) {
-  body {
+  html, body {
     overflow-x: hidden;
     background-color: hsl(220, 20%, 11%) !important;
     color: hsl(45, 25%, 90%) !important;
+  }
+  
+  /* Force all mobile elements to dark theme */
+  *, *::before, *::after {
+    background-color: hsl(220, 20%, 11%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+  
+  /* Card overrides for mobile */
+  .card, [class*="card"] {
+    background-color: hsl(220, 25%, 14%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+  
+  /* Button overrides */
+  button {
+    background-color: hsl(220, 25%, 14%) !important;
+    color: hsl(45, 25%, 90%) !important;
+    border-color: hsl(220, 15%, 22%) !important;
+  }
+  
+  /* Input overrides */
+  input, select, textarea {
+    background-color: hsl(220, 20%, 16%) !important;
+    color: hsl(45, 25%, 90%) !important;
+    border-color: hsl(220, 15%, 22%) !important;
+  }
+  
+  /* Header mobile fixes */
+  header {
+    background-color: hsl(220, 20%, 11%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+  
+  /* Navigation mobile fixes */
+  nav, .nav, [class*="nav"] {
+    background-color: hsl(220, 20%, 11%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+  
+  /* Main content area */
+  main {
+    background-color: hsl(220, 20%, 11%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+  
+  /* Override any white backgrounds */
+  .bg-white {
+    background-color: hsl(220, 20%, 11%) !important;
+  }
+  
+  .text-black, .text-gray-900, .text-gray-800 {
+    color: hsl(45, 25%, 90%) !important;
+  }
+  
+  .text-gray-700, .text-gray-600, .text-gray-500 {
+    color: hsl(45, 10%, 62%) !important;
   }
 }
 

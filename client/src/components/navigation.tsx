@@ -72,19 +72,29 @@ export function Sidebar({ user }: NavigationProps) {
   ];
 
   return (
-    <div className={cn(
-      "fixed left-0 top-0 h-full bg-white border-r border-gray-200 shadow-lg transition-all duration-300 z-50",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
+    <div 
+      className={cn(
+        "fixed left-0 top-0 h-full shadow-lg transition-all duration-300 z-50",
+        isCollapsed ? "w-16" : "w-64"
+      )}
+      style={{
+        backgroundColor: 'hsl(220, 20%, 11%)',
+        borderRight: '1px solid hsl(220, 15%, 22%)',
+        color: 'hsl(45, 25%, 90%)'
+      }}
+    >
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div 
+        className="p-4"
+        style={{ borderBottom: '1px solid hsl(220, 15%, 22%)' }}
+      >
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">日</span>
               </div>
-              <span className="font-bold text-gray-900">JapanLearn</span>
+              <span className="font-bold" style={{ color: 'hsl(45, 25%, 90%)' }}>JapanLearn</span>
             </div>
           )}
           
@@ -93,6 +103,11 @@ export function Sidebar({ user }: NavigationProps) {
             size="sm"
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1"
+            style={{
+              backgroundColor: 'hsl(220, 25%, 14%)',
+              color: 'hsl(45, 25%, 90%)',
+              border: '1px solid hsl(220, 15%, 22%)'
+            }}
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -101,34 +116,45 @@ export function Sidebar({ user }: NavigationProps) {
 
       {/* User Profile Section */}
       {user && (
-        <div className="p-4 border-b border-gray-200">
+        <div 
+          className="p-4"
+          style={{ borderBottom: '1px solid hsl(220, 15%, 22%)' }}
+        >
           <div className={cn(
             "flex items-center space-x-3",
             isCollapsed && "justify-center"
           )}>
             <Avatar className="h-10 w-10">
               <AvatarImage src="/placeholder-avatar.jpg" />
-              <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+              <AvatarFallback className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
                 {user.displayName.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
             
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium truncate" style={{ color: 'hsl(45, 25%, 90%)' }}>
                   {user.displayName}
                 </p>
                 <div className="flex items-center space-x-2 mt-1">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs"
+                    style={{ 
+                      borderColor: 'hsl(38, 75%, 67%)', 
+                      color: 'hsl(38, 75%, 67%)',
+                      backgroundColor: 'hsl(38, 75%, 67%, 0.1)'
+                    }}
+                  >
                     {user.currentBelt} Belt
                   </Badge>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs" style={{ color: 'hsl(45, 10%, 62%)' }}>
                     {user.totalXP} XP
                   </span>
                 </div>
                 <div className="flex items-center space-x-1 mt-1">
-                  <Calendar className="h-3 w-3 text-orange-500" />
-                  <span className="text-xs text-gray-600">
+                  <Calendar className="h-3 w-3" style={{ color: 'hsl(38, 75%, 67%)' }} />
+                  <span className="text-xs" style={{ color: 'hsl(45, 10%, 62%)' }}>
                     {user.currentStreak} day streak
                   </span>
                 </div>
