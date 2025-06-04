@@ -1,5 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { useLanguageMode } from "@/App";
+import { useLanguageContent } from "@/components/language-toggle";
 
 interface SidebarProps {
   user?: {
@@ -11,12 +13,14 @@ interface SidebarProps {
 export default function Sidebar({ user }: SidebarProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { languageMode } = useLanguageMode();
+  const content = useLanguageContent(languageMode);
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: "fas fa-chart-line" },
-    { path: "/achievements", label: "Achievements", icon: "fas fa-trophy" },
+    { path: "/", label: content.dashboard, icon: "fas fa-chart-line" },
+    { path: "/achievements", label: content.achievements, icon: "fas fa-trophy" },
     { path: "/streaks", label: "Streaks", icon: "fas fa-fire" },
-    { path: "/settings", label: "Settings", icon: "fas fa-cog" },
+    { path: "/settings", label: content.settings, icon: "fas fa-cog" },
   ];
 
   const userLevel = user ? Math.floor(user.totalXP / 200) + 1 : 1;

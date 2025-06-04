@@ -19,6 +19,8 @@ import { queryClient } from "@/lib/queryClient";
 export default function Dashboard() {
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const { toast } = useToast();
+  const { languageMode } = useLanguageMode();
+  const content = useLanguageContent(languageMode);
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ["/api/dashboard"],

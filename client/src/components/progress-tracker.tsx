@@ -3,6 +3,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, Activity, Target, Clock } from "lucide-react";
+import { useLanguageMode } from "@/App";
+import { useLanguageContent } from "@/components/language-toggle";
 
 interface ProgressData {
   wanikaniData?: {
@@ -41,6 +43,8 @@ interface ProgressTrackerProps {
 }
 
 export default function ProgressTracker({ progress, hasApiKeys, onSync, isLoading }: ProgressTrackerProps) {
+  const { languageMode } = useLanguageMode();
+  const content = useLanguageContent(languageMode);
   const wanikani = progress?.wanikaniData;
   const bunpro = progress?.bunproData;
 
