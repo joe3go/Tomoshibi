@@ -144,8 +144,8 @@ function SimpleLanguageToggle() {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-12 sm:h-14 items-center justify-between px-2 sm:px-4">
+    <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-12 sm:h-14 items-center justify-between px-2 sm:px-4 ml-0 lg:ml-64">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <h1 className="text-sm sm:text-lg font-bold japanese-heading truncate">
             <span className="hidden sm:inline">日本語学習 - Japanese Learning Tracker</span>

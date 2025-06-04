@@ -29,7 +29,7 @@ export default function Sidebar({ user }: SidebarProps) {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-3 left-3 z-50 w-10 h-10 bg-gradient-to-br from-momiji to-ume rounded-lg shadow-lg flex items-center justify-center"
+        className="lg:hidden fixed top-3 left-3 z-[60] w-10 h-10 bg-gradient-to-br from-momiji to-ume rounded-lg shadow-lg flex items-center justify-center"
       >
         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isMobileMenuOpen ? (
@@ -43,14 +43,14 @@ export default function Sidebar({ user }: SidebarProps) {
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          className="lg:hidden fixed inset-0 bg-black/50 z-[40]"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:relative inset-y-0 left-0 z-40 w-64 lg:w-64 
+        fixed lg:relative inset-y-0 left-0 z-[50] w-64 lg:w-64 
         bg-white/95 backdrop-blur-sm shadow-xl border-r border-gray-300 
         flex flex-col transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
