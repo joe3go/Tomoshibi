@@ -1,5 +1,5 @@
 import { Switch, Route } from "wouter";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -8,6 +8,7 @@ import Dashboard from "@/pages/dashboard";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
+import AuthPage from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 
 // Language types and context
@@ -26,12 +27,44 @@ const LanguageContext = createContext<LanguageContextType>({
 export const useLanguageMode = () => useContext(LanguageContext);
 
 function Router() {
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check for stored user data
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        localStorage.removeItem("user");
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sakura via-shiro to-kawa flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-momiji mx-auto mb-4"></div>
+          <p className="text-yami/70">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/social" component={Social} />
       <Route path="/achievements" component={Achievements} />
       <Route path="/settings" component={Settings} />
+      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );
