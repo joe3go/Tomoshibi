@@ -204,17 +204,8 @@ export default function StudyPage() {
 
   if (!reviewQueue || reviewQueue.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/">
-              <Button variant="outline">
-                <ChevronLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-              </Button>
-            </Link>
-          </div>
-
           <div className="text-center py-16">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">All caught up!</h2>
@@ -236,7 +227,7 @@ export default function StudyPage() {
     const timeSpent = Math.round((Date.now() - sessionStartTime) / 60000);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="p-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-16">
             <Star className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
@@ -290,22 +281,15 @@ export default function StudyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="p-4 max-h-screen overflow-y-auto">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/">
-            <Button variant="outline">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
-          
-          <div className="text-center">
-            <div className="text-sm text-gray-600 mb-1">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-center flex-1">
+            <div className="text-sm text-gray-600 mb-2">
               Card {currentCardIndex + 1} of {reviewQueue.length}
             </div>
-            <Progress value={progress} className="w-64" />
+            <Progress value={progress} className="w-64 mx-auto" />
           </div>
           
           <div className="text-sm text-gray-600">

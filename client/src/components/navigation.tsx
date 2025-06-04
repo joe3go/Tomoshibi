@@ -148,12 +148,11 @@ export function Sidebar({ user }: NavigationProps) {
             return (
               <li key={item.name}>
                 <Link href={item.href}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
+                  <div
                     className={cn(
-                      "w-full justify-start h-auto p-3",
+                      "w-full flex items-center rounded-lg p-3 transition-colors cursor-pointer",
                       isCollapsed && "justify-center px-2",
-                      isActive && "bg-blue-600 text-white hover:bg-blue-700"
+                      isActive ? "bg-blue-600 text-white hover:bg-blue-700" : "hover:bg-gray-100"
                     )}
                     title={isCollapsed ? item.name : undefined}
                   >
@@ -168,7 +167,7 @@ export function Sidebar({ user }: NavigationProps) {
                         <div className="text-xs opacity-70">{item.description}</div>
                       </div>
                     )}
-                  </Button>
+                  </div>
                 </Link>
               </li>
             );
