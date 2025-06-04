@@ -92,89 +92,115 @@ export default function Dashboard() {
   const beltProgress = ((beltIndex + 1) / beltOrder.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="p-6 relative">
+      {/* Floating Sakura Petals */}
+      <div className="sakura-float" style={{ left: '10%', animationDelay: '0s' }}>🌸</div>
+      <div className="sakura-float" style={{ left: '30%', animationDelay: '2s' }}>🌸</div>
+      <div className="sakura-float" style={{ left: '60%', animationDelay: '4s' }}>🌸</div>
+      <div className="sakura-float" style={{ left: '80%', animationDelay: '6s' }}>🌸</div>
+      
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Welcome back, {user.displayName}!
+        {/* Zen Header */}
+        <div className="text-center mb-8 zen-card p-8">
+          <div className="japanese-welcome mb-4">
+            おかえりなさい、{user.displayName}さん
+          </div>
+          <h1 className="text-3xl font-semibold text-foreground mb-2 japanese-heading">
+            Welcome back, {user.displayName}
           </h1>
-          <p className="text-xl text-gray-600">
-            Continue your Japanese learning journey • {user.currentBelt} belt • JLPT {user.currentJLPTLevel}
+          <p className="text-lg text-muted-foreground japanese-text">
+            今日も一緒に日本語を学びましょう
           </p>
-          <div className="flex items-center justify-center gap-4 mt-4">
-            <Badge variant="outline" className="text-lg px-4 py-2">
-              {beltEmojis[user.currentBelt]} {user.currentBelt.charAt(0).toUpperCase() + user.currentBelt.slice(1)} Belt
-            </Badge>
-            <Badge variant="outline" className="text-lg px-4 py-2">
-              🎯 {user.studyGoal}
-            </Badge>
+          <p className="text-base text-muted-foreground mt-1">
+            Continue your Japanese learning journey
+          </p>
+          
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <div className="zen-card px-4 py-2 bg-gradient-to-r from-primary/10 to-matcha/10 border-primary/20">
+              <span className="text-sm font-medium text-primary">
+                {beltEmojis[user.currentBelt]} {user.currentBelt.charAt(0).toUpperCase() + user.currentBelt.slice(1)} Belt
+              </span>
+            </div>
+            <div className="zen-card px-4 py-2 bg-gradient-to-r from-sakura/20 to-ume/20 border-accent/20">
+              <span className="text-sm font-medium text-foreground">
+                🎯 JLPT {user.currentJLPTLevel}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Quick Action */}
+        {/* Zen Study Action */}
         <div className="text-center mb-8">
           <Link href="/study-mode">
-            <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              <Play className="mr-2 h-5 w-5" />
-              Choose Study Mode ({stats.reviewQueue} items ready)
-            </Button>
+            <button className="zen-button text-lg px-12 py-4 group">
+              <Play className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" />
+              <span className="japanese-text">始めましょう</span>
+              <span className="ml-2">({stats.reviewQueue} items ready)</span>
+            </button>
           </Link>
+          
+          <p className="text-sm text-muted-foreground mt-3 japanese-text">
+            今日の復習を始める準備ができています
+          </p>
         </div>
 
-        {/* Quick Stats Grid */}
+        {/* Zen Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-blue-600">Total XP</p>
-                  <p className="text-3xl font-bold text-blue-900">{user.totalXP.toLocaleString()}</p>
-                  <p className="text-xs text-blue-600">Level {stats.currentLevel}</p>
-                </div>
-                <Star className="h-10 w-10 text-yellow-500" />
+          <div className="zen-card p-6 group hover:shadow-lg transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-primary japanese-text">総経験値</p>
+                <p className="text-xs text-muted-foreground mb-1">Total XP</p>
+                <p className="text-3xl font-bold text-foreground zen-pulse">{user.totalXP.toLocaleString()}</p>
+                <p className="text-xs text-primary">Level {stats.currentLevel}</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="p-3 rounded-full bg-gradient-to-br from-achievement/20 to-achievement-gold/20">
+                <Star className="h-8 w-8 text-achievement" />
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-orange-600">Study Streak</p>
-                  <p className="text-3xl font-bold text-orange-900">{user.currentStreak} days</p>
-                  <p className="text-xs text-orange-600">Best: {user.bestStreak} days</p>
-                </div>
-                <Zap className="h-10 w-10 text-orange-500" />
+          <div className="zen-card p-6 group hover:shadow-lg transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-orange-600 japanese-text">連続学習</p>
+                <p className="text-xs text-muted-foreground mb-1">Study Streak</p>
+                <p className="text-3xl font-bold text-foreground zen-pulse">{user.currentStreak} days</p>
+                <p className="text-xs text-orange-600">Best: {user.bestStreak} days</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="p-3 rounded-full bg-gradient-to-br from-orange-100 to-achievement/20">
+                <Zap className="h-8 w-8 text-orange-500" />
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-600">Accuracy</p>
-                  <p className="text-3xl font-bold text-green-900">{stats.accuracy}%</p>
-                  <p className="text-xs text-green-600">Recent session</p>
-                </div>
-                <Target className="h-10 w-10 text-green-500" />
+          <div className="zen-card p-6 group hover:shadow-lg transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-600 japanese-text">正確性</p>
+                <p className="text-xs text-muted-foreground mb-1">Accuracy</p>
+                <p className="text-3xl font-bold text-foreground zen-pulse">{stats.accuracy}%</p>
+                <p className="text-xs text-green-600">Recent session</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="p-3 rounded-full bg-gradient-to-br from-green-100 to-bamboo/20">
+                <Target className="h-8 w-8 text-green-500" />
+              </div>
+            </div>
+          </div>
 
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-purple-600">Cards Mastered</p>
-                  <p className="text-3xl font-bold text-purple-900">{stats.masteredCards}</p>
-                  <p className="text-xs text-purple-600">of {stats.totalCards} total</p>
-                </div>
-                <Trophy className="h-10 w-10 text-purple-500" />
+          <div className="zen-card p-6 group hover:shadow-lg transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-600 japanese-text">習得済み</p>
+                <p className="text-xs text-muted-foreground mb-1">Cards Mastered</p>
+                <p className="text-3xl font-bold text-foreground zen-pulse">{stats.masteredCards}</p>
+                <p className="text-xs text-purple-600">of {stats.totalCards} total</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="p-3 rounded-full bg-gradient-to-br from-purple-100 to-ume/20">
+                <Trophy className="h-8 w-8 text-purple-500" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main Content Tabs */}
