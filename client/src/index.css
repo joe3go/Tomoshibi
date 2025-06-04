@@ -246,55 +246,74 @@
 }
 
 .dark {
-  /* Material Design 3 Dark Theme - Shinjuku Nightlife Inspired */
-  --background: 0 0% 7%; /* #121212 - Material Design recommended dark surface */
-  --foreground: 0 0% 100%; /* Pure white for high contrast (15.8:1) */
-  --card: 0 0% 11%; /* 1dp elevation - 5% white overlay */
-  --card-foreground: 0 0% 95%; /* High contrast text */
-  --popover: 0 0% 13%; /* 2dp elevation - 7% white overlay */
-  --popover-foreground: 0 0% 95%;
+  /* Shinjuku Bar Atmosphere - Cinematic Dark Theme */
+  --background: 220 25% 4%; /* Ink black with subtle blue undertone */
+  --foreground: 45 15% 88%; /* Soft beige for readable text */
+  --card: 220 20% 8%; /* Rain-slick navy for elevated surfaces */
+  --card-foreground: 45 15% 88%; /* Soft beige text */
+  --popover: 220 25% 10%; /* Deeper navy for overlays */
+  --popover-foreground: 45 15% 88%;
   
-  /* Desaturated primary - Material Design compliance */
-  --primary: 280 60% 65%; /* Desaturated purple - passes 4.5:1 contrast */
-  --primary-foreground: 0 0% 0%; /* Black text on light primary */
+  /* Warm amber primary - bar lighting */
+  --primary: 38 85% 62%; /* Bourbon amber glow */
+  --primary-foreground: 220 25% 4%; /* Dark text on amber */
   
-  --secondary: 0 0% 18%; /* 3dp elevation surface */
-  --secondary-foreground: 0 0% 87%; /* High contrast secondary text */
+  --secondary: 25 30% 15%; /* Barwood brown undertones */
+  --secondary-foreground: 45 15% 82%; /* Lighter beige */
   
-  --muted: 0 0% 15%; /* Lower elevation surface */
-  --muted-foreground: 0 0% 60%; /* Medium contrast for secondary info */
+  --muted: 220 15% 12%; /* Smoky charcoal */
+  --muted-foreground: 45 8% 55%; /* Dimmed beige for secondary text */
   
-  --accent: 0 0% 20%; /* 4dp elevation surface */
-  --accent-foreground: 0 0% 95%;
+  --accent: 25 30% 18%; /* Warm wood accent */
+  --accent-foreground: 45 15% 88%;
   
-  --destructive: 0 60% 50%; /* Desaturated red for accessibility */
-  --destructive-foreground: 0 0% 95%;
-  --border: 0 0% 20%; /* Subtle borders on dark theme */
-  --input: 0 0% 18%; /* Input field background */
-  --ring: 280 60% 65%; /* Focus ring matches primary */
+  --destructive: 0 45% 48%; /* Muted red for warnings */
+  --destructive-foreground: 45 15% 88%;
+  --border: 220 15% 18%; /* Subtle charcoal borders */
+  --input: 220 20% 10%; /* Input backgrounds */
+  --ring: 38 85% 62%; /* Amber focus ring */
   
-  /* Themed accent colors - desaturated for Material Design compliance */
-  --matcha: 140 40% 50%; /* Desaturated green - maintains accessibility */
-  --bamboo: 60 30% 75%; /* Light accent color */
-  --sakura: 320 50% 65%; /* Desaturated pink - avoids optical vibration */
-  --achievement: 45 70% 55%; /* Desaturated gold - readable on dark */
-  --achievement-gold: 50 60% 60%; /* Accessible yellow-gold */
-  --neon-pink: 320 50% 65%; /* Desaturated to prevent eye strain */
-  --neon-cyan: 180 50% 60%; /* Desaturated cyan - better contrast */
-  --neon-orange: 30 60% 60%; /* Desaturated orange - accessible */
-  --tokyo-night: 0 0% 7%; /* Base dark color */
-  --street-glow: 270 40% 30%; /* Subtle accent glow */
+  /* Atmospheric bar colors */
+  --bourbon-amber: 38 85% 62%; /* Main warm light */
+  --neon-cherry: 348 82% 65%; /* Neon cherry blossom pink */
+  --rain-navy: 220 25% 12%; /* Rain-slick surfaces */
+  --smoky-teal: 180 35% 45%; /* Muted teal accents */
+  --barwood: 25 30% 25%; /* Warm wood tones */
+  --ink-black: 220 25% 4%; /* Deep background */
+  --soft-beige: 45 15% 88%; /* Text color */
   
-  /* Material Design elevation surfaces */
-  --surface-1dp: 0 0% 11%; /* 5% white overlay */
-  --surface-2dp: 0 0% 12%; /* 7% white overlay */
-  --surface-3dp: 0 0% 13%; /* 8% white overlay */
-  --surface-4dp: 0 0% 14%; /* 9% white overlay */
-  --surface-6dp: 0 0% 15%; /* 11% white overlay */
-  --surface-8dp: 0 0% 16%; /* 12% white overlay */
-  --surface-12dp: 0 0% 17%; /* 14% white overlay */
-  --surface-16dp: 0 0% 18%; /* 15% white overlay */
-  --surface-24dp: 0 0% 19%; /* 16% white overlay */
+  /* Traditional Japanese accents */
+  --washi-paper: 45 25% 92%; /* Light paper texture */
+  --frosted-glass: 220 15% 25%; /* Glass surfaces */
+  --lantern-glow: 38 90% 68%; /* Paper lantern warmth */
+  
+  /* Atmospheric lighting effects */
+  --warm-glow: 38 85% 62%; /* Main ambient light */
+  --cool-reflection: 180 35% 45%; /* Glass/water reflections */
+  --neon-accent: 348 82% 65%; /* Bright neon highlights */
+  
+  /* Material elevation with atmospheric tinting */
+  --surface-1dp: 220 20% 9%; /* Slight elevation with warmth */
+  --surface-2dp: 220 18% 11%; /* Medium elevation */
+  --surface-3dp: 220 16% 13%; /* Higher elevation */
+  --surface-4dp: 220 15% 15%; /* Prominent elevation */
+  --surface-6dp: 220 14% 17%; /* Modal/floating elements */
+  --surface-8dp: 220 13% 19%; /* App bars */
+  --surface-12dp: 220 12% 21%; /* Cards at high elevation */
+  --surface-16dp: 220 11% 23%; /* Navigation */
+  --surface-24dp: 220 10% 25%; /* Highest elevation */
+  
+  /* Legacy color mappings for compatibility */
+  --matcha: 140 25% 45%; /* Muted green */
+  --bamboo: 60 20% 65%; /* Natural bamboo */
+  --sakura: 348 82% 65%; /* Neon cherry blossom */
+  --achievement: 38 85% 62%; /* Bourbon amber */
+  --achievement-gold: 45 80% 58%; /* Warm gold */
+  --neon-pink: 348 82% 65%; /* Cherry blossom neon */
+  --neon-cyan: 180 35% 45%; /* Smoky teal */
+  --neon-orange: 38 85% 62%; /* Bourbon amber */
+  --tokyo-night: 220 25% 4%; /* Ink black */
+  --street-glow: 38 60% 35%; /* Dim amber glow */
 }
 
 @layer base {
@@ -307,8 +326,36 @@
     font-family: 'Inter', 'Noto Sans JP', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
-    background-color: hsl(0, 0%, 7%);
+    background-color: hsl(220, 25%, 4%);
+    background-image: 
+      radial-gradient(circle at 20% 80%, hsl(38, 85%, 62%) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(348, 82%, 65%) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, hsl(180, 35%, 45%) 0%, transparent 50%);
+    background-size: 100% 100%, 100% 100%, 100% 100%;
+    background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      linear-gradient(90deg, transparent 50%, hsl(220, 25%, 4%) 50.1%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        hsl(220, 15%, 6%) 2px,
+        hsl(220, 15%, 6%) 4px
+      );
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
   }
 }
 
@@ -536,15 +583,15 @@
   100% { background-position: 200% 0; }
 }
 
-/* Modern Zen UI Components */
+/* Shinjuku Bar Atmosphere UI Components */
 .zen-card {
-  @apply bg-card border border-border rounded-xl shadow-sm;
-  background: linear-gradient(145deg, 
-    hsl(var(--card)), 
-    hsl(var(--washi)));
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(8px);
 }
 
 .zen-card::before {
@@ -554,18 +601,21 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, 
-    hsl(var(--primary) / 0.03) 0%, 
-    transparent 50%);
+  background: 
+    linear-gradient(135deg, 
+      hsl(var(--bourbon-amber) / 0.02) 0%, 
+      transparent 30%,
+      hsl(var(--neon-cherry) / 0.01) 70%,
+      transparent 100%);
   pointer-events: none;
 }
 
 .zen-card:hover {
-  @apply shadow-md;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  border-color: hsl(var(--bourbon-amber) / 0.2);
   box-shadow: 
-    0 8px 25px hsl(var(--foreground) / 0.06),
-    0 3px 10px hsl(var(--foreground) / 0.08);
+    0 4px 20px hsl(var(--ink-black) / 0.3),
+    0 0 40px hsl(var(--bourbon-amber) / 0.05);
 }
 
 /* Floating sakura petals */

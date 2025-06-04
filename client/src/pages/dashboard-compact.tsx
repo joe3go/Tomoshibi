@@ -106,17 +106,17 @@ export default function Dashboard() {
   const beltProgress = ((beltIndex + 1) / beltOrder.length) * 100;
 
   return (
-    <div className="p-4 relative max-h-screen overflow-y-auto">
-      {/* Subtle background sakura pattern */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.02] z-0">
-        <div className="absolute top-20 left-10 text-4xl rotate-12">🌸</div>
-        <div className="absolute top-40 right-20 text-3xl -rotate-6">🌸</div>
-        <div className="absolute bottom-32 left-1/4 text-3xl rotate-45">🌸</div>
-        <div className="absolute top-1/3 right-1/3 text-2xl -rotate-12">🌸</div>
-        <div className="absolute bottom-20 right-10 text-3xl rotate-6">🌸</div>
+    <div className="p-4 relative max-h-screen overflow-y-auto z-10">
+      {/* Atmospheric bar elements */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.08] z-0">
+        <div className="absolute top-20 left-10 w-8 h-8 rounded-full" style={{ backgroundColor: 'hsl(38, 85%, 62%)', filter: 'blur(8px)' }}></div>
+        <div className="absolute top-40 right-20 w-6 h-6 rounded-full" style={{ backgroundColor: 'hsl(348, 82%, 65%)', filter: 'blur(6px)' }}></div>
+        <div className="absolute bottom-32 left-1/4 w-10 h-10 rounded-full" style={{ backgroundColor: 'hsl(180, 35%, 45%)', filter: 'blur(10px)' }}></div>
+        <div className="absolute top-1/3 right-1/3 w-4 h-4 rounded-full" style={{ backgroundColor: 'hsl(38, 85%, 62%)', filter: 'blur(4px)' }}></div>
+        <div className="absolute bottom-20 right-10 w-6 h-6 rounded-full" style={{ backgroundColor: 'hsl(348, 82%, 65%)', filter: 'blur(6px)' }}></div>
       </div>
       
-      <div className="max-w-7xl mx-auto space-y-4 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-4 relative z-20">
         {/* Welcome Header */}
         <div className="zen-card p-4">
           <div className="flex items-center justify-between">
