@@ -7,6 +7,8 @@ import JourneyMap from "@/components/journey-map";
 import ProgressTracker from "@/components/progress-tracker";
 import AchievementModal from "@/components/achievement-modal";
 import ProgressCircle from "@/components/progress-circle";
+import { useLanguageMode } from "@/App";
+import { useLanguageContent } from "@/components/language-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
