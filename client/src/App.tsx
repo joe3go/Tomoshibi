@@ -35,8 +35,85 @@ function Router() {
   );
 }
 
+// Language content for all components
+export const LanguageContent = {
+  en: {
+    dashboard: "Dashboard",
+    achievements: "Achievements", 
+    settings: "Settings",
+    progress: "Progress Tracking",
+    wanikaniLevel: "WaniKani Level",
+    bunproGrammar: "Bunpro Grammar Points",
+    wanikaniAccuracy: "WaniKani Accuracy",
+    bunproAccuracy: "Bunpro Accuracy",
+    sync: "Sync Data",
+    syncing: "Syncing...",
+    lastSynced: "Last synced",
+    setupApiKeys: "Setup API Keys",
+    wanikaniReviews: "WaniKani Reviews",
+    bunproReviews: "Bunpro Reviews",
+    totalXP: "Total XP",
+    currentStreak: "Current Streak",
+    bestStreak: "Best Streak",
+    jlptLevel: "JLPT Level",
+    recentActivity: "Recent Activity",
+    unlockedAchievements: "Unlocked Achievements",
+    viewAll: "View All"
+  },
+  jp: {
+    dashboard: "ダッシュボード",
+    achievements: "実績",
+    settings: "設定",
+    progress: "進歩追跡",
+    wanikaniLevel: "WaniKaniレベル",
+    bunproGrammar: "Bunpro文法ポイント",
+    wanikaniAccuracy: "WaniKani精度",
+    bunproAccuracy: "Bunpro精度",
+    sync: "データ同期",
+    syncing: "同期中...",
+    lastSynced: "最終同期",
+    setupApiKeys: "APIキー設定",
+    wanikaniReviews: "WaniKaniレビュー",
+    bunproReviews: "Bunproレビュー",
+    totalXP: "総経験値",
+    currentStreak: "現在の連続記録",
+    bestStreak: "最高連続記録",
+    jlptLevel: "JLPTレベル",
+    recentActivity: "最近の活動",
+    unlockedAchievements: "解放された実績",
+    viewAll: "すべて表示"
+  },
+  "jp-furigana": {
+    dashboard: "ダッシュボード",
+    achievements: "実績（じっせき）",
+    settings: "設定（せってい）",
+    progress: "進歩（しんぽ）追跡（ついせき）",
+    wanikaniLevel: "WaniKaniレベル",
+    bunproGrammar: "Bunpro文法（ぶんぽう）ポイント",
+    wanikaniAccuracy: "WaniKani精度（せいど）",
+    bunproAccuracy: "Bunpro精度（せいど）",
+    sync: "データ同期（どうき）",
+    syncing: "同期中（どうきちゅう）...",
+    lastSynced: "最終（さいしゅう）同期（どうき）",
+    setupApiKeys: "APIキー設定（せってい）",
+    wanikaniReviews: "WaniKaniレビュー",
+    bunproReviews: "Bunproレビュー",
+    totalXP: "総（そう）経験値（けいけんち）",
+    currentStreak: "現在（げんざい）の連続（れんぞく）記録（きろく）",
+    bestStreak: "最高（さいこう）連続（れんぞく）記録（きろく）",
+    jlptLevel: "JLPTレベル",
+    recentActivity: "最近（さいきん）の活動（かつどう）",
+    unlockedAchievements: "解放（かいほう）された実績（じっせき）",
+    viewAll: "すべて表示（ひょうじ）"
+  }
+};
+
+export function useLanguageContent(mode: LanguageMode) {
+  return LanguageContent[mode];
+}
+
 // Simple Language Toggle Component
-function LanguageToggle() {
+function SimpleLanguageToggle() {
   const { languageMode, setLanguageMode } = useLanguageMode();
   
   const modes = [
@@ -51,7 +128,7 @@ function LanguageToggle() {
       onChange={(e) => setLanguageMode(e.target.value as LanguageMode)}
       className="px-3 py-1 rounded border bg-background text-foreground"
     >
-      {modes.map(mode => (
+      {modes.map((mode) => (
         <option key={mode.value} value={mode.value}>
           {mode.label}
         </option>
@@ -69,7 +146,7 @@ function AppHeader() {
             日本語学習 - Japanese Learning Tracker
           </h1>
         </div>
-        <LanguageToggle />
+        <SimpleLanguageToggle />
       </div>
     </header>
   );
@@ -82,7 +159,6 @@ function App() {
   });
 
   const setLanguageMode = (mode: LanguageMode) => {
-    console.log('App: Setting language to:', mode);
     setLanguageModeState(mode);
     localStorage.setItem('language-mode', mode);
   };

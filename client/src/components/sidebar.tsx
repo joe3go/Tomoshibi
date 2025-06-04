@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
-import { useLanguageMode } from "@/App";
-import { useLanguageContent } from "@/components/language-toggle";
+import { useLanguageMode, useLanguageContent } from "@/App";
 
 interface SidebarProps {
   user?: {
@@ -15,8 +14,6 @@ export default function Sidebar({ user }: SidebarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { languageMode } = useLanguageMode();
   const content = useLanguageContent(languageMode);
-  
-  console.log('Sidebar rendering with language:', languageMode);
 
   const navItems = [
     { path: "/", label: content.dashboard, icon: "fas fa-chart-line" },

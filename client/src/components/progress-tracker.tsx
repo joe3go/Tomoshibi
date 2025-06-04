@@ -3,8 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, Activity, Target, Clock } from "lucide-react";
-import { useLanguageMode } from "@/App";
-import { useLanguageContent } from "@/components/language-toggle";
+import { useLanguageMode, useLanguageContent } from "@/App";
 
 interface ProgressData {
   wanikaniData?: {
