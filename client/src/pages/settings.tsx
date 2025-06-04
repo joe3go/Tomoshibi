@@ -43,12 +43,40 @@ export default function Settings() {
       
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+    onSuccess: async () => {
+      // Show specific message based on which keys were updated
+      const updatedServices = [];
+      if (wanikaniKey) updatedServices.push("WaniKani");
+      if (bunproKey) updatedServices.push("Bunpro");
+      
       toast({
         title: "API keys updated",
-        description: "Your WaniKani and Bunpro API keys have been securely saved",
+        description: `Your ${updatedServices.join(" and ")} API key${updatedServices.length > 1 ? 's have' : ' has'} been securely saved. Syncing data...`,
       });
+      
+      // Trigger data sync immediately after saving keys
+      try {
+        await fetch("/api/sync-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        
+        // Invalidate cache to refresh dashboard with new data
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+        
+        toast({
+          title: "Data synchronized",
+          description: "Your progress data has been updated from the connected services",
+        });
+      } catch (error) {
+        console.error("Sync error:", error);
+        toast({
+          title: "Sync incomplete",
+          description: "API keys saved but data sync failed. Please check your API keys are valid.",
+          variant: "destructive",
+        });
+      }
+      
       setWanikaniKey("");
       setBunproKey("");
     },

@@ -404,6 +404,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Alternative API key endpoint for settings page
+  app.post("/api/user/api-keys", async (req, res) => {
+    try {
+      const { userId, wanikaniApiKey, bunproApiKey } = req.body;
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const updateData: any = {};
+      if (wanikaniApiKey !== undefined) updateData.wanikaniApiKey = wanikaniApiKey;
+      if (bunproApiKey !== undefined) updateData.bunproApiKey = bunproApiKey;
+
+      await storage.updateUser(userId, updateData);
+
+      res.json({ message: "API keys updated successfully" });
+    } catch (error) {
+      console.error("API keys update error:", error);
+      res.status(500).json({ message: "Failed to update API keys" });
+    }
+  });
+
   // Sync data from external APIs
   app.post("/api/sync-data", async (req, res) => {
     try {
