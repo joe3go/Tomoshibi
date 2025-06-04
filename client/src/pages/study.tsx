@@ -52,6 +52,31 @@ export default function StudyPage() {
     totalCards: 0
   });
 
+  // Audio functionality
+  const playAudio = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ja-JP'; // Japanese language
+      utterance.rate = 0.8; // Slightly slower for learning
+      utterance.pitch = 1.0;
+      
+      // Try to use a Japanese voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const japaneseVoice = voices.find(voice => 
+        voice.lang.startsWith('ja') || voice.name.includes('Japanese')
+      );
+      
+      if (japaneseVoice) {
+        utterance.voice = japaneseVoice;
+      }
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   // Fetch review queue
   const { data: reviewQueue, isLoading, error } = useQuery<ReviewCard[]>({
     queryKey: ["/api/review-queue"],
@@ -300,7 +325,12 @@ export default function StudyPage() {
                   {showReading ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   Reading
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => playAudio(currentCard.sentenceCard.japanese)}
+                  title="Play audio"
+                >
                   <Volume2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -383,49 +413,29 @@ export default function StudyPage() {
                 )}
 
                 {/* Answer Buttons */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <Button
                     onClick={() => handleAnswer(1)}
                     variant="destructive"
-                    className="flex flex-col py-4 h-auto"
+                    size="lg"
+                    className="flex flex-col py-6 h-auto"
                     disabled={submitReviewMutation.isPending}
                   >
-                    <XCircle className="h-5 w-5 mb-1" />
-                    <span>Again</span>
-                    <span className="text-xs opacity-80">Hard</span>
+                    <XCircle className="h-8 w-8 mb-2" />
+                    <span className="text-lg font-semibold">No</span>
+                    <span className="text-sm opacity-80">I didn't know this</span>
                   </Button>
                   
                   <Button
-                    onClick={() => handleAnswer(2)}
-                    variant="outline"
-                    className="flex flex-col py-4 h-auto border-orange-300 text-orange-700 hover:bg-orange-50"
-                    disabled={submitReviewMutation.isPending}
-                  >
-                    <RotateCcw className="h-5 w-5 mb-1" />
-                    <span>Hard</span>
-                    <span className="text-xs opacity-80">Difficult</span>
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleAnswer(3)}
-                    variant="outline"
-                    className="flex flex-col py-4 h-auto border-blue-300 text-blue-700 hover:bg-blue-50"
-                    disabled={submitReviewMutation.isPending}
-                  >
-                    <CheckCircle className="h-5 w-5 mb-1" />
-                    <span>Good</span>
-                    <span className="text-xs opacity-80">Normal</span>
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleAnswer(5)}
+                    onClick={() => handleAnswer(4)}
                     variant="default"
-                    className="flex flex-col py-4 h-auto bg-green-600 hover:bg-green-700"
+                    size="lg"
+                    className="flex flex-col py-6 h-auto bg-green-600 hover:bg-green-700"
                     disabled={submitReviewMutation.isPending}
                   >
-                    <Star className="h-5 w-5 mb-1" />
-                    <span>Easy</span>
-                    <span className="text-xs opacity-80">Perfect</span>
+                    <CheckCircle className="h-8 w-8 mb-2" />
+                    <span className="text-lg font-semibold">Yes</span>
+                    <span className="text-sm opacity-80">I knew this</span>
                   </Button>
                 </div>
 
