@@ -71,14 +71,20 @@ export default function ProgressTracker({ progress, hasApiKeys, onSync, isLoadin
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="japanese-heading text-2xl font-bold">
-          進歩追跡 - Progress Tracking
+          {languageMode === 'en' ? content.progress :
+           languageMode === 'jp' ? '進歩追跡' :
+           '進歩<ruby>しんぽ</ruby>追跡<ruby>ついせき</ruby>'} - {content.progress}
         </h2>
         <Button 
           onClick={onSync} 
           disabled={!hasApiKeys || isLoading}
           className="matcha-gradient text-white"
         >
-          {isLoading ? "Syncing..." : "Sync Data"}
+          {isLoading ? 
+            (languageMode === 'en' ? "Syncing..." : 
+             languageMode === 'jp' ? "同期中..." : 
+             "同期<ruby>どうき</ruby>中<ruby>ちゅう</ruby>...") :
+            content.syncData}
         </Button>
       </div>
 

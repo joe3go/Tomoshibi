@@ -91,7 +91,19 @@ export const LanguageContent = {
     level: "Level",
     totalXP: "Total XP",
     syncData: "Sync Data",
-    welcome: "Welcome back"
+    welcome: "Welcome back",
+    currentLevel: "Current Level",
+    radicals: "Radicals",
+    overallProgress: "Overall Progress Trends",
+    kanjiMastery: "Kanji Mastery",
+    combinedAccuracy: "Combined Accuracy",
+    overallPerformance: "Overall Performance",
+    connectWanikani: "Connect WaniKani to track kanji and vocabulary progress",
+    connectBunpro: "Connect Bunpro to track grammar progress",
+    configureApiKeys: "Configure WaniKani and Bunpro API keys in Settings to track authentic progress data",
+    lastSynced: "Last Synced",
+    justNow: "Just now",
+    never: "Never"
   },
   jp: {
     dashboard: "ダッシュボード",
@@ -111,7 +123,19 @@ export const LanguageContent = {
     level: "レベル",
     totalXP: "総XP",
     syncData: "データ同期",
-    welcome: "お帰りなさい"
+    welcome: "お帰りなさい",
+    currentLevel: "現在のレベル",
+    radicals: "部首",
+    overallProgress: "全体的な進歩傾向",
+    kanjiMastery: "漢字習得",
+    combinedAccuracy: "総合正確性",
+    overallPerformance: "全体パフォーマンス",
+    connectWanikani: "漢字と語彙の進歩を追跡するためにWaniKaniを接続",
+    connectBunpro: "文法進歩を追跡するためにBunproを接続",
+    configureApiKeys: "本物の進歩データを追跡するために設定でWaniKaniとBunpro APIキーを設定",
+    lastSynced: "最終同期",
+    justNow: "たった今",
+    never: "未同期"
   },
   "jp-furigana": {
     dashboard: "ダッシュボード",
@@ -131,7 +155,19 @@ export const LanguageContent = {
     level: "レベル",
     totalXP: "総<ruby>そう</ruby>XP",
     syncData: "データ同期<ruby>どうき</ruby>",
-    welcome: "お帰<ruby>かえ</ruby>りなさい"
+    welcome: "お帰<ruby>かえ</ruby>りなさい",
+    currentLevel: "現在<ruby>げんざい</ruby>のレベル",
+    radicals: "部首<ruby>ぶしゅ</ruby>",
+    overallProgress: "全体的<ruby>ぜんたいてき</ruby>な進歩<ruby>しんぽ</ruby>傾向<ruby>けいこう</ruby>",
+    kanjiMastery: "漢字<ruby>かんじ</ruby>習得<ruby>しゅうとく</ruby>",
+    combinedAccuracy: "総合<ruby>そうごう</ruby>正確性<ruby>せいかくせい</ruby>",
+    overallPerformance: "全体<ruby>ぜんたい</ruby>パフォーマンス",
+    connectWanikani: "漢字<ruby>かんじ</ruby>と語彙<ruby>ごい</ruby>の進歩<ruby>しんぽ</ruby>を追跡<ruby>ついせき</ruby>するためにWaniKaniを接続<ruby>せつぞく</ruby>",
+    connectBunpro: "文法<ruby>ぶんぽう</ruby>進歩<ruby>しんぽ</ruby>を追跡<ruby>ついせき</ruby>するためにBunproを接続<ruby>せつぞく</ruby>",
+    configureApiKeys: "本物<ruby>ほんもの</ruby>の進歩<ruby>しんぽ</ruby>データを追跡<ruby>ついせき</ruby>するために設定<ruby>せってい</ruby>でWaniKaniとBunpro APIキーを設定<ruby>せってい</ruby>",
+    lastSynced: "最終<ruby>さいしゅう</ruby>同期<ruby>どうき</ruby>",
+    justNow: "たった今<ruby>いま</ruby>",
+    never: "未<ruby>み</ruby>同期<ruby>どうき</ruby>"
   }
 };
 
