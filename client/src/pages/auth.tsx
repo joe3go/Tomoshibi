@@ -128,7 +128,7 @@ export default function AuthPage() {
             <div className="w-8 h-8 bg-gradient-to-br from-momiji to-ume rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">日</span>
             </div>
-            <h1 className="text-xl font-bold text-sumi">Japanese Learning Hub</h1>
+            <h1 className="text-xl font-bold text-sumi">Tomoshibi</h1>
           </Link>
           <nav className="flex items-center space-x-4">
             <Link href="/">
@@ -157,8 +157,7 @@ export default function AuthPage() {
               Master Japanese with Confidence
             </h2>
             <p className="text-lg text-yami/70 leading-relaxed">
-              Track your WaniKani kanji progress, Bunpro grammar studies, and connect with fellow learners 
-              on your journey to Japanese fluency.
+              Master Japanese with our comprehensive JLPT-based learning system. Track your progress through vocabulary, kanji, and grammar with authentic content.
             </p>
           </div>
           
@@ -170,8 +169,8 @@ export default function AuthPage() {
             </div>
             <div className="bg-white/50 backdrop-blur-sm p-4 rounded-xl text-center">
               <Cherry className="h-6 w-6 mx-auto mb-2 text-ume" />
-              <div className="text-sm font-medium text-yami">API Integration</div>
-              <div className="text-xs text-yami/60">WaniKani & Bunpro</div>
+              <div className="text-sm font-medium text-yami">SRS Learning</div>
+              <div className="text-xs text-yami/60">Spaced repetition system</div>
             </div>
           </div>
         </div>

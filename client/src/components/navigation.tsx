@@ -94,7 +94,7 @@ export function Sidebar({ user }: NavigationProps) {
               <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">日</span>
               </div>
-              <span className="font-bold" style={{ color: 'hsl(45, 25%, 90%)' }}>JapanLearn</span>
+              <span className="font-bold" style={{ color: 'hsl(45, 25%, 90%)' }}>Tomoshibi</span>
             </div>
           )}
           
