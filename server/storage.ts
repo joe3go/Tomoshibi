@@ -591,6 +591,90 @@ export class DatabaseStorage implements IStorage {
       }
     }
   }
+
+  // SRS Learning System implementations
+  async getAllGrammarPoints(): Promise<GrammarPoint[]> {
+    const result = await db.select().from(grammarPoints).orderBy(grammarPoints.difficulty, grammarPoints.id);
+    return result;
+  }
+
+  async getGrammarPoint(id: number): Promise<GrammarPoint | undefined> {
+    const [result] = await db.select().from(grammarPoints).where(eq(grammarPoints.id, id));
+    return result;
+  }
+
+  async getAllKanji(): Promise<Kanji[]> {
+    const result = await db.select().from(kanji).orderBy(kanji.frequency, kanji.strokeCount);
+    return result;
+  }
+
+  async getKanji(id: number): Promise<Kanji | undefined> {
+    const [result] = await db.select().from(kanji).where(eq(kanji.id, id));
+    return result;
+  }
+
+  async getAllVocabulary(): Promise<Vocabulary[]> {
+    const result = await db.select().from(vocabulary).orderBy(vocabulary.difficulty, vocabulary.id);
+    return result;
+  }
+
+  async getVocabulary(id: number): Promise<Vocabulary | undefined> {
+    const [result] = await db.select().from(vocabulary).where(eq(vocabulary.id, id));
+    return result;
+  }
+
+  async getUserSrsItems(userId: number): Promise<SrsItem[]> {
+    const result = await db.select().from(srsItems).where(eq(srsItems.userId, userId));
+    return result;
+  }
+
+  async getSrsItem(id: number): Promise<SrsItem | undefined> {
+    const [result] = await db.select().from(srsItems).where(eq(srsItems.id, id));
+    return result;
+  }
+
+  async createSrsItem(item: InsertSrsItem): Promise<SrsItem> {
+    const [result] = await db.insert(srsItems).values(item).returning();
+    return result;
+  }
+
+  async updateSrsItem(id: number, updates: Partial<SrsItem>): Promise<SrsItem | undefined> {
+    const [result] = await db.update(srsItems).set({
+      ...updates,
+      updatedAt: new Date()
+    }).where(eq(srsItems.id, id)).returning();
+    return result;
+  }
+
+  async getReviewQueue(userId: number): Promise<SrsItem[]> {
+    const now = new Date();
+    const result = await db.select().from(srsItems)
+      .where(
+        and(
+          eq(srsItems.userId, userId),
+          lte(srsItems.nextReviewAt, now)
+        )
+      )
+      .orderBy(srsItems.nextReviewAt);
+    return result;
+  }
+
+  async createReviewSession(session: InsertReviewSession): Promise<ReviewSession> {
+    const [result] = await db.insert(reviewSessions).values(session).returning();
+    return result;
+  }
+
+  async getUserReviewSessions(userId: number, limit?: number): Promise<ReviewSession[]> {
+    let query = db.select().from(reviewSessions)
+      .where(eq(reviewSessions.userId, userId))
+      .orderBy(desc(reviewSessions.reviewedAt));
+    
+    if (limit) {
+      query = query.limit(limit);
+    }
+    
+    return await query;
+  }
 }
 
 export const storage = new DatabaseStorage();

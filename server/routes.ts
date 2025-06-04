@@ -961,6 +961,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SRS Learning System routes
+  app.get('/api/grammar', async (req, res) => {
+    try {
+      const result = await db.select().from(grammarPoints).orderBy(grammarPoints.difficulty, grammarPoints.id);
+      res.json(result);
+    } catch (error) {
+      console.error('Error fetching grammar points:', error);
+      res.status(500).json({ error: 'Failed to fetch grammar points' });
+    }
+  });
+
+  app.get('/api/kanji', async (req, res) => {
+    try {
+      const result = await db.select().from(kanji).orderBy(kanji.strokeCount);
+      res.json(result);
+    } catch (error) {
+      console.error('Error fetching kanji:', error);
+      res.status(500).json({ error: 'Failed to fetch kanji' });
+    }
+  });
+
+  app.get('/api/vocabulary', async (req, res) => {
+    try {
+      const result = await db.select().from(vocabulary).orderBy(vocabulary.difficulty, vocabulary.id);
+      res.json(result);
+    } catch (error) {
+      console.error('Error fetching vocabulary:', error);
+      res.status(500).json({ error: 'Failed to fetch vocabulary' });
+    }
+  });
+
+  app.get('/api/reviews/queue', async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+      // Return empty queue for now - SRS items will be implemented as users unlock content
+      res.json([]);
+    } catch (error) {
+      console.error('Error fetching review queue:', error);
+      res.status(500).json({ error: 'Failed to fetch review queue' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
