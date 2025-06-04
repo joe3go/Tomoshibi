@@ -77,6 +77,30 @@ export interface IStorage {
   getForumPosts(topicId: number): Promise<ForumPost[]>;
   createForumTopic(topic: InsertForumTopic): Promise<ForumTopic>;
   createForumPost(post: InsertForumPost): Promise<ForumPost>;
+
+  // SRS Learning System
+  // Grammar operations
+  getAllGrammarPoints(): Promise<GrammarPoint[]>;
+  getGrammarPoint(id: number): Promise<GrammarPoint | undefined>;
+  
+  // Kanji operations
+  getAllKanji(): Promise<Kanji[]>;
+  getKanji(id: number): Promise<Kanji | undefined>;
+  
+  // Vocabulary operations
+  getAllVocabulary(): Promise<Vocabulary[]>;
+  getVocabulary(id: number): Promise<Vocabulary | undefined>;
+  
+  // SRS operations
+  getUserSrsItems(userId: number): Promise<SrsItem[]>;
+  getSrsItem(id: number): Promise<SrsItem | undefined>;
+  createSrsItem(item: InsertSrsItem): Promise<SrsItem>;
+  updateSrsItem(id: number, updates: Partial<SrsItem>): Promise<SrsItem | undefined>;
+  getReviewQueue(userId: number): Promise<SrsItem[]>;
+  
+  // Review operations
+  createReviewSession(session: InsertReviewSession): Promise<ReviewSession>;
+  getUserReviewSessions(userId: number, limit?: number): Promise<ReviewSession[]>;
 }
 
 export class MemStorage implements IStorage {
