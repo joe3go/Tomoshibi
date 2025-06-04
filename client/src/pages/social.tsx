@@ -44,31 +44,33 @@ export default function Social() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* XP Leaderboard */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              {languageMode === 'en' ? 'Top XP Earners' : languageMode === 'jp' ? 'XP獲得ランキング' : 'XP獲得（かくとく）ランキング'}
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Trophy className="h-4 w-4 text-yellow-500" />
+              <span className="truncate">
+                {languageMode === 'en' ? 'Top XP Earners' : languageMode === 'jp' ? 'XP獲得ランキング' : 'XP獲得（かくとく）ランキング'}
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {socialData?.leaderboards?.xp?.map((user: any, index: number) => (
-                <div key={user.id} className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold">
+                <div key={user.id} className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">
                     {index + 1}
                   </div>
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-6 w-6 flex-shrink-0">
                     <AvatarImage src={user.profileImageUrl} />
-                    <AvatarFallback>{user.displayName[0]}</AvatarFallback>
+                    <AvatarFallback className="text-xs">{user.displayName[0]}</AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium">{user.displayName}</p>
-                    <p className="text-sm text-muted-foreground">{user.totalXP.toLocaleString()} XP</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{user.displayName}</p>
+                    <p className="text-xs text-muted-foreground">{user.totalXP.toLocaleString()} XP</p>
                   </div>
-                  {index === 0 && <Crown className="h-5 w-5 text-yellow-500" />}
+                  {index === 0 && <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />}
                 </div>
               ))}
             </div>
