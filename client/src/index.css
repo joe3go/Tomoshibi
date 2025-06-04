@@ -246,74 +246,75 @@
 }
 
 .dark {
-  /* Shinjuku Bar Atmosphere - Cinematic Dark Theme */
-  --background: 220 25% 4%; /* Ink black with subtle blue undertone */
-  --foreground: 45 15% 88%; /* Soft beige for readable text */
-  --card: 220 20% 8%; /* Rain-slick navy for elevated surfaces */
-  --card-foreground: 45 15% 88%; /* Soft beige text */
-  --popover: 220 25% 10%; /* Deeper navy for overlays */
-  --popover-foreground: 45 15% 88%;
+  /* Readable Shinjuku Bar Theme - Warm & Cozy */
+  --background: 220 20% 11%; /* Smoky Charcoal #1A1C1F */
+  --foreground: 45 25% 90%; /* Soft Beige / Bone White #EDEAE5 */
+  --card: 220 25% 14%; /* Deep Indigo-Navy #23262C */
+  --card-foreground: 45 25% 90%; /* Soft Beige text */
+  --popover: 220 25% 16%; /* Slightly elevated navy */
+  --popover-foreground: 45 25% 90%;
   
-  /* Warm amber primary - bar lighting */
-  --primary: 38 85% 62%; /* Bourbon amber glow */
-  --primary-foreground: 220 25% 4%; /* Dark text on amber */
+  /* Warm amber primary - whisky glow */
+  --primary: 38 75% 67%; /* Whisky Amber / Gold #F4B860 */
+  --primary-foreground: 220 20% 11%; /* Dark text on amber */
   
-  --secondary: 25 30% 15%; /* Barwood brown undertones */
-  --secondary-foreground: 45 15% 82%; /* Lighter beige */
+  --secondary: 220 20% 18%; /* Elevated card surface */
+  --secondary-foreground: 45 20% 85%; /* Lighter beige */
   
-  --muted: 220 15% 12%; /* Smoky charcoal */
-  --muted-foreground: 45 8% 55%; /* Dimmed beige for secondary text */
+  --muted: 220 15% 16%; /* Muted card background */
+  --muted-foreground: 45 10% 62%; /* Stone Gray #A09E9B */
   
-  --accent: 25 30% 18%; /* Warm wood accent */
-  --accent-foreground: 45 15% 88%;
+  --accent: 220 25% 20%; /* Accent surfaces */
+  --accent-foreground: 45 25% 90%;
   
-  --destructive: 0 45% 48%; /* Muted red for warnings */
-  --destructive-foreground: 45 15% 88%;
-  --border: 220 15% 18%; /* Subtle charcoal borders */
-  --input: 220 20% 10%; /* Input backgrounds */
-  --ring: 38 85% 62%; /* Amber focus ring */
+  --destructive: 0 50% 55%; /* Readable red for warnings */
+  --destructive-foreground: 45 25% 90%;
+  --border: 220 15% 22%; /* Subtle borders */
+  --input: 220 20% 16%; /* Input backgrounds */
+  --ring: 38 75% 67%; /* Amber focus ring */
   
   /* Atmospheric bar colors */
-  --bourbon-amber: 38 85% 62%; /* Main warm light */
-  --neon-cherry: 348 82% 65%; /* Neon cherry blossom pink */
-  --rain-navy: 220 25% 12%; /* Rain-slick surfaces */
-  --smoky-teal: 180 35% 45%; /* Muted teal accents */
-  --barwood: 25 30% 25%; /* Warm wood tones */
-  --ink-black: 220 25% 4%; /* Deep background */
-  --soft-beige: 45 15% 88%; /* Text color */
+  --bourbon-amber: 38 75% 67%; /* #F4B860 - Main warm lighting */
+  --neon-cherry: 348 70% 60%; /* #EF5DA8 - Muted Sakura Pink */
+  --rain-navy: 220 25% 14%; /* Rain-slick surfaces */
+  --smoky-teal: 180 30% 50%; /* Muted teal accents */
+  --barwood: 25 35% 30%; /* Warm wood tones */
+  --smoky-charcoal: 220 20% 11%; /* Background base */
+  --soft-beige: 45 25% 90%; /* Primary text color */
+  --stone-gray: 45 10% 62%; /* Secondary text color */
   
   /* Traditional Japanese accents */
-  --washi-paper: 45 25% 92%; /* Light paper texture */
-  --frosted-glass: 220 15% 25%; /* Glass surfaces */
-  --lantern-glow: 38 90% 68%; /* Paper lantern warmth */
+  --washi-paper: 45 30% 92%; /* Light paper texture */
+  --frosted-glass: 220 15% 28%; /* Glass surfaces */
+  --lantern-glow: 38 80% 70%; /* Paper lantern warmth */
   
   /* Atmospheric lighting effects */
-  --warm-glow: 38 85% 62%; /* Main ambient light */
-  --cool-reflection: 180 35% 45%; /* Glass/water reflections */
-  --neon-accent: 348 82% 65%; /* Bright neon highlights */
+  --warm-glow: 38 75% 67%; /* Main ambient light */
+  --cool-reflection: 180 30% 50%; /* Glass/water reflections */
+  --neon-accent: 348 70% 60%; /* Bright neon highlights */
   
-  /* Material elevation with atmospheric tinting */
-  --surface-1dp: 220 20% 9%; /* Slight elevation with warmth */
-  --surface-2dp: 220 18% 11%; /* Medium elevation */
-  --surface-3dp: 220 16% 13%; /* Higher elevation */
-  --surface-4dp: 220 15% 15%; /* Prominent elevation */
-  --surface-6dp: 220 14% 17%; /* Modal/floating elements */
-  --surface-8dp: 220 13% 19%; /* App bars */
-  --surface-12dp: 220 12% 21%; /* Cards at high elevation */
-  --surface-16dp: 220 11% 23%; /* Navigation */
-  --surface-24dp: 220 10% 25%; /* Highest elevation */
+  /* Material elevation with proper contrast */
+  --surface-1dp: 220 22% 16%; /* Cards - subtle elevation */
+  --surface-2dp: 220 20% 18%; /* Elevated cards */
+  --surface-3dp: 220 18% 20%; /* Higher elevation */
+  --surface-4dp: 220 16% 22%; /* Prominent surfaces */
+  --surface-6dp: 220 14% 24%; /* Modal backgrounds */
+  --surface-8dp: 220 12% 26%; /* App bars */
+  --surface-12dp: 220 10% 28%; /* Navigation */
+  --surface-16dp: 220 8% 30%; /* Highest elements */
+  --surface-24dp: 220 6% 32%; /* Top-most surfaces */
   
   /* Legacy color mappings for compatibility */
-  --matcha: 140 25% 45%; /* Muted green */
-  --bamboo: 60 20% 65%; /* Natural bamboo */
-  --sakura: 348 82% 65%; /* Neon cherry blossom */
-  --achievement: 38 85% 62%; /* Bourbon amber */
-  --achievement-gold: 45 80% 58%; /* Warm gold */
-  --neon-pink: 348 82% 65%; /* Cherry blossom neon */
-  --neon-cyan: 180 35% 45%; /* Smoky teal */
-  --neon-orange: 38 85% 62%; /* Bourbon amber */
-  --tokyo-night: 220 25% 4%; /* Ink black */
-  --street-glow: 38 60% 35%; /* Dim amber glow */
+  --matcha: 140 30% 50%; /* Readable green */
+  --bamboo: 60 25% 70%; /* Natural bamboo */
+  --sakura: 348 70% 60%; /* Muted sakura pink */
+  --achievement: 38 75% 67%; /* Whisky amber */
+  --achievement-gold: 45 75% 65%; /* Warm gold */
+  --neon-pink: 348 70% 60%; /* Muted cherry blossom */
+  --neon-cyan: 180 30% 50%; /* Smoky teal */
+  --neon-orange: 38 75% 67%; /* Bourbon amber */
+  --tokyo-night: 220 20% 11%; /* Smoky charcoal */
+  --street-glow: 38 50% 40%; /* Dim amber glow */
 }
 
 @layer base {
@@ -326,36 +327,8 @@
     font-family: 'Inter', 'Noto Sans JP', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
-    background-color: hsl(220, 25%, 4%);
-    background-image: 
-      radial-gradient(circle at 20% 80%, hsl(38, 85%, 62%) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(348, 82%, 65%) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, hsl(180, 35%, 45%) 0%, transparent 50%);
-    background-size: 100% 100%, 100% 100%, 100% 100%;
-    background-attachment: fixed;
+    background-color: hsl(220, 20%, 11%);
     min-height: 100vh;
-    position: relative;
-  }
-  
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      linear-gradient(90deg, transparent 50%, hsl(220, 25%, 4%) 50.1%),
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        hsl(220, 15%, 6%) 2px,
-        hsl(220, 15%, 6%) 4px
-      );
-    opacity: 0.03;
-    pointer-events: none;
-    z-index: 1;
   }
 }
 
