@@ -32,6 +32,29 @@ function Router() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check if we're in preview mode (add ?preview=true to URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPreviewMode = urlParams.get('preview') === 'true';
+    
+    if (isPreviewMode) {
+      // Auto-login with test user in preview mode
+      const testUser = {
+        id: 1,
+        username: "preview_user",
+        email: "preview@example.com",
+        totalXP: 1250,
+        currentStreak: 7,
+        jlptLevel: "N4",
+        wanikaniApiKey: "preview_wk_key",
+        bunproApiKey: "preview_bp_key",
+        createdAt: new Date().toISOString()
+      };
+      setUser(testUser);
+      localStorage.setItem("user", JSON.stringify(testUser));
+      setIsLoading(false);
+      return;
+    }
+
     // Check for stored user data
     const userData = localStorage.getItem("user");
     if (userData) {

@@ -22,9 +22,18 @@ export default function Dashboard() {
   const { languageMode } = useLanguageMode();
   const content = useLanguageContent(languageMode);
 
+  // Check if in preview mode
+  const isPreviewMode = new URLSearchParams(window.location.search).get('preview') === 'true';
+  
   const { data: dashboardData, isLoading } = useQuery({
-    queryKey: ["/api/dashboard"],
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryKey: ["/api/dashboard", isPreviewMode ? "preview" : "normal"],
+    queryFn: async () => {
+      const url = isPreviewMode ? "/api/dashboard?preview=true" : "/api/dashboard";
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch dashboard data');
+      return response.json();
+    },
+    refetchInterval: isPreviewMode ? false : 30000, // Don't auto-refresh in preview mode
   });
 
   const syncMutation = useMutation({

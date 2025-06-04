@@ -352,7 +352,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user dashboard data
   app.get("/api/dashboard", async (req, res) => {
     try {
-      // For demo purposes, using user ID 1
+      const isPreview = req.query.preview === 'true';
+      
+      if (isPreview) {
+        // Preview mode: Use test user with authentic API integration if keys available
+        const testUser = {
+          id: 1,
+          username: "preview_user",
+          email: "preview@example.com",
+          totalXP: 1250,
+          currentStreak: 7,
+          jlptLevel: "N4",
+          wanikaniApiKey: null,
+          bunproApiKey: null,
+          createdAt: new Date().toISOString()
+        };
+
+        // Try to fetch authentic data if API keys are provided via environment
+        let wanikaniData = null;
+        let bunproData = null;
+
+        if (process.env.PREVIEW_WANIKANI_API_KEY) {
+          try {
+            const wkClient = new WaniKaniClient(process.env.PREVIEW_WANIKANI_API_KEY);
+            const [user, summary, subjects] = await Promise.all([
+              wkClient.getUser(),
+              wkClient.getSummary(),
+              wkClient.getSubjects(['kanji', 'vocabulary', 'radical'])
+            ]);
+            wanikaniData = { user, summary, subjects };
+            testUser.wanikaniApiKey = "connected";
+          } catch (error) {
+            console.log("Preview WaniKani API not available");
+          }
+        }
+
+        if (process.env.PREVIEW_BUNPRO_API_KEY) {
+          try {
+            const bpClient = new BunproClient(process.env.PREVIEW_BUNPRO_API_KEY);
+            const [user, progress] = await Promise.all([
+              bpClient.getUser(),
+              bpClient.getProgress()
+            ]);
+            bunproData = { user, progress };
+            testUser.bunproApiKey = "connected";
+          } catch (error) {
+            console.log("Preview Bunpro API not available");
+          }
+        }
+
+        const previewData = {
+          user: testUser,
+          progress: { wanikaniData, bunproData },
+          achievements: [
+            {
+              id: 1,
+              name: "Kanji Novice",
+              description: "Learn your first 100 kanji",
+              icon: "🈯",
+              xpReward: 100,
+              category: "kanji",
+              unlockedAt: new Date(Date.now() - 86400000 * 3).toISOString()
+            },
+            {
+              id: 2,
+              name: "Weekly Warrior", 
+              description: "Study for 7 consecutive days",
+              icon: "🔥",
+              xpReward: 150,
+              category: "consistency",
+              unlockedAt: new Date().toISOString()
+            }
+          ],
+          recentSessions: [
+            {
+              id: 1,
+              userId: 1,
+              date: new Date().toISOString(),
+              duration: 45,
+              itemsStudied: 23,
+              xpEarned: 85,
+              sessionType: "review"
+            }
+          ]
+        };
+
+        return res.json(previewData);
+      }
+
+      // Regular mode: For demo purposes, using user ID 1
       const userId = 1;
       let user = await storage.getUser(userId);
       
