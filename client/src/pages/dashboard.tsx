@@ -138,13 +138,13 @@ export default function Dashboard() {
           
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between relative z-10 gap-6 lg:gap-0">
             <div className="text-center lg:text-left">
-              <div className="japanese-welcome mb-3 gentle-float">
+              <div className="japanese-welcome mb-3 gentle-float text-gray-900">
                 ようこそ、{user?.displayName?.split(' ')[0] || '学習者'}さん
               </div>
-              <p className="japanese-text text-muted-foreground">
+              <p className="japanese-text text-gray-800">
                 今日も一緒に頑張りましょう！
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-gray-700 mt-1">
                 Welcome back! Let's continue your Japanese journey together.
               </p>
             </div>

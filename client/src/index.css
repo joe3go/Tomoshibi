@@ -117,6 +117,38 @@
     font-weight: 400 !important;
   }
   
+  /* Global text contrast fixes */
+  .text-white {
+    color: #1f2937 !important;
+  }
+  
+  .text-muted-foreground {
+    color: #374151 !important;
+  }
+  
+  .japanese-welcome {
+    color: #1f2937 !important;
+    font-weight: 600 !important;
+  }
+  
+  .japanese-text {
+    color: #374151 !important;
+  }
+  
+  /* Card text improvements */
+  .card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  
+  .card h3, .card h4, .card h5 {
+    color: #1f2937 !important;
+  }
+  
+  .card p {
+    color: #374151 !important;
+  }
+  
   /* Navigation improvements */
   .nav-item {
     background: rgba(243, 244, 246, 0.8) !important;
