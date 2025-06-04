@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Sidebar, MobileNav } from "@/components/navigation";
 import Dashboard from "@/pages/dashboard";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
@@ -13,6 +14,7 @@ import StudyModePage from "@/pages/study-mode";
 import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
+import { useQuery } from "@tanstack/react-query";
 
 // Language types and context
 export type LanguageMode = "en" | "jp" | "jp-furigana";
@@ -80,24 +82,48 @@ function Router() {
     );
   }
 
+  if (user) {
+    return (
+      <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
+          <Sidebar user={{
+            displayName: user.displayName || "User",
+            totalXP: user.totalXP || 0,
+            currentBelt: user.currentBelt || "white",
+            currentStreak: user.currentStreak || 0
+          }} />
+        </div>
+        
+        {/* Mobile Navigation */}
+        <MobileNav user={{
+          displayName: user.displayName || "User",
+          totalXP: user.totalXP || 0,
+          currentBelt: user.currentBelt || "white",
+          currentStreak: user.currentStreak || 0
+        }} />
+        
+        {/* Main Content */}
+        <div className="flex-1 md:ml-64 mt-16 md:mt-0 min-h-screen">
+          <Switch>
+            <Route path="/" component={Dashboard} />
+            <Route path="/study" component={StudyPage} />
+            <Route path="/study-mode" component={StudyModePage} />
+            <Route path="/social" component={Social} />
+            <Route path="/achievements" component={Achievements} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/auth" component={AuthPage} />
+            <Route component={NotFound} />
+          </Switch>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
-      {user ? (
-        <>
-          <Route path="/" component={Dashboard} />
-          <Route path="/study" component={StudyPage} />
-          <Route path="/study-mode" component={StudyModePage} />
-          <Route path="/social" component={Social} />
-          <Route path="/achievements" component={Achievements} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/auth" component={AuthPage} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/auth" component={AuthPage} />
-        </>
-      )}
+      <Route path="/" component={Landing} />
+      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );
