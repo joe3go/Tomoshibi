@@ -29,9 +29,15 @@ export default function Sidebar({ user }: SidebarProps) {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 w-12 h-12 bg-gradient-to-br from-momiji to-ume rounded-xl shadow-lg flex items-center justify-center"
+        className="lg:hidden fixed top-3 left-3 z-50 w-10 h-10 bg-gradient-to-br from-momiji to-ume rounded-lg shadow-lg flex items-center justify-center"
       >
-        <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-white text-lg`}></i>
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isMobileMenuOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
       </button>
 
       {/* Mobile Overlay */}
@@ -44,7 +50,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:relative inset-y-0 left-0 z-40 w-80 lg:w-64 
+        fixed lg:relative inset-y-0 left-0 z-40 w-64 lg:w-64 
         bg-gradient-to-b from-washi to-white shadow-lg border-r border-gray-200 
         flex flex-col transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}

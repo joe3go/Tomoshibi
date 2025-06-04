@@ -123,9 +123,9 @@ export default function Dashboard() {
     <div className="flex min-h-screen washi-texture">
       <Sidebar user={user} />
       
-      <div className="flex-1 overflow-auto lg:ml-0">
+      <div className="flex-1 overflow-auto lg:ml-0 w-full">
         {/* Peaceful Japanese Welcome Header */}
-        <header className="japanese-card border-b-0 px-4 lg:px-8 py-6 lg:py-8 pt-20 lg:pt-8 relative overflow-hidden">
+        <header className="japanese-card border-b-0 px-3 lg:px-8 py-4 lg:py-8 pt-16 lg:pt-8 relative overflow-hidden">
           {/* Subtle decorative sakura petals */}
           <div className="absolute top-4 right-4 w-16 h-16 opacity-10 gentle-float">
             <svg viewBox="0 0 100 100" className="w-full h-full text-sakura">

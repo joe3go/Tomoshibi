@@ -24,7 +24,7 @@
   h1, h2, h3, h4, h5, h6 {
     line-height: 1.2;
     word-break: break-word;
-    font-size: 90% !important;
+    font-size: 85% !important;
   }
   
   .grid {
@@ -40,14 +40,47 @@
     margin-top: 0.75rem !important;
   }
   
+  /* Fix main content positioning */
+  .flex-1 {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Ensure main content is not hidden behind sidebar */
   main {
-    padding-top: 4rem;
+    padding-top: 3.5rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  header {
+    padding-top: 3.5rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
   
   .truncate {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  
+  /* Card spacing fixes */
+  .japanese-card {
+    padding: 0.75rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  /* Button sizing */
+  button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Progress circle sizing */
+  .progress-circle {
+    width: 80px !important;
+    height: 80px !important;
   }
 }
 
