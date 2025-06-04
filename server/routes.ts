@@ -4,91 +4,106 @@ import { storage, DatabaseStorage } from "./storage";
 import { apiKeySetupSchema, insertStudySessionSchema } from "@shared/schema";
 import { z } from "zod";
 
-// Mock API clients for WaniKani and Bunpro
+// WaniKani API client for kanji, radicals, and vocabulary tracking
 class WaniKaniClient {
   private apiKey: string;
+  private baseUrl = 'https://api.wanikani.com/v2';
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
   }
 
-  async getUser() {
-    // In a real implementation, this would make an actual API call
-    return {
-      id: "user123",
-      username: "learner",
-      level: 18,
-      subscription: {
-        active: true,
-        type: "recurring"
+  private async makeRequest(endpoint: string) {
+    if (!this.apiKey) {
+      throw new Error('WaniKani API key is required');
+    }
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Wanikani-Revision': '20170710'
       }
-    };
+    });
+    
+    if (!response.ok) {
+      throw new Error(`WaniKani API error: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+
+  async getUser() {
+    return await this.makeRequest('/user');
   }
 
   async getSummary() {
-    return {
-      lessons: [
-        { available_at: new Date(), subject_ids: [1, 2, 3] }
-      ],
-      reviews: [
-        { available_at: new Date(), subject_ids: [4, 5, 6, 7, 8] }
-      ]
-    };
+    return await this.makeRequest('/summary');
   }
 
-  async getSubjects() {
-    return {
-      data: [
-        { id: 1, object: "kanji", data: { level: 1, character: "一" } },
-        { id: 2, object: "kanji", data: { level: 1, character: "二" } },
-        { id: 3, object: "vocabulary", data: { level: 1, character: "人" } }
-      ],
-      total_count: 342
-    };
+  async getSubjects(types?: string[]) {
+    const typeParam = types ? `?types=${types.join(',')}` : '';
+    return await this.makeRequest(`/subjects${typeParam}`);
   }
 
   async getAssignments() {
-    return {
-      data: [
-        { id: 1, subject_id: 1, srs_stage: 5 },
-        { id: 2, subject_id: 2, srs_stage: 4 }
-      ]
-    };
+    return await this.makeRequest('/assignments');
+  }
+
+  async getReviewStatistics() {
+    return await this.makeRequest('/review_statistics');
+  }
+
+  async getLevelProgression() {
+    return await this.makeRequest('/level_progressions');
   }
 }
 
+// Bunpro API client for grammar point tracking
 class BunproClient {
   private apiKey: string;
+  private baseUrl = 'https://bunpro.jp/api/v4';
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
   }
 
-  async getUser() {
-    return {
-      id: "user456",
-      username: "grammar_learner",
-      streak: 12,
-      profile: {
-        study_level: 2
+  private async makeRequest(endpoint: string) {
+    if (!this.apiKey) {
+      throw new Error('Bunpro API key is required');
+    }
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      headers: {
+        'Authorization': `Token ${this.apiKey}`,
+        'Content-Type': 'application/json'
       }
-    };
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Bunpro API error: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+
+  async getUser() {
+    return await this.makeRequest('/user');
   }
 
   async getProgress() {
-    return {
-      grammar_points_learned: 127,
-      reviews_completed: 1200,
-      average_srs_level: 4.2,
-      accuracy_percentage: 84
-    };
+    return await this.makeRequest('/user/progress');
   }
 
   async getReviews() {
-    return {
-      reviews_available: 12,
-      reviews_completed_today: 8
-    };
+    return await this.makeRequest('/reviews');
+  }
+
+  async getGrammarPoints() {
+    return await this.makeRequest('/grammar_points');
+  }
+
+  async getStudyQueue() {
+    return await this.makeRequest('/study_queue');
   }
 }
 
