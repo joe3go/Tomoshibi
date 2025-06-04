@@ -244,32 +244,52 @@ export default function AuthPage() {
               </TabsContent>
               
               <TabsContent value="register">
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-displayName">Display Name</Label>
-                      <Input
-                        id="register-displayName"
-                        type="text"
-                        placeholder="Your name"
-                        value={registerForm.displayName}
-                        onChange={(e) => setRegisterForm({ ...registerForm, displayName: e.target.value })}
-                        required
-                      />
+                <div className="space-y-4">
+                  {/* Google OAuth Sign Up */}
+                  <Button
+                    onClick={() => window.location.href = '/api/auth/google'}
+                    className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
+                    variant="outline"
+                  >
+                    <SiGoogle className="mr-2 h-4 w-4" />
+                    Sign up with Google
+                  </Button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full" />
                     </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="register-username">Username</Label>
-                      <Input
-                        id="register-username"
-                        type="text"
-                        placeholder="Username"
-                        value={registerForm.username}
-                        onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
-                        required
-                      />
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-muted-foreground">Or create account with email</span>
                     </div>
                   </div>
+
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="register-displayName">Display Name</Label>
+                        <Input
+                          id="register-displayName"
+                          type="text"
+                          placeholder="Your name"
+                          value={registerForm.displayName}
+                          onChange={(e) => setRegisterForm({ ...registerForm, displayName: e.target.value })}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-username">Username</Label>
+                        <Input
+                          id="register-username"
+                          type="text"
+                          placeholder="Username"
+                          value={registerForm.username}
+                          onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="register-email">Email</Label>
@@ -325,7 +345,8 @@ export default function AuthPage() {
                   >
                     {isLoading ? "Creating account..." : "Create Account"}
                   </Button>
-                </form>
+                  </form>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>

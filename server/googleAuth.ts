@@ -28,10 +28,7 @@ export function setupGoogleAuth(app: Express) {
         // Create new user
         user = await storage.createUser({
           username: email || `user_${googleId}`,
-          email,
-          firstName,
-          lastName,
-          profileImageUrl,
+          displayName: `${firstName || ''} ${lastName || ''}`.trim() || email || `User ${googleId}`,
           googleId,
           totalXP: 0,
           currentStreak: 0,
