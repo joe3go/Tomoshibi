@@ -86,11 +86,14 @@ function Router() {
           <Route path="/social" component={Social} />
           <Route path="/achievements" component={Achievements} />
           <Route path="/settings" component={Settings} />
+          <Route path="/auth" component={AuthPage} />
         </>
       ) : (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/auth" component={AuthPage} />
+        </>
       )}
-      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );

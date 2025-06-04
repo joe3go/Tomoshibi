@@ -407,20 +407,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           achievements: [
             {
               id: 1,
-              name: "Kanji Novice",
-              description: "Learn your first 100 kanji",
-              icon: "🈯",
-              xpReward: 100,
-              category: "kanji",
+              achievement: {
+                id: 1,
+                name: "Kanji Novice",
+                description: "Learn your first 100 kanji",
+                icon: "fas fa-torii-gate",
+                xpReward: 100,
+                category: "kanji"
+              },
               unlockedAt: new Date(Date.now() - 86400000 * 3).toISOString()
             },
             {
               id: 2,
-              name: "Weekly Warrior", 
-              description: "Study for 7 consecutive days",
-              icon: "🔥",
-              xpReward: 150,
-              category: "consistency",
+              achievement: {
+                id: 2,
+                name: "Weekly Warrior", 
+                description: "Study for 7 consecutive days",
+                icon: "fas fa-fire",
+                xpReward: 150,
+                category: "consistency"
+              },
               unlockedAt: new Date().toISOString()
             }
           ],
