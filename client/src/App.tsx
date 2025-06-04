@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sidebar, MobileNav } from "@/components/navigation";
 import InstallPrompt from "@/components/install-prompt";
+import ThemeToggle from "@/components/theme-toggle";
+import { ThemeProvider } from "@/hooks/use-theme";
 import Dashboard from "@/pages/dashboard-compact";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
@@ -237,22 +239,23 @@ function SimpleLanguageToggle() {
 
 function AppHeader() {
   return (
-    <header style={{ backgroundColor: 'hsl(220, 20%, 11%)', borderBottom: '1px solid hsl(220, 15%, 22%)' }} className="sticky top-0 z-30 w-full backdrop-blur-lg">
+    <header className="sticky top-0 z-30 w-full backdrop-blur-lg bg-background/90 border-b border-border">
       <div className="flex h-12 items-center justify-between px-3 lg:px-4 lg:ml-64">
         <div className="flex items-center gap-2 ml-12 lg:ml-0">
           <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
             <span className="text-white text-xs font-bold">日</span>
           </div>
-          <h1 className="hidden sm:block text-base font-semibold" style={{ color: 'hsl(45, 25%, 90%)' }}>
+          <h1 className="hidden sm:block text-base font-semibold text-foreground">
             Journey
           </h1>
         </div>
         
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <SimpleLanguageToggle />
-          <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(38, 75%, 67%, 0.2)' }}>
-            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: 'hsl(38, 75%, 67%)' }}></div>
-            <span className="text-xs font-medium" style={{ color: 'hsl(38, 75%, 67%)' }}>Live</span>
+          <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20">
+            <div className="w-1 h-1 rounded-full bg-primary"></div>
+            <span className="text-xs font-medium text-primary">Live</span>
           </div>
         </div>
       </div>
@@ -266,15 +269,8 @@ function App() {
     return (saved as LanguageMode) || "en";
   });
 
-  // Force dark theme on HTML element and register service worker
+  // Register service worker for PWA functionality
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.backgroundColor = 'hsl(220, 20%, 11%)';
-    document.documentElement.style.color = 'hsl(45, 25%, 90%)';
-    document.body.style.backgroundColor = 'hsl(220, 20%, 11%)';
-    document.body.style.color = 'hsl(45, 25%, 90%)';
-
-    // Register service worker for PWA functionality
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -298,16 +294,18 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageContext.Provider value={contextValue}>
-        <TooltipProvider>
-          <div className="min-h-screen" style={{ backgroundColor: 'hsl(220, 20%, 11%)', color: 'hsl(45, 25%, 90%)' }}>
-            <AppHeader />
-            <Toaster />
-            <Router />
-            <InstallPrompt />
-          </div>
-        </TooltipProvider>
-      </LanguageContext.Provider>
+      <ThemeProvider>
+        <LanguageContext.Provider value={contextValue}>
+          <TooltipProvider>
+            <div className="min-h-screen bg-background text-foreground">
+              <AppHeader />
+              <Toaster />
+              <Router />
+              <InstallPrompt />
+            </div>
+          </TooltipProvider>
+        </LanguageContext.Provider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

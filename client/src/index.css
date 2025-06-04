@@ -17,167 +17,60 @@ html, body {
   }
 }
 
-/* Force dark theme on all elements */
-*, *::before, *::after {
-  background-color: hsl(220, 20%, 11%) !important;
-  color: hsl(45, 25%, 90%) !important;
-}
-
-/* Card backgrounds */
-.card, [class*="card"], .zen-card {
-  background-color: hsl(220, 25%, 14%) !important;
-  color: hsl(45, 25%, 90%) !important;
-  border-color: hsl(220, 15%, 22%) !important;
-}
-
-/* Mobile-first dark theme enforcement */
-@media screen and (max-width: 768px) {
-  /* Force all elements dark - highest priority */
-  *,
-  *::before,
-  *::after,
-  html,
-  body,
-  #root,
-  [data-reactroot],
-  .min-h-screen {
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Widget containers - solve accuracy widget text issues */
-  .widget,
-  .widget-container,
-  .progress-widget,
-  .stats-widget,
-  .accuracy-widget,
-  .streak-widget,
-  .zen-card {
-    background-color: hsl(220, 25%, 14%) !important;
-    border: 1px solid hsl(220, 15%, 22%) !important;
-    border-radius: 12px !important;
-  }
-
-  /* Widget text content - ensure readability */
-  .widget *,
-  .widget-container *,
-  .progress-widget *,
-  .stats-widget *,
-  .accuracy-widget *,
-  .streak-widget *,
-  .zen-card * {
-    color: hsl(45, 25%, 90%) !important;
-    background-color: transparent !important;
-  }
-
-  /* Progress circles and visual elements */
-  .progress-circle,
-  .circular-progress,
-  .progress-ring {
-    background-color: transparent !important;
-  }
-
-  /* Card components */
-  .card,
-  [class*="card"] {
-    background-color: hsl(220, 25%, 14%) !important;
-    border-color: hsl(220, 15%, 22%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  .card *,
-  [class*="card"] * {
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Header and navigation fixes */
-  header,
-  .header,
-  .app-header {
-    background-color: hsl(220, 20%, 11%) !important;
-    border-bottom: 1px solid hsl(220, 15%, 22%) !important;
-  }
-
-  /* Button styling */
-  button {
-    background-color: hsl(220, 25%, 14%) !important;
-    color: hsl(45, 25%, 90%) !important;
-    border: 1px solid hsl(220, 15%, 22%) !important;
-  }
-
-  /* Primary action buttons */
-  .bg-primary,
-  button[class*="primary"],
-  .primary-button {
-    background-color: hsl(38, 75%, 67%) !important;
-    color: hsl(220, 20%, 11%) !important;
-    border: none !important;
-  }
-
-  /* Text hierarchy */
-  h1, h2, h3, h4, h5, h6 {
-    color: hsl(45, 25%, 90%) !important;
-    font-weight: 600 !important;
-  }
-
-  p, span, div, label {
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Muted text for secondary information */
-  .text-muted,
-  .text-muted-foreground,
-  .text-gray-500,
-  .text-gray-600,
-  .text-gray-700,
-  small {
-    color: hsl(45, 15%, 70%) !important;
-  }
-
-  /* Eliminate white backgrounds */
-  .bg-white,
-  .bg-gray-50,
-  .bg-gray-100,
-  .bg-gray-200 {
-    background-color: hsl(220, 20%, 11%) !important;
-  }
-
-  /* Japanese text styling */
-  .japanese-text,
-  .japanese-card {
-    background-color: hsl(220, 25%, 14%) !important;
-    color: hsl(45, 25%, 90%) !important;
-    border: 1px solid hsl(220, 15%, 22%) !important;
-  }
-
-  /* Ensure main content area is dark */
-  main,
-  .main-content,
-  .dashboard-content {
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Input elements */
-  input,
-  select,
-  textarea {
-    background-color: hsl(220, 20%, 16%) !important;
-    color: hsl(45, 25%, 90%) !important;
-    border: 1px solid hsl(220, 15%, 22%) !important;
-  }
-
-  /* Tab components */
-  .tabs,
-  .tab-content,
-  .tab-trigger {
-    background-color: hsl(220, 25%, 14%) !important;
-    color: hsl(45, 25%, 90%) !important;
+/* Clean mobile styles */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
   }
 }
 
 :root {
-  /* Only Dark Theme - Readable Shinjuku Bar */
+  /* Light Theme - Japanese Traditional */
+  --background: 43 45% 93%; /* Warm washi paper beige */
+  --foreground: 30 20% 25%; /* Dark charcoal sumi ink */
+  --card: 45 50% 95%; /* Soft cream card */
+  --card-foreground: 30 20% 25%;
+  --popover: 45 50% 95%;
+  --popover-foreground: 30 20% 25%;
+  
+  /* Primary colors - neon purple for contrast */
+  --primary: 280 100% 70%; /* Neon purple */
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary colors - soft sakura */
+  --secondary: 350 25% 92%; /* Pale sakura pink */
+  --secondary-foreground: 30 20% 25%;
+  
+  /* Muted tones */
+  --muted: 45 40% 94%; /* Light beige */
+  --muted-foreground: 30 15% 50%;
+  
+  /* Accent - warm bamboo */
+  --accent: 60 35% 88%; /* Warm bamboo beige */
+  --accent-foreground: 30 20% 25%;
+  
+  /* Utility colors */
+  --destructive: 0 65% 65%; /* Muted red */
+  --destructive-foreground: 45 60% 98%;
+  --border: 45 30% 88%; /* Soft border */
+  --input: 45 40% 94%;
+  --ring: 280 100% 70%;
+  
+  --radius: 0.75rem;
+  
+  /* Japanese Traditional Colors */
+  --sakura: 350 40% 85%; /* Soft cherry blossom */
+  --matcha: 140 30% 45%; /* Earthy green tea */
+  --bamboo: 60 35% 70%; /* Natural bamboo */
+  --achievement: 45 70% 65%; /* Warm golden */
+  --achievement-gold: 45 80% 55%; /* Rich gold */
+  --neon-pink: 320 100% 75%; /* Hot pink neon */
+  --neon-cyan: 180 100% 75%; /* Cyan neon */
+  --neon-orange: 30 100% 65%; /* Orange neon */
+}
+
+.dark {
+  /* Dark Theme - Readable Shinjuku Bar */
   --background: 220 20% 11%; /* Smoky Charcoal #1A1C1F */
   --foreground: 45 25% 90%; /* Soft Beige / Bone White #EDEAE5 */
   --card: 220 25% 14%; /* Deep Indigo-Navy #23262C */
@@ -204,29 +97,16 @@ html, body {
   --input: 220 20% 16%; /* Input backgrounds */
   --ring: 38 75% 67%; /* Amber focus ring */
   
-  --radius: 0.75rem;
-  
   /* Atmospheric bar colors */
   --bourbon-amber: 38 75% 67%; /* #F4B860 - Main warm lighting */
   --neon-cherry: 348 70% 60%; /* #EF5DA8 - Muted Sakura Pink */
-  --rain-navy: 220 25% 14%; /* Rain-slick surfaces */
   --smoky-teal: 180 30% 50%; /* Muted teal accents */
-  --barwood: 25 35% 30%; /* Warm wood tones */
-  --smoky-charcoal: 220 20% 11%; /* Background base */
-  --soft-beige: 45 25% 90%; /* Primary text color */
-  --stone-gray: 45 10% 62%; /* Secondary text color */
-  
-  /* Legacy color mappings */
-  --matcha: 140 30% 50%; /* Readable green */
-  --bamboo: 60 25% 70%; /* Natural bamboo */
   --sakura: 348 70% 60%; /* Muted sakura pink */
   --achievement: 38 75% 67%; /* Whisky amber */
   --achievement-gold: 45 75% 65%; /* Warm gold */
   --neon-pink: 348 70% 60%; /* Muted cherry blossom */
   --neon-cyan: 180 30% 50%; /* Smoky teal */
   --neon-orange: 38 75% 67%; /* Bourbon amber */
-  --tokyo-night: 220 20% 11%; /* Smoky charcoal */
-  --street-glow: 38 50% 40%; /* Dim amber glow */
 }
 
 /* Remove duplicate dark theme - only use :root */
