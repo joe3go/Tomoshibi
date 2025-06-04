@@ -78,7 +78,7 @@ class WaniKaniClient {
 // Bunpro API client for grammar point tracking
 class BunproClient {
   private apiKey: string;
-  private baseUrl = 'https://bunpro.jp/api/v4';
+  private baseUrl = 'https://bunpro.jp/api/user';
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
@@ -96,6 +96,12 @@ class BunproClient {
       }
     });
     
+    // Check if response is HTML (indicates API endpoint issue)
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('text/html')) {
+      throw new Error('Bunpro API returned HTML - endpoint may be incorrect or API key invalid');
+    }
+    
     if (!response.ok) {
       throw new Error(`Bunpro API error: ${response.status} ${response.statusText}`);
     }
@@ -104,11 +110,11 @@ class BunproClient {
   }
 
   async getUser() {
-    return await this.makeRequest('/user');
+    return await this.makeRequest('');
   }
 
   async getProgress() {
-    return await this.makeRequest('/user/progress');
+    return await this.makeRequest('/progress');
   }
 
   async getReviews() {

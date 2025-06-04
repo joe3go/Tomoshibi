@@ -1,4 +1,5 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, varchar, index } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -308,3 +309,246 @@ export type Leaderboard = typeof leaderboards.$inferSelect;
 export type UserProgress = typeof userProgress.$inferSelect;
 export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
 export type ApiKeySetup = z.infer<typeof apiKeySetupSchema>;
+
+// SRS Learning System Tables
+
+// Grammar Points - JLPT N5 grammar structures
+export const grammarPoints = pgTable("grammar_points", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 100 }).notNull(), // e.g., "です/である"
+  titleJapanese: varchar("title_japanese", { length: 100 }).notNull(), // e.g., "です/である"
+  jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(), // N5, N4, N3, N2, N1
+  structure: text("structure").notNull(), // Grammar pattern explanation
+  meaning: text("meaning").notNull(), // English explanation
+  examples: json("examples").notNull(), // Array of example sentences with translations
+  notes: text("notes"), // Additional usage notes
+  tags: json("tags"), // Array of tags for categorization
+  difficulty: integer("difficulty").notNull().default(1), // 1-5 difficulty rating
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Kanji - Individual kanji characters
+export const kanji = pgTable("kanji", {
+  id: serial("id").primaryKey(),
+  character: varchar("character", { length: 1 }).notNull().unique(), // The kanji character
+  jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(),
+  meaning: text("meaning").notNull(), // English meanings
+  onyomi: jsonb("onyomi"), // On'yomi readings array
+  kunyomi: jsonb("kunyomi"), // Kun'yomi readings array
+  radicals: jsonb("radicals"), // Component radicals
+  strokeCount: integer("stroke_count").notNull(),
+  frequency: integer("frequency"), // Usage frequency ranking
+  examples: jsonb("examples").notNull(), // Example words using this kanji
+  mnemonics: text("mnemonics"), // Memory aids
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Vocabulary - Words and phrases
+export const vocabulary = pgTable("vocabulary", {
+  id: serial("id").primaryKey(),
+  word: varchar("word", { length: 50 }).notNull(), // Japanese word
+  reading: varchar("reading", { length: 100 }).notNull(), // Hiragana/katakana reading
+  meaning: text("meaning").notNull(), // English meaning
+  partOfSpeech: varchar("part_of_speech", { length: 50 }).notNull(), // noun, verb, etc.
+  jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(),
+  kanjiIds: jsonb("kanji_ids"), // Related kanji IDs
+  examples: jsonb("examples").notNull(), // Example sentences
+  audio: varchar("audio", { length: 255 }), // Audio file path/URL
+  difficulty: integer("difficulty").notNull().default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// SRS Items - Individual items in the spaced repetition system
+export const srsItems = pgTable("srs_items", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  itemType: varchar("item_type", { length: 20 }).notNull(), // 'grammar', 'kanji', 'vocabulary'
+  itemId: integer("item_id").notNull(), // References grammar_points.id, kanji.id, or vocabulary.id
+  srsLevel: integer("srs_level").notNull().default(0), // 0-8 SRS stages
+  nextReviewAt: timestamp("next_review_at").notNull(),
+  lastReviewedAt: timestamp("last_reviewed_at"),
+  correctStreak: integer("correct_streak").notNull().default(0),
+  totalReviews: integer("total_reviews").notNull().default(0),
+  correctReviews: integer("correct_reviews").notNull().default(0),
+  unlockedAt: timestamp("unlocked_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Review Sessions - Track individual review attempts
+export const reviewSessions = pgTable("review_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  srsItemId: integer("srs_item_id").notNull().references(() => srsItems.id),
+  isCorrect: boolean("is_correct").notNull(),
+  responseTime: integer("response_time"), // Time in milliseconds
+  reviewType: varchar("review_type", { length: 20 }).notNull(), // 'meaning', 'reading', 'audio'
+  userAnswer: text("user_answer"),
+  correctAnswer: text("correct_answer"),
+  reviewedAt: timestamp("reviewed_at").defaultNow()
+});
+
+// Study Streaks - Track daily study habits
+export const studyStreaks = pgTable("study_streaks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  date: date("date").notNull(),
+  reviewsCompleted: integer("reviews_completed").notNull().default(0),
+  lessonsCompleted: integer("lessons_completed").notNull().default(0),
+  timeSpent: integer("time_spent").notNull().default(0), // Minutes
+  accuracy: numeric("accuracy", { precision: 5, scale: 2 }), // Percentage
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Learning Paths - Structured curriculum progression
+export const learningPaths = pgTable("learning_paths", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description").notNull(),
+  jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(),
+  order: integer("order").notNull(),
+  prerequisites: jsonb("prerequisites"), // Array of required learning path IDs
+  content: jsonb("content").notNull(), // Structured lessons and milestones
+  estimatedHours: integer("estimated_hours"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// User Learning Path Progress
+export const userLearningProgress = pgTable("user_learning_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  learningPathId: integer("learning_path_id").notNull().references(() => learningPaths.id),
+  currentLesson: integer("current_lesson").notNull().default(0),
+  completedLessons: jsonb("completed_lessons").notNull().default([]),
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Relations for better querying
+export const grammarPointsRelations = relations(grammarPoints, ({ many }) => ({
+  srsItems: many(srsItems),
+}));
+
+export const kanjiRelations = relations(kanji, ({ many }) => ({
+  srsItems: many(srsItems),
+  vocabularyItems: many(vocabulary),
+}));
+
+export const vocabularyRelations = relations(vocabulary, ({ many, one }) => ({
+  srsItems: many(srsItems),
+}));
+
+export const srsItemsRelations = relations(srsItems, ({ one, many }) => ({
+  user: one(users, {
+    fields: [srsItems.userId],
+    references: [users.id],
+  }),
+  reviewSessions: many(reviewSessions),
+  grammarPoint: one(grammarPoints, {
+    fields: [srsItems.itemId],
+    references: [grammarPoints.id],
+  }),
+  kanji: one(kanji, {
+    fields: [srsItems.itemId],
+    references: [kanji.id],
+  }),
+  vocabulary: one(vocabulary, {
+    fields: [srsItems.itemId],
+    references: [vocabulary.id],
+  }),
+}));
+
+export const reviewSessionsRelations = relations(reviewSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [reviewSessions.userId],
+    references: [users.id],
+  }),
+  srsItem: one(srsItems, {
+    fields: [reviewSessions.srsItemId],
+    references: [srsItems.id],
+  }),
+}));
+
+export const studyStreaksRelations = relations(studyStreaks, ({ one }) => ({
+  user: one(users, {
+    fields: [studyStreaks.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userLearningProgressRelations = relations(userLearningProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [userLearningProgress.userId],
+    references: [users.id],
+  }),
+  learningPath: one(learningPaths, {
+    fields: [userLearningProgress.learningPathId],
+    references: [learningPaths.id],
+  }),
+}));
+
+// Type exports for the new tables
+export type GrammarPoint = typeof grammarPoints.$inferSelect;
+export type InsertGrammarPoint = typeof grammarPoints.$inferInsert;
+export type Kanji = typeof kanji.$inferSelect;
+export type InsertKanji = typeof kanji.$inferInsert;
+export type Vocabulary = typeof vocabulary.$inferSelect;
+export type InsertVocabulary = typeof vocabulary.$inferInsert;
+export type SrsItem = typeof srsItems.$inferSelect;
+export type InsertSrsItem = typeof srsItems.$inferInsert;
+export type ReviewSession = typeof reviewSessions.$inferSelect;
+export type InsertReviewSession = typeof reviewSessions.$inferInsert;
+export type StudyStreak = typeof studyStreaks.$inferSelect;
+export type InsertStudyStreak = typeof studyStreaks.$inferInsert;
+export type LearningPath = typeof learningPaths.$inferSelect;
+export type InsertLearningPath = typeof learningPaths.$inferInsert;
+export type UserLearningProgress = typeof userLearningProgress.$inferSelect;
+export type InsertUserLearningProgress = typeof userLearningProgress.$inferInsert;
+
+// SRS Algorithm Constants
+export const SRS_INTERVALS = [
+  4 * 60 * 60 * 1000,      // 4 hours (apprentice 1)
+  8 * 60 * 60 * 1000,      // 8 hours (apprentice 2)
+  24 * 60 * 60 * 1000,     // 1 day (apprentice 3)
+  3 * 24 * 60 * 60 * 1000, // 3 days (apprentice 4)
+  7 * 24 * 60 * 60 * 1000, // 1 week (guru 1)
+  14 * 24 * 60 * 60 * 1000, // 2 weeks (guru 2)
+  30 * 24 * 60 * 60 * 1000, // 1 month (master)
+  120 * 24 * 60 * 60 * 1000, // 4 months (enlightened)
+]; // burned items don't come back for review
+
+export const SRS_LEVEL_NAMES = [
+  'lesson',
+  'apprentice_1',
+  'apprentice_2', 
+  'apprentice_3',
+  'apprentice_4',
+  'guru_1',
+  'guru_2',
+  'master',
+  'enlightened',
+  'burned'
+];
+
+// Validation schemas for SRS operations
+export const submitReviewSchema = z.object({
+  srsItemId: z.number(),
+  isCorrect: z.boolean(),
+  responseTime: z.number().optional(),
+  reviewType: z.enum(['meaning', 'reading', 'audio']),
+  userAnswer: z.string(),
+});
+
+export const unlockItemsSchema = z.object({
+  grammarPointIds: z.array(z.number()).optional(),
+  kanjiIds: z.array(z.number()).optional(),
+  vocabularyIds: z.array(z.number()).optional(),
+});
+
+export type SubmitReview = z.infer<typeof submitReviewSchema>;
+export type UnlockItems = z.infer<typeof unlockItemsSchema>;
