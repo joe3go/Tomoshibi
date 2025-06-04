@@ -123,55 +123,35 @@ export default function Dashboard() {
     <div className="flex min-h-screen washi-texture">
       <Sidebar user={user} />
       
-      <div className="flex-1 overflow-auto lg:ml-0 w-full">
-        {/* Peaceful Japanese Welcome Header */}
-        <header className="japanese-card border-b-0 px-3 lg:px-8 py-4 lg:py-8 pt-16 lg:pt-8 relative overflow-hidden">
-          {/* Subtle decorative sakura petals */}
-          <div className="absolute top-4 right-4 w-16 h-16 opacity-10 gentle-float">
-            <svg viewBox="0 0 100 100" className="w-full h-full text-sakura">
-              <path d="M50,20 C60,30 70,40 50,50 C30,40 40,30 50,20 Z" fill="currentColor"/>
-              <path d="M50,50 C60,60 70,70 50,80 C30,70 40,60 50,50 Z" fill="currentColor"/>
-              <path d="M20,50 C30,40 40,30 50,50 C40,70 30,60 20,50 Z" fill="currentColor"/>
-              <path d="M50,50 C60,40 70,30 80,50 C70,70 60,60 50,50 Z" fill="currentColor"/>
-            </svg>
-          </div>
-          
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between relative z-10 gap-6 lg:gap-0">
-            <div className="text-center lg:text-left">
-              <div className="japanese-welcome mb-3 gentle-float text-gray-900">
-                ようこそ、{user?.displayName?.split(' ')[0] || '学習者'}さん
-              </div>
-              <p className="japanese-text text-gray-800">
-                今日も一緒に頑張りましょう！
-              </p>
-              <p className="text-sm text-gray-700 mt-1">
-                Welcome back! Let's continue your Japanese journey together.
+      <div className="flex-1 overflow-auto lg:ml-0 w-full pt-14">
+        {/* Modern Welcome Section */}
+        <div className="px-4 lg:px-8 py-4 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">
+                Welcome back, {user?.username || 'Learner'}!
+              </h2>
+              <p className="text-sm text-gray-600">
+                Continue your Japanese learning journey
               </p>
             </div>
             
-            {/* Peaceful Stats Display */}
-            <div className="flex items-center justify-center lg:justify-end gap-6 lg:gap-8">
-              <div className="text-center zen-pulse">
-                <div className="w-14 h-14 lg:w-16 lg:h-16 matcha-gradient rounded-full flex items-center justify-center mb-2 shadow-lg mx-auto">
-                  <span className="text-white text-base lg:text-lg font-bold japanese-text">{user?.totalXP || 0}</span>
+            {/* Weekly Progress Indicators */}
+            <div className="hidden lg:flex items-center gap-2">
+              {weekData.map((day, index) => (
+                <div key={index} className="flex flex-col items-center gap-1">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                    day.studied 
+                      ? 'bg-indigo-500 text-white' 
+                      : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {day.day}
+                  </div>
                 </div>
-                <div className="text-xs lg:text-sm text-foreground font-medium japanese-text">経験値</div>
-              </div>
-              <div className="text-center zen-pulse">
-                <div className="w-14 h-14 lg:w-16 lg:h-16 sakura-gradient rounded-full flex items-center justify-center mb-2 shadow-lg mx-auto">
-                  <span className="text-white text-base lg:text-lg font-bold japanese-text">{user?.currentStreak || 0}</span>
-                </div>
-                <div className="text-xs lg:text-sm text-foreground font-medium japanese-text">連続日数</div>
-              </div>
-              <div className="text-center zen-pulse">
-                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-bamboo rounded-full flex items-center justify-center mb-2 shadow-lg mx-auto">
-                  <span className="text-white text-base lg:text-lg font-bold japanese-text">{achievements?.length || 0}</span>
-                </div>
-                <div className="text-xs lg:text-sm text-foreground font-medium japanese-text">実績</div>
-              </div>
+              ))}
             </div>
           </div>
-        </header>
+        </div>
 
         {/* Main Content */}
         <main className="p-4 lg:p-8">

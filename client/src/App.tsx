@@ -144,16 +144,23 @@ function SimpleLanguageToggle() {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-12 sm:h-14 items-center justify-between px-2 sm:px-4 ml-0 lg:ml-64">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <h1 className="text-sm sm:text-lg font-bold japanese-heading truncate">
-            <span className="hidden sm:inline">日本語学習 - Japanese Learning Tracker</span>
-            <span className="sm:hidden">日本語学習</span>
+    <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100">
+      <div className="flex h-14 items-center justify-between px-4 lg:ml-64">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+            <span className="text-white text-xs font-bold">日</span>
+          </div>
+          <h1 className="hidden sm:block text-lg font-bold text-gray-900 tracking-tight">
+            Learning Journey
           </h1>
         </div>
-        <div className="flex-shrink-0">
+        
+        <div className="flex items-center gap-3">
           <SimpleLanguageToggle />
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 rounded-full">
+            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+            <span className="text-xs font-medium text-emerald-700">Live</span>
+          </div>
         </div>
       </div>
     </header>
