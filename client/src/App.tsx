@@ -9,6 +9,7 @@ import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
 import StudyPage from "@/pages/study";
+import StudyModePage from "@/pages/study-mode";
 import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
@@ -85,6 +86,7 @@ function Router() {
         <>
           <Route path="/" component={Dashboard} />
           <Route path="/study" component={StudyPage} />
+          <Route path="/study-mode" component={StudyModePage} />
           <Route path="/social" component={Social} />
           <Route path="/achievements" component={Achievements} />
           <Route path="/settings" component={Settings} />

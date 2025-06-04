@@ -114,10 +114,10 @@ export default function Dashboard() {
 
         {/* Quick Action */}
         <div className="text-center mb-8">
-          <Link href="/study">
+          <Link href="/study-mode">
             <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               <Play className="mr-2 h-5 w-5" />
-              Start Review Session ({stats.reviewQueue} cards ready)
+              Choose Study Mode ({stats.reviewQueue} items ready)
             </Button>
           </Link>
         </div>
