@@ -147,7 +147,7 @@ function AppHeader() {
     <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100">
       <div className="flex h-12 items-center justify-between px-3 lg:px-4 lg:ml-64">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
             <span className="text-white text-xs font-bold">日</span>
           </div>
           <h1 className="hidden sm:block text-base font-semibold text-gray-900">
