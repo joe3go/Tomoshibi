@@ -1,8 +1,24 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage, DatabaseStorage } from "./storage";
-import { apiKeySetupSchema, insertStudySessionSchema } from "@shared/schema";
+import { 
+  apiKeySetupSchema, 
+  insertStudySessionSchema,
+  registerSchema,
+  loginSchema,
+  verifyEmailSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from "@shared/schema";
 import { z } from "zod";
+import { 
+  hashPassword, 
+  comparePasswords, 
+  generateVerificationToken, 
+  generatePasswordResetToken,
+  getPasswordResetExpiry 
+} from "./auth";
+import { sendVerificationEmail, sendPasswordResetEmail } from "./emailService";
 
 // WaniKani API client for kanji, radicals, and vocabulary tracking
 class WaniKaniClient {
@@ -168,6 +184,206 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (storage instanceof DatabaseStorage) {
     await storage.seedAchievements();
   }
+
+  // Manual Email Registration Routes
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { email, password, displayName, username } = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail?.(email) || await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email or username" });
+      }
+      
+      // Hash password and generate verification token
+      const hashedPassword = await hashPassword(password);
+      const verificationToken = generateVerificationToken();
+      
+      // Create user with unverified email
+      const newUser = await storage.createUser({
+        username,
+        displayName,
+        email,
+        password: hashedPassword,
+        emailVerified: false,
+        emailVerificationToken: verificationToken,
+        totalXP: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        currentJLPTLevel: "N5",
+      });
+      
+      // Send verification email
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      await sendVerificationEmail(email, verificationToken, baseUrl);
+      
+      res.status(201).json({ 
+        message: "Registration successful! Please check your email to verify your account.",
+        userId: newUser.id 
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      
+      const user = await storage.getUserByEmail?.(email);
+      if (!user || !user.password) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      const isValidPassword = await comparePasswords(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      if (!user.emailVerified) {
+        return res.status(401).json({ message: "Please verify your email before logging in" });
+      }
+      
+      // Set user session (simplified - in production use proper session management)
+      req.session = req.session || {};
+      (req.session as any).userId = user.id;
+      
+      const { password: _, emailVerificationToken, passwordResetToken, ...safeUser } = user;
+      res.json({ user: safeUser });
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.get('/api/auth/verify-email', async (req, res) => {
+    try {
+      const { token } = verifyEmailSchema.parse(req.query);
+      
+      const user = await storage.getUserByVerificationToken?.(token);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired verification token" });
+      }
+      
+      // Mark email as verified and clear token
+      await storage.updateUser(user.id, {
+        emailVerified: true,
+        emailVerificationToken: null,
+      });
+      
+      res.json({ message: "Email verified successfully! You can now log in." });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Email verification failed" });
+    }
+  });
+
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = forgotPasswordSchema.parse(req.body);
+      
+      const user = await storage.getUserByEmail?.(email);
+      if (!user) {
+        // Don't reveal if email exists for security
+        return res.json({ message: "If an account exists with this email, a password reset link has been sent." });
+      }
+      
+      const resetToken = generatePasswordResetToken();
+      const resetExpiry = getPasswordResetExpiry();
+      
+      await storage.updateUser(user.id, {
+        passwordResetToken: resetToken,
+        passwordResetExpires: resetExpiry,
+      });
+      
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      await sendPasswordResetEmail(email, resetToken, baseUrl);
+      
+      res.json({ message: "If an account exists with this email, a password reset link has been sent." });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({ message: "Password reset failed" });
+    }
+  });
+
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, password } = resetPasswordSchema.parse(req.body);
+      
+      const user = await storage.getUserByPasswordResetToken?.(token);
+      if (!user || !user.passwordResetExpires || new Date() > user.passwordResetExpires) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+      
+      const hashedPassword = await hashPassword(password);
+      await storage.updateUser(user.id, {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      });
+      
+      res.json({ message: "Password reset successfully! You can now log in with your new password." });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({ message: "Password reset failed" });
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    req.session = null;
+    res.json({ message: "Logged out successfully" });
+  });
+
+  app.get('/api/auth/user', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      const { password, emailVerificationToken, passwordResetToken, ...safeUser } = user;
+      res.json(safeUser);
+    } catch (error) {
+      console.error("Get user error:", error);
+      res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
+  // API Key Management Routes
+  app.post('/api/user/api-keys', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const { wanikaniApiKey, bunproApiKey } = apiKeySetupSchema.parse(req.body);
+      
+      await storage.updateUser(userId, {
+        wanikaniApiKey,
+        bunproApiKey,
+      });
+      
+      res.json({ message: "API keys updated successfully" });
+    } catch (error) {
+      console.error("API key update error:", error);
+      res.status(500).json({ message: "Failed to update API keys" });
+    }
+  });
+
   // Get user dashboard data
   app.get("/api/dashboard", async (req, res) => {
     try {
