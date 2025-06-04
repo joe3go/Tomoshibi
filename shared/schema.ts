@@ -334,12 +334,12 @@ export const kanji = pgTable("kanji", {
   character: varchar("character", { length: 1 }).notNull().unique(), // The kanji character
   jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(),
   meaning: text("meaning").notNull(), // English meanings
-  onyomi: jsonb("onyomi"), // On'yomi readings array
-  kunyomi: jsonb("kunyomi"), // Kun'yomi readings array
-  radicals: jsonb("radicals"), // Component radicals
+  onyomi: json("onyomi"), // On'yomi readings array
+  kunyomi: json("kunyomi"), // Kun'yomi readings array
+  radicals: json("radicals"), // Component radicals
   strokeCount: integer("stroke_count").notNull(),
   frequency: integer("frequency"), // Usage frequency ranking
-  examples: jsonb("examples").notNull(), // Example words using this kanji
+  examples: json("examples").notNull(), // Example words using this kanji
   mnemonics: text("mnemonics"), // Memory aids
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
@@ -353,8 +353,8 @@ export const vocabulary = pgTable("vocabulary", {
   meaning: text("meaning").notNull(), // English meaning
   partOfSpeech: varchar("part_of_speech", { length: 50 }).notNull(), // noun, verb, etc.
   jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(),
-  kanjiIds: jsonb("kanji_ids"), // Related kanji IDs
-  examples: jsonb("examples").notNull(), // Example sentences
+  kanjiIds: json("kanji_ids"), // Related kanji IDs
+  examples: json("examples").notNull(), // Example sentences
   audio: varchar("audio", { length: 255 }), // Audio file path/URL
   difficulty: integer("difficulty").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow(),
@@ -395,11 +395,11 @@ export const reviewSessions = pgTable("review_sessions", {
 export const studyStreaks = pgTable("study_streaks", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  date: date("date").notNull(),
+  date: varchar("date", { length: 10 }).notNull(),
   reviewsCompleted: integer("reviews_completed").notNull().default(0),
   lessonsCompleted: integer("lessons_completed").notNull().default(0),
   timeSpent: integer("time_spent").notNull().default(0), // Minutes
-  accuracy: numeric("accuracy", { precision: 5, scale: 2 }), // Percentage
+  accuracy: integer("accuracy"), // Percentage (0-100)
   createdAt: timestamp("created_at").defaultNow()
 });
 
@@ -410,8 +410,8 @@ export const learningPaths = pgTable("learning_paths", {
   description: text("description").notNull(),
   jlptLevel: varchar("jlpt_level", { length: 5 }).notNull(),
   order: integer("order").notNull(),
-  prerequisites: jsonb("prerequisites"), // Array of required learning path IDs
-  content: jsonb("content").notNull(), // Structured lessons and milestones
+  prerequisites: json("prerequisites"), // Array of required learning path IDs
+  content: json("content").notNull(), // Structured lessons and milestones
   estimatedHours: integer("estimated_hours"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
@@ -423,7 +423,7 @@ export const userLearningProgress = pgTable("user_learning_progress", {
   userId: integer("user_id").notNull().references(() => users.id),
   learningPathId: integer("learning_path_id").notNull().references(() => learningPaths.id),
   currentLesson: integer("current_lesson").notNull().default(0),
-  completedLessons: jsonb("completed_lessons").notNull().default([]),
+  completedLessons: json("completed_lessons").notNull().default("[]"),
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow()
