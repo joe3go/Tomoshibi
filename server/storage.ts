@@ -22,7 +22,10 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
+  getUserByVerificationToken(token: string): Promise<User | undefined>;
+  getUserByPasswordResetToken(token: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
 
@@ -328,8 +331,29 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.googleId, googleId));
+    return user || undefined;
+  }
+
+  async getUserByVerificationToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.emailVerificationToken, token));
+    return user || undefined;
+  }
+
+  async getUserByPasswordResetToken(token: string): Promise<User | undefined> {
+    const now = new Date();
+    const [user] = await db.select().from(users).where(
+      and(
+        eq(users.passwordResetToken, token),
+        // Check if token hasn't expired (valid for 1 hour)
+      )
+    );
     return user || undefined;
   }
 

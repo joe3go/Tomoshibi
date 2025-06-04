@@ -19,6 +19,10 @@ export const users = pgTable("users", {
   wanikaniApiKey: text("wanikani_api_key"),
   bunproApiKey: text("bunpro_api_key"),
   lastStudyDate: timestamp("last_study_date"),
+  emailVerified: boolean("email_verified").default(false),
+  emailVerificationToken: text("email_verification_token"),
+  passwordResetToken: text("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -84,6 +88,31 @@ export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
 export const apiKeySetupSchema = z.object({
   wanikaniApiKey: z.string().optional(),
   bunproApiKey: z.string().optional(),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  displayName: z.string().min(2, "Display name must be at least 2 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters"),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Verification token is required"),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export type User = typeof users.$inferSelect;
