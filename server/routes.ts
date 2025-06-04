@@ -192,7 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Simplified Email Registration Routes (for demo - email verification disabled)
   app.post('/api/auth/register', async (req, res) => {
     try {
-      const { email, password, displayName, username } = registerSchema.parse(req.body);
+      const { email, password, username } = registerSchema.parse(req.body);
       
       // Check if user already exists
       const existingUser = await storage.getUserByUsername(username);
@@ -206,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create user (simplified without email verification for demo)
       const newUser = await storage.createUser({
         username,
-        displayName,
+        displayName: username,
         password: hashedPassword,
       });
       

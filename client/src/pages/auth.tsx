@@ -26,7 +26,6 @@ export default function AuthPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    displayName: "",
     username: "",
   });
 
@@ -83,7 +82,6 @@ export default function AuthPage() {
       const response = await apiRequest("POST", "/api/auth/register", {
         email: registerForm.email,
         password: registerForm.password,
-        displayName: registerForm.displayName,
         username: registerForm.username,
       });
       
@@ -100,7 +98,6 @@ export default function AuthPage() {
           email: "",
           password: "",
           confirmPassword: "",
-          displayName: "",
           username: "",
         });
       } else {
@@ -265,30 +262,16 @@ export default function AuthPage() {
                   </div>
 
                   <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="register-displayName">Display Name</Label>
-                        <Input
-                          id="register-displayName"
-                          type="text"
-                          placeholder="Your name"
-                          value={registerForm.displayName}
-                          onChange={(e) => setRegisterForm({ ...registerForm, displayName: e.target.value })}
-                          required
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="register-username">Username</Label>
-                        <Input
-                          id="register-username"
-                          type="text"
-                          placeholder="Username"
-                          value={registerForm.username}
-                          onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
-                          required
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-username">Username</Label>
+                      <Input
+                        id="register-username"
+                        type="text"
+                        placeholder="Choose a username"
+                        value={registerForm.username}
+                        onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
+                        required
+                      />
                     </div>
                   
                   <div className="space-y-2">
