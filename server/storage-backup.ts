@@ -61,7 +61,7 @@ export class MemStorage implements IStorage {
   private userAchievements: Map<number, UserAchievement>;
   private learningPaths: Map<number, LearningPath>;
   private userPathProgress: Map<number, UserPathProgress>;
-  
+
   private currentUserId: number;
   private currentCardId: number;
   private currentSrsItemId: number;
@@ -78,19 +78,48 @@ export class MemStorage implements IStorage {
     this.userAchievements = new Map();
     this.learningPaths = new Map();
     this.userPathProgress = new Map();
-    
+
     this.currentUserId = 1;
     this.currentCardId = 1;
     this.currentSrsItemId = 1;
     this.currentSessionId = 1;
     this.currentAchievementId = 1;
     this.currentUserAchievementId = 1;
-    
+
     this.seedData();
   }
 
+  private determineTheme(meaning: string): string {
+    const themes = {
+      'I, me': 'personal',
+      'you': 'personal', 
+      'he, him': 'personal',
+      'she, her': 'personal',
+      'person': 'people',
+      'house, home': 'living',
+      'school': 'education',
+      'book': 'education',
+      'car': 'transport',
+      'time': 'time',
+      'now': 'time'
+    };
+    return themes[meaning as keyof typeof themes] || 'general';
+  }
+
+  private extractGrammarPoints(sentence: string): string[] {
+    const points = [];
+    if (sentence.includes('です')) points.push('です copula');
+    if (sentence.includes('は')) points.push('は particle');
+    if (sentence.includes('を')) points.push('を particle');
+    if (sentence.includes('に')) points.push('に particle');
+    if (sentence.includes('で')) points.push('で particle');
+    if (sentence.includes('が')) points.push('が particle');
+    if (sentence.includes('ます')) points.push('polite present');
+    return points.length > 0 ? points : ['basic grammar'];
+  }
+
   private seedData() {
-    // Create demo user
+    // Create demo user with Google ID support
     const demoUser: User = {
       id: 1,
       username: "demo_user",
@@ -118,10 +147,8 @@ export class MemStorage implements IStorage {
     this.users.set(1, demoUser);
 
     // Generate authentic JLPT N5 sentence cards from vocabulary data
-    const sentenceCards: SentenceCard[] = [];
-    
     n5Vocabulary.slice(0, 20).forEach((vocab, index) => {
-      sentenceCards.push({
+      const card: SentenceCard = {
         id: index + 1,
         japanese: vocab.example_sentence_jp,
         reading: vocab.example_sentence_jp,
@@ -136,50 +163,37 @@ export class MemStorage implements IStorage {
         vocabulary: [vocab.kanji, vocab.kana_reading],
         culturalNotes: `Core N5 vocabulary: ${vocab.kanji} (${vocab.kana_reading}) - ${vocab.english_meaning}`,
         createdAt: new Date()
-      });
-    });
-
-    // Store sentence cards
-    sentenceCards.forEach(card => {
+      };
       this.sentenceCards.set(card.id, card);
     });
-        culturalNotes: "やばい is very common slang, especially among young people.",
-        createdAt: new Date()
-      }
-    ];
 
-    sentenceCards.forEach(card => {
-      this.sentenceCards.set(card.id, card);
-      this.currentCardId = Math.max(this.currentCardId, card.id + 1);
-    });
-
-    // Create SRS items for demo user
-    sentenceCards.slice(0, 3).forEach((card, index) => {
+    // Create SRS items for the first few cards
+    [1, 2, 3, 4, 5].forEach(cardId => {
       const srsItem: SrsItem = {
-        id: index + 1,
+        id: cardId,
         userId: 1,
-        sentenceCardId: card.id,
-        interval: index === 0 ? 1 : index === 1 ? 3 : 7,
+        sentenceCardId: cardId,
+        interval: 1,
         easeFactor: 2.5,
-        repetitions: index,
-        lastReviewed: new Date(Date.now() - (index * 24 * 60 * 60 * 1000)),
-        nextReview: new Date(Date.now() + (index * 24 * 60 * 60 * 1000)),
-        correctCount: index * 2,
-        incorrectCount: index,
-        mastery: index === 0 ? "new" : index === 1 ? "learning" : "review",
+        repetitions: 0,
+        lastReviewed: null,
+        nextReview: new Date(),
+        correctCount: 0,
+        incorrectCount: 0,
+        mastery: 'learning',
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      this.srsItems.set(srsItem.id, srsItem);
+      this.srsItems.set(cardId, srsItem);
     });
 
     // Seed achievements
-    const achievements: Achievement[] = [
+    const achievements = [
       {
         id: 1,
         name: "First Steps",
-        description: "Complete your first study session",
-        icon: "🚪",
+        description: "Complete your first review session",
+        icon: "👶",
         category: "milestone",
         threshold: 1,
         beltRequired: null,
@@ -188,46 +202,13 @@ export class MemStorage implements IStorage {
       },
       {
         id: 2,
-        name: "Consistency Master",
-        description: "Study for 7 days in a row",
+        name: "Streak Master",
+        description: "Maintain a 7-day study streak",
         icon: "🔥",
-        category: "streak",
+        category: "consistency",
         threshold: 7,
         beltRequired: null,
         xpReward: 200,
-        createdAt: new Date()
-      },
-      {
-        id: 3,
-        name: "Yellow Belt",
-        description: "Achieve yellow belt mastery",
-        icon: "🥋",
-        category: "belt",
-        threshold: null,
-        beltRequired: "yellow",
-        xpReward: 500,
-        createdAt: new Date()
-      },
-      {
-        id: 4,
-        name: "Anime Enthusiast",
-        description: "Master 50 anime-style sentences",
-        icon: "📺",
-        category: "content",
-        threshold: 50,
-        beltRequired: null,
-        xpReward: 300,
-        createdAt: new Date()
-      },
-      {
-        id: 5,
-        name: "Casual Speaker",
-        description: "Master casual Japanese conversation",
-        icon: "💬",
-        category: "register",
-        threshold: 25,
-        beltRequired: null,
-        xpReward: 250,
         createdAt: new Date()
       }
     ];
@@ -236,66 +217,47 @@ export class MemStorage implements IStorage {
       this.achievements.set(achievement.id, achievement);
     });
 
-    // Unlock some achievements for demo user
-    const userAchievement1: UserAchievement = {
-      id: 1,
-      userId: 1,
-      achievementId: 1,
-      unlockedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
-    };
-    const userAchievement2: UserAchievement = {
-      id: 2,
-      userId: 1,
-      achievementId: 2,
-      unlockedAt: new Date()
-    };
-
-    this.userAchievements.set(1, userAchievement1);
-    this.userAchievements.set(2, userAchievement2);
-
-    // Create a recent study session
+    // Sample study session
     const studySession: StudySession = {
       id: 1,
       userId: 1,
       sessionType: "review",
-      cardsReviewed: 15,
-      cardsCorrect: 13,
-      timeSpentMinutes: 18,
-      xpEarned: 85,
-      startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      completedAt: new Date(Date.now() - 2 * 60 * 60 * 1000 + 18 * 60 * 1000)
+      cardsReviewed: 5,
+      cardsCorrect: 4,
+      timeSpentMinutes: 15,
+      xpEarned: 100,
+      startedAt: new Date(Date.now() - 900000), // 15 minutes ago
+      completedAt: new Date()
     };
     this.studySessions.set(1, studySession);
   }
 
+  // User operations
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    for (const user of this.users.values()) {
+      if (user.username === username) return user;
+    }
+    return undefined;
   }
 
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.googleId === googleId);
+    for (const user of this.users.values()) {
+      if (user.googleId === googleId) return user;
+    }
+    return undefined;
   }
 
   async createUser(userData: InsertUser): Promise<User> {
     const user: User = {
       id: this.currentUserId++,
       ...userData,
-      currentBelt: "white",
-      currentJLPTLevel: "N5",
-      totalXP: 0,
-      currentStreak: 0,
-      bestStreak: 0,
-      lastStudyDate: null,
-      dailyGoalMinutes: 20,
-      enableReminders: true,
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    
     this.users.set(user.id, user);
     return user;
   }
@@ -309,6 +271,7 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
+  // Sentence card operations
   async getSentenceCards(filters?: {
     jlptLevel?: string;
     register?: string;
@@ -317,17 +280,19 @@ export class MemStorage implements IStorage {
   }): Promise<SentenceCard[]> {
     let cards = Array.from(this.sentenceCards.values());
     
-    if (filters?.jlptLevel) {
-      cards = cards.filter(card => card.jlptLevel === filters.jlptLevel);
-    }
-    if (filters?.register) {
-      cards = cards.filter(card => card.register === filters.register);
-    }
-    if (filters?.theme) {
-      cards = cards.filter(card => card.theme === filters.theme);
-    }
-    if (filters?.difficulty) {
-      cards = cards.filter(card => card.difficulty <= filters.difficulty);
+    if (filters) {
+      if (filters.jlptLevel) {
+        cards = cards.filter(card => card.jlptLevel === filters.jlptLevel);
+      }
+      if (filters.register) {
+        cards = cards.filter(card => card.register === filters.register);
+      }
+      if (filters.theme) {
+        cards = cards.filter(card => card.theme === filters.theme);
+      }
+      if (filters.difficulty !== undefined) {
+        cards = cards.filter(card => card.difficulty === filters.difficulty);
+      }
     }
     
     return cards;
@@ -341,13 +306,18 @@ export class MemStorage implements IStorage {
     const card: SentenceCard = {
       id: this.currentCardId++,
       ...cardData,
+      reading: cardData.reading || null,
+      audioUrl: cardData.audioUrl || null,
+      theme: cardData.theme || null,
+      source: cardData.source || null,
+      culturalNotes: cardData.culturalNotes || null,
       createdAt: new Date()
     };
-    
     this.sentenceCards.set(card.id, card);
     return card;
   }
 
+  // SRS operations
   async getUserSrsItems(userId: number): Promise<SrsItem[]> {
     return Array.from(this.srsItems.values()).filter(item => item.userId === userId);
   }
@@ -359,11 +329,17 @@ export class MemStorage implements IStorage {
   async createSrsItem(itemData: InsertSrsItem): Promise<SrsItem> {
     const item: SrsItem = {
       id: this.currentSrsItemId++,
+      interval: itemData.interval || 1,
+      easeFactor: itemData.easeFactor || 2.5,
+      repetitions: itemData.repetitions || 0,
+      lastReviewed: itemData.lastReviewed || null,
+      correctCount: itemData.correctCount || 0,
+      incorrectCount: itemData.incorrectCount || 0,
+      mastery: itemData.mastery || 'learning',
       ...itemData,
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    
     this.srsItems.set(item.id, item);
     return item;
   }
@@ -378,30 +354,44 @@ export class MemStorage implements IStorage {
   }
 
   async getReviewQueue(userId: number, limit?: number): Promise<SrsItem[]> {
-    const userItems = Array.from(this.srsItems.values())
-      .filter(item => item.userId === userId && item.nextReview <= new Date())
+    const now = new Date();
+    let queue = Array.from(this.srsItems.values())
+      .filter(item => item.userId === userId && item.nextReview <= now)
       .sort((a, b) => a.nextReview.getTime() - b.nextReview.getTime());
     
-    return limit ? userItems.slice(0, limit) : userItems;
+    if (limit) {
+      queue = queue.slice(0, limit);
+    }
+    
+    return queue;
   }
 
+  // Study session operations
   async createStudySession(sessionData: InsertStudySession): Promise<StudySession> {
     const session: StudySession = {
       id: this.currentSessionId++,
-      startedAt: new Date(),
-      ...sessionData
+      cardsReviewed: sessionData.cardsReviewed || 0,
+      cardsCorrect: sessionData.cardsCorrect || 0,
+      timeSpentMinutes: sessionData.timeSpentMinutes || 0,
+      xpEarned: sessionData.xpEarned || 0,
+      completedAt: sessionData.completedAt || null,
+      ...sessionData,
+      startedAt: new Date()
     };
-    
     this.studySessions.set(session.id, session);
     return session;
   }
 
   async getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]> {
-    const sessions = Array.from(this.studySessions.values())
+    let sessions = Array.from(this.studySessions.values())
       .filter(session => session.userId === userId)
       .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
     
-    return limit ? sessions.slice(0, limit) : sessions;
+    if (limit) {
+      sessions = sessions.slice(0, limit);
+    }
+    
+    return sessions;
   }
 
   async updateStudySession(id: number, updates: Partial<StudySession>): Promise<StudySession | undefined> {
@@ -413,6 +403,7 @@ export class MemStorage implements IStorage {
     return updatedSession;
   }
 
+  // Achievement operations
   async getAllAchievements(): Promise<Achievement[]> {
     return Array.from(this.achievements.values());
   }
@@ -420,22 +411,23 @@ export class MemStorage implements IStorage {
   async createAchievement(achievementData: InsertAchievement): Promise<Achievement> {
     const achievement: Achievement = {
       id: this.currentAchievementId++,
+      threshold: achievementData.threshold || null,
+      beltRequired: achievementData.beltRequired || null,
+      xpReward: achievementData.xpReward || 0,
       ...achievementData,
       createdAt: new Date()
     };
-    
     this.achievements.set(achievement.id, achievement);
     return achievement;
   }
 
   async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
-    const userAchievements = Array.from(this.userAchievements.values())
-      .filter(ua => ua.userId === userId);
-    
-    return userAchievements.map(ua => {
-      const achievement = this.achievements.get(ua.achievementId)!;
-      return { ...ua, achievement };
-    });
+    return Array.from(this.userAchievements.values())
+      .filter(ua => ua.userId === userId)
+      .map(ua => {
+        const achievement = this.achievements.get(ua.achievementId)!;
+        return { ...ua, achievement };
+      });
   }
 
   async unlockAchievement(userAchievementData: InsertUserAchievement): Promise<UserAchievement> {
@@ -444,14 +436,17 @@ export class MemStorage implements IStorage {
       ...userAchievementData,
       unlockedAt: new Date()
     };
-    
     this.userAchievements.set(userAchievement.id, userAchievement);
     return userAchievement;
   }
 
   async hasUserAchievement(userId: number, achievementId: number): Promise<boolean> {
-    return Array.from(this.userAchievements.values())
-      .some(ua => ua.userId === userId && ua.achievementId === achievementId);
+    for (const ua of this.userAchievements.values()) {
+      if (ua.userId === userId && ua.achievementId === achievementId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async getAllLearningPaths(): Promise<LearningPath[]> {
