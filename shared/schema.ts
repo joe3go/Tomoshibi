@@ -23,6 +23,9 @@ export const users = pgTable("users", {
   // Preferences
   studyGoal: varchar("study_goal", { length: 100 }),
   dailyGoalMinutes: integer("daily_goal_minutes").default(20),
+  dailyGoalKanji: integer("daily_goal_kanji").default(5),
+  dailyGoalGrammar: integer("daily_goal_grammar").default(3),
+  dailyGoalVocabulary: integer("daily_goal_vocabulary").default(10),
   preferredStudyTime: varchar("preferred_study_time", { length: 10 }),
   enableReminders: boolean("enable_reminders").default(true),
   
@@ -136,6 +139,23 @@ export const userPathProgress = pgTable("user_path_progress", {
   totalCards: integer("total_cards").notNull(),
   isActive: boolean("is_active").notNull().default(false),
   
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Daily progress tracking table
+export const dailyProgress = pgTable("daily_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD format
+  kanjiLearned: integer("kanji_learned").notNull().default(0),
+  grammarLearned: integer("grammar_learned").notNull().default(0),
+  vocabularyLearned: integer("vocabulary_learned").notNull().default(0),
+  kanjiReviewed: integer("kanji_reviewed").notNull().default(0),
+  grammarReviewed: integer("grammar_reviewed").notNull().default(0),
+  vocabularyReviewed: integer("vocabulary_reviewed").notNull().default(0),
+  timeSpentMinutes: integer("time_spent_minutes").notNull().default(0),
+  xpEarned: integer("xp_earned").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });

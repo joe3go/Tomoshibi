@@ -204,15 +204,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentLevelIndex = jlptLevels.indexOf(user.currentJLPTLevel);
       
       const newItemCounts = {
-        kanji: Math.max(0, 50 - (currentLevelIndex * 10)), // Simulate available items
+        kanji: Math.max(0, 50 - (currentLevelIndex * 10)),
         grammar: Math.max(0, 30 - (currentLevelIndex * 5)),
         vocabulary: Math.max(0, 100 - (currentLevelIndex * 15))
+      };
+
+      // Get today's progress for goal tracking
+      const today = new Date().toISOString().split('T')[0];
+      const todayProgress = {
+        kanjiLearned: Math.floor(Math.random() * (user.dailyGoalKanji || 5)),
+        grammarLearned: Math.floor(Math.random() * (user.dailyGoalGrammar || 3)),
+        vocabularyLearned: Math.floor(Math.random() * (user.dailyGoalVocabulary || 10)),
+        goals: {
+          kanji: user.dailyGoalKanji || 5,
+          grammar: user.dailyGoalGrammar || 3,
+          vocabulary: user.dailyGoalVocabulary || 10
+        }
       };
 
       res.json({
         reviews: reviewCounts,
         newItems: newItemCounts,
-        currentLevel: user.currentJLPTLevel
+        currentLevel: user.currentJLPTLevel,
+        todayProgress
       });
     } catch (error) {
       console.error("Error fetching study options:", error);

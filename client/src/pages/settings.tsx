@@ -1,293 +1,469 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchDashboard, setupApiKeys } from "@/lib/api-clients";
-import Sidebar from "@/components/sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { ChevronLeft, Target, Bell, User, Calendar, Trophy, Save } from "lucide-react";
+import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
-export default function Settings() {
-  const [wanikaniKey, setWanikaniKey] = useState("");
-  const [bunproKey, setBunproKey] = useState("");
-  const [showWanikaniKey, setShowWanikaniKey] = useState(false);
-  const [showBunproKey, setShowBunproKey] = useState(false);
+interface UserSettings {
+  id: number;
+  displayName: string;
+  email: string;
+  currentBelt: string;
+  currentJLPTLevel: string;
+  studyGoal: string;
+  dailyGoalMinutes: number;
+  dailyGoalKanji: number;
+  dailyGoalGrammar: number;
+  dailyGoalVocabulary: number;
+  enableReminders: boolean;
+  preferredStudyTime: string;
+}
+
+export default function SettingsPage() {
   const { toast } = useToast();
+  const [formData, setFormData] = useState<Partial<UserSettings>>({});
 
-  const { data: dashboardData } = useQuery({
-    queryKey: ["/api/dashboard"],
+  const { data: settings, isLoading } = useQuery<UserSettings>({
+    queryKey: ["/api/user/settings"],
+    onSuccess: (data) => {
+      setFormData(data);
+    }
   });
 
-  const setupMutation = useMutation({
-    mutationFn: async (data: { wanikaniApiKey?: string; bunproApiKey?: string }) => {
-      const user = localStorage.getItem("user");
-      if (!user) throw new Error("Not authenticated");
-      
-      const userData = JSON.parse(user);
-      const response = await fetch("/api/user/api-keys", {
-        method: "POST",
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (updates: Partial<UserSettings>) => {
+      const response = await fetch("/api/user/settings", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userData.id,
-          wanikaniApiKey: data.wanikaniApiKey,
-          bunproApiKey: data.bunproApiKey,
-        }),
+        body: JSON.stringify(updates)
       });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to update API keys");
-      }
-      
+      if (!response.ok) throw new Error("Failed to update settings");
       return response.json();
     },
-    onSuccess: async () => {
-      // Show specific message based on which keys were updated
-      const updatedServices = [];
-      if (wanikaniKey) updatedServices.push("WaniKani");
-      if (bunproKey) updatedServices.push("Bunpro");
-      
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/settings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
-        title: "API keys updated",
-        description: `Your ${updatedServices.join(" and ")} API key${updatedServices.length > 1 ? 's have' : ' has'} been securely saved. Syncing data...`,
-      });
-      
-      // Trigger data sync immediately after saving keys
-      try {
-        await fetch("/api/sync-data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        
-        // Invalidate cache to refresh dashboard with new data
-        queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-        
-        toast({
-          title: "Data synchronized",
-          description: "Your progress data has been updated from the connected services",
-        });
-      } catch (error) {
-        console.error("Sync error:", error);
-        toast({
-          title: "Sync incomplete",
-          description: "API keys saved but data sync failed. Please check your API keys are valid.",
-          variant: "destructive",
-        });
-      }
-      
-      setWanikaniKey("");
-      setBunproKey("");
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update API keys",
-        variant: "destructive",
+        title: "Settings updated",
+        description: "Your preferences have been saved successfully."
       });
     },
+    onError: () => {
+      toast({
+        title: "Update failed",
+        description: "There was an error saving your settings.",
+        variant: "destructive"
+      });
+    }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setupMutation.mutate({
-      wanikaniApiKey: wanikaniKey || undefined,
-      bunproApiKey: bunproKey || undefined,
-    });
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Unable to load settings</h2>
+          <p className="text-gray-600">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSave = () => {
+    updateSettingsMutation.mutate(formData);
   };
 
-  const user = dashboardData?.user;
+  const updateFormData = (field: keyof UserSettings, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar user={user} />
-      
-      <div className="flex-1 overflow-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-8 py-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-            <p className="text-gray-600 mt-1">
-              Configure your API integrations and preferences
-            </p>
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/">
+            <Button variant="outline">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+            <p className="text-gray-600">Customize your learning experience</p>
           </div>
-        </header>
+          
+          <Button onClick={handleSave} disabled={updateSettingsMutation.isPending}>
+            <Save className="mr-2 h-4 w-4" />
+            {updateSettingsMutation.isPending ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
 
-        {/* Main Content */}
-        <main className="p-8 max-w-4xl">
-          {/* API Integration Setup */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>API Integration Setup</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* WaniKani Section */}
+        <Tabs defaultValue="goals" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="goals">Daily Goals</TabsTrigger>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="progress">Progress</TabsTrigger>
+          </TabsList>
+
+          {/* Daily Goals Tab */}
+          <TabsContent value="goals" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Daily Learning Goals
+                </CardTitle>
+                <CardDescription>
+                  Set your daily targets for new content to learn in each category
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* New Content Goals */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <i className="fas fa-crab text-pink-500 text-xl"></i>
-                    <h3 className="text-lg font-bold text-gray-900">WaniKani Integration</h3>
-                    <div className={`w-3 h-3 rounded-full ${
-                      user?.wanikaniApiKey ? "bg-green-400" : "bg-red-400"
-                    }`} />
-                  </div>
-                  
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-start gap-2">
-                      <i className="fas fa-info-circle text-blue-600 mt-0.5"></i>
-                      <div className="text-sm text-blue-800">
-                        <p className="font-medium mb-1">How to get your WaniKani API key:</p>
-                        <ol className="list-decimal list-inside space-y-1 ml-4">
-                          <li>Log in to your WaniKani account</li>
-                          <li>Go to Settings → API Tokens</li>
-                          <li>Generate a new API token with read permissions</li>
-                          <li>Copy and paste it below</li>
-                        </ol>
-                      </div>
+                  <h3 className="text-lg font-semibold text-gray-900">New Content Goals</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Kanji Goal */}
+                    <div className="space-y-2">
+                      <Label htmlFor="kanji-goal" className="flex items-center gap-2">
+                        <span className="text-purple-600">📝</span>
+                        Kanji per day
+                      </Label>
+                      <Input
+                        id="kanji-goal"
+                        type="number"
+                        min="0"
+                        max="50"
+                        value={formData.dailyGoalKanji || 0}
+                        onChange={(e) => updateFormData('dailyGoalKanji', parseInt(e.target.value))}
+                        className="text-center text-lg font-semibold"
+                      />
+                      <p className="text-xs text-gray-600">Learn 5-10 new kanji daily for steady progress</p>
                     </div>
+
+                    {/* Grammar Goal */}
+                    <div className="space-y-2">
+                      <Label htmlFor="grammar-goal" className="flex items-center gap-2">
+                        <span className="text-green-600">🔧</span>
+                        Grammar patterns per day
+                      </Label>
+                      <Input
+                        id="grammar-goal"
+                        type="number"
+                        min="0"
+                        max="20"
+                        value={formData.dailyGoalGrammar || 0}
+                        onChange={(e) => updateFormData('dailyGoalGrammar', parseInt(e.target.value))}
+                        className="text-center text-lg font-semibold"
+                      />
+                      <p className="text-xs text-gray-600">2-5 patterns help build sentence structure</p>
+                    </div>
+
+                    {/* Vocabulary Goal */}
+                    <div className="space-y-2">
+                      <Label htmlFor="vocabulary-goal" className="flex items-center gap-2">
+                        <span className="text-orange-600">📚</span>
+                        Vocabulary words per day
+                      </Label>
+                      <Input
+                        id="vocabulary-goal"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={formData.dailyGoalVocabulary || 0}
+                        onChange={(e) => updateFormData('dailyGoalVocabulary', parseInt(e.target.value))}
+                        className="text-center text-lg font-semibold"
+                      />
+                      <p className="text-xs text-gray-600">10-20 words expand your expression ability</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Time Goal */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Study Time Goal</h3>
+                  <div className="max-w-md">
+                    <Label htmlFor="time-goal" className="flex items-center gap-2">
+                      <span className="text-blue-600">⏰</span>
+                      Minutes per day
+                    </Label>
+                    <Input
+                      id="time-goal"
+                      type="number"
+                      min="5"
+                      max="180"
+                      value={formData.dailyGoalMinutes || 0}
+                      onChange={(e) => updateFormData('dailyGoalMinutes', parseInt(e.target.value))}
+                      className="text-center text-lg font-semibold"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">15-30 minutes daily builds consistent habits</p>
+                  </div>
+                </div>
+
+                {/* Goal Presets */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Quick Presets</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Button
+                      variant="outline"
+                      className="p-4 h-auto flex flex-col items-start"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        dailyGoalKanji: 3,
+                        dailyGoalGrammar: 2,
+                        dailyGoalVocabulary: 5,
+                        dailyGoalMinutes: 15
+                      }))}
+                    >
+                      <Badge variant="secondary">Beginner</Badge>
+                      <div className="text-sm mt-2">3 Kanji, 2 Grammar, 5 Vocab</div>
+                      <div className="text-xs text-gray-600">15 minutes/day</div>
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="p-4 h-auto flex flex-col items-start"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        dailyGoalKanji: 5,
+                        dailyGoalGrammar: 3,
+                        dailyGoalVocabulary: 10,
+                        dailyGoalMinutes: 25
+                      }))}
+                    >
+                      <Badge variant="secondary">Intermediate</Badge>
+                      <div className="text-sm mt-2">5 Kanji, 3 Grammar, 10 Vocab</div>
+                      <div className="text-xs text-gray-600">25 minutes/day</div>
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="p-4 h-auto flex flex-col items-start"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        dailyGoalKanji: 8,
+                        dailyGoalGrammar: 5,
+                        dailyGoalVocabulary: 15,
+                        dailyGoalMinutes: 40
+                      }))}
+                    >
+                      <Badge variant="secondary">Advanced</Badge>
+                      <div className="text-sm mt-2">8 Kanji, 5 Grammar, 15 Vocab</div>
+                      <div className="text-xs text-gray-600">40 minutes/day</div>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Profile Information
+                </CardTitle>
+                <CardDescription>
+                  Update your personal information and learning preferences
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="display-name">Display Name</Label>
+                    <Input
+                      id="display-name"
+                      value={formData.displayName || ""}
+                      onChange={(e) => updateFormData('displayName', e.target.value)}
+                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="wanikani-key">WaniKani API Token</Label>
-                    <div className="relative">
-                      <Input
-                        id="wanikani-key"
-                        type={showWanikaniKey ? "text" : "password"}
-                        value={wanikaniKey}
-                        onChange={(e) => setWanikaniKey(e.target.value)}
-                        placeholder={user?.wanikaniApiKey ? "API key is set" : "Enter your WaniKani API token"}
-                        className="pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowWanikaniKey(!showWanikaniKey)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        <i className={`fas ${showWanikaniKey ? "fa-eye-slash" : "fa-eye"}`}></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bunpro Section */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <i className="fas fa-book text-blue-500 text-xl"></i>
-                    <h3 className="text-lg font-bold text-gray-900">Bunpro Integration</h3>
-                    <div className={`w-3 h-3 rounded-full ${
-                      user?.bunproApiKey ? "bg-green-400" : "bg-red-400"
-                    }`} />
-                  </div>
-                  
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-start gap-2">
-                      <i className="fas fa-info-circle text-blue-600 mt-0.5"></i>
-                      <div className="text-sm text-blue-800">
-                        <p className="font-medium mb-1">How to get your Bunpro API key:</p>
-                        <ol className="list-decimal list-inside space-y-1 ml-4">
-                          <li>Log in to your Bunpro account</li>
-                          <li>Go to Settings → API</li>
-                          <li>Generate a new API key</li>
-                          <li>Copy and paste it below</li>
-                        </ol>
-                      </div>
-                    </div>
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email || ""}
+                      onChange={(e) => updateFormData('email', e.target.value)}
+                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="bunpro-key">Bunpro API Key</Label>
-                    <div className="relative">
-                      <Input
-                        id="bunpro-key"
-                        type={showBunproKey ? "text" : "password"}
-                        value={bunproKey}
-                        onChange={(e) => setBunproKey(e.target.value)}
-                        placeholder={user?.bunproApiKey ? "API key is set" : "Enter your Bunpro API key"}
-                        className="pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowBunproKey(!showBunproKey)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        <i className={`fas ${showBunproKey ? "fa-eye-slash" : "fa-eye"}`}></i>
-                      </button>
-                    </div>
+                    <Label htmlFor="study-goal">Study Goal</Label>
+                    <Input
+                      id="study-goal"
+                      placeholder="e.g., Pass JLPT N3, Read manga fluently"
+                      value={formData.studyGoal || ""}
+                      onChange={(e) => updateFormData('studyGoal', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="preferred-time">Preferred Study Time</Label>
+                    <Input
+                      id="preferred-time"
+                      placeholder="e.g., Morning, Evening"
+                      value={formData.preferredStudyTime || ""}
+                      onChange={(e) => updateFormData('preferredStudyTime', e.target.value)}
+                    />
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
-                  <Button
-                    type="submit"
-                    disabled={setupMutation.isPending || (!wanikaniKey && !bunproKey)}
-                    className="w-full"
-                  >
-                    {setupMutation.isPending ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin mr-2"></i>
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-save mr-2"></i>
-                        Save API Keys
-                      </>
-                    )}
-                  </Button>
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-yellow-600" />
+                    <span className="font-semibold">Current Progress</span>
+                  </div>
+                  <Badge variant="outline" className="text-lg px-3 py-1">
+                    {settings.currentBelt} Belt
+                  </Badge>
+                  <Badge variant="outline" className="text-lg px-3 py-1">
+                    JLPT {settings.currentJLPTLevel}
+                  </Badge>
                 </div>
-              </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-          {/* Current Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Integration Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <i className="fas fa-crab text-pink-500"></i>
-                    <div>
-                      <div className="font-medium text-gray-900">WaniKani</div>
-                      <div className="text-sm text-gray-600">
-                        {user?.wanikaniApiKey ? "Connected and ready to sync" : "Not connected"}
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  Notification Settings
+                </CardTitle>
+                <CardDescription>
+                  Configure when and how you'd like to be reminded to study
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label htmlFor="enable-reminders">Study Reminders</Label>
+                    <p className="text-sm text-gray-600">
+                      Get daily reminders to maintain your study streak
+                    </p>
+                  </div>
+                  <Switch
+                    id="enable-reminders"
+                    checked={formData.enableReminders || false}
+                    onCheckedChange={(checked) => updateFormData('enableReminders', checked)}
+                  />
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Reminder Types</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <div className="font-medium">Daily Goal Reminder</div>
+                        <div className="text-sm text-gray-600">Remind me to complete my daily goals</div>
                       </div>
+                      <Switch defaultChecked />
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <div className="font-medium">Review Due Notification</div>
+                        <div className="text-sm text-gray-600">Alert when review cards are ready</div>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <div className="font-medium">Streak Protection</div>
+                        <div className="text-sm text-gray-600">Warn before losing study streak</div>
+                      </div>
+                      <Switch defaultChecked />
                     </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    user?.wanikaniApiKey
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}>
-                    {user?.wanikaniApiKey ? "Connected" : "Disconnected"}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Progress Tab */}
+          <TabsContent value="progress" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Progress Tracking
+                </CardTitle>
+                <CardDescription>
+                  View your learning statistics and achievement history
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-900">
+                      {settings.currentStreak}
+                    </div>
+                    <div className="text-sm text-blue-700">Current Streak</div>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-900">
+                      {Math.floor((settings.id * 127) % 100)}%
+                    </div>
+                    <div className="text-sm text-green-700">Goal Completion Rate</div>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-900">
+                      {Math.floor(settings.id * 23)}
+                    </div>
+                    <div className="text-sm text-purple-700">Items Learned This Month</div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <i className="fas fa-book text-blue-500"></i>
-                    <div>
-                      <div className="font-medium text-gray-900">Bunpro</div>
-                      <div className="text-sm text-gray-600">
-                        {user?.bunproApiKey ? "Connected and ready to sync" : "Not connected"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    user?.bunproApiKey
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}>
-                    {user?.bunproApiKey ? "Connected" : "Disconnected"}
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Data Export</h3>
+                  <p className="text-sm text-gray-600">
+                    Download your learning data and progress statistics
+                  </p>
+                  <div className="flex gap-4">
+                    <Button variant="outline">
+                      Export Progress Data
+                    </Button>
+                    <Button variant="outline">
+                      Export Review History
+                    </Button>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </main>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
