@@ -8,6 +8,7 @@ import Dashboard from "@/pages/dashboard";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
+import StudyPage from "@/pages/study";
 import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
@@ -83,6 +84,7 @@ function Router() {
       {user ? (
         <>
           <Route path="/" component={Dashboard} />
+          <Route path="/study" component={StudyPage} />
           <Route path="/social" component={Social} />
           <Route path="/achievements" component={Achievements} />
           <Route path="/settings" component={Settings} />
