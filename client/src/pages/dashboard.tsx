@@ -3,7 +3,7 @@ import { fetchDashboard, syncData } from "@/lib/api-clients";
 import { useState } from "react";
 import Sidebar from "@/components/sidebar";
 import JLPTJourney from "@/components/jlpt-journey";
-import JourneyMap from "@/components/journey-map";
+
 import ProgressTracker from "@/components/progress-tracker";
 import AchievementModal from "@/components/achievement-modal";
 import ProgressCircle from "@/components/progress-circle";
@@ -168,14 +168,7 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Interactive Learning Journey Map */}
-          <div className="mt-8">
-            <JourneyMap 
-              userProgress={progress}
-              userLevel={user?.currentJLPTLevel || "N5"}
-              totalXP={user?.totalXP || 0}
-            />
-          </div>
+
 
           {/* Peaceful Stats Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 mt-6 lg:mt-8">
