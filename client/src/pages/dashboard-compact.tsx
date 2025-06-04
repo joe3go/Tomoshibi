@@ -117,136 +117,179 @@ export default function Dashboard() {
       </div>
       
       <div className="max-w-7xl mx-auto space-y-4 relative z-10">
-        {/* Compact Header */}
+        {/* Welcome Header */}
         <div className="zen-card p-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="japanese-welcome text-lg mb-1">おかえりなさい、{user.displayName}さん</div>
-              <div className="flex items-center gap-3">
-                <div className="zen-card px-2 py-1 bg-gradient-to-r from-primary/10 to-matcha/10 border-primary/20">
-                  <span className="text-xs font-medium text-primary">
-                    {beltEmojis[user.currentBelt]} {user.currentBelt} • JLPT {user.currentJLPTLevel}
-                  </span>
-                </div>
+              <div className="text-sm text-muted-foreground">
+                {beltEmojis[user.currentBelt]} {user.currentBelt.charAt(0).toUpperCase() + user.currentBelt.slice(1)} Belt • JLPT {user.currentJLPTLevel}
               </div>
             </div>
-            <Link href="/study-mode">
-              <button className="zen-button px-6 py-2">
-                <Play className="mr-2 h-4 w-4" />
-                始める ({stats.reviewQueue})
-              </button>
-            </Link>
           </div>
         </div>
 
-        {/* Compact Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* XP with Progress Ring */}
-          <div className="zen-card p-3">
-            <div className="flex items-center gap-2">
-              <div className="relative w-10 h-10">
-                <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
+        {/* Priority Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link href="/study-mode">
+            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-primary/5 to-matcha/5 border-primary/20">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-gradient-to-br from-primary to-matcha text-white">
+                  <Play className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Start Review</h3>
+                  <p className="text-muted-foreground">{stats.reviewQueue} cards ready to review</p>
+                  <div className="text-sm text-primary font-medium mt-1">Continue your learning journey</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/study">
+            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-green-50 to-bamboo/10 border-green-200">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Learn New</h3>
+                  <p className="text-muted-foreground">Practice with new sentence cards</p>
+                  <div className="text-sm text-green-600 font-medium mt-1">Expand your knowledge</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* Analytics Overview */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* XP Progress */}
+          <div className="zen-card p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total XP</p>
+                <p className="text-2xl font-bold text-foreground">{user.totalXP.toLocaleString()}</p>
+                <p className="text-xs text-primary">Level {stats.currentLevel}</p>
+              </div>
+              <div className="relative w-12 h-12">
+                <svg className="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
                   <path
                     d="m18,2.0845 a 15.9155,15.9155 0 0,1 0,31.831 a 15.9155,15.9155 0 0,1 0,-31.831"
                     fill="none"
                     stroke="hsl(var(--muted))"
-                    strokeWidth="2"
+                    strokeWidth="3"
                   />
                   <path
                     d="m18,2.0845 a 15.9155,15.9155 0 0,1 0,31.831 a 15.9155,15.9155 0 0,1 0,-31.831"
                     fill="none"
                     stroke="hsl(var(--achievement))"
-                    strokeWidth="2"
+                    strokeWidth="3"
                     strokeDasharray={`${stats.levelProgress}, 100`}
+                    className="zen-pulse"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Star className="h-3 w-3 text-achievement" />
+                  <Star className="h-4 w-4 text-achievement" />
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Study Streak */}
+          <div className="zen-card p-4">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-primary japanese-text">総経験値</p>
-                <p className="text-lg font-bold">{user.totalXP.toLocaleString()}</p>
+                <p className="text-sm font-medium text-muted-foreground">Study Streak</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="text-2xl font-bold text-foreground">{user.currentStreak}</p>
+                  <p className="text-sm text-orange-600">days</p>
+                </div>
+                <p className="text-xs text-muted-foreground">Best: {user.bestStreak}</p>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <Zap className="h-6 w-6 text-orange-500" />
+                <div className="grid grid-cols-7 gap-0.5">
+                  {Array.from({ length: 7 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        i < user.currentStreak % 7 ? 'bg-orange-400' : 'bg-muted'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Streak with Calendar Dots */}
-          <div className="zen-card p-3">
-            <div>
-              <p className="text-xs text-orange-600 japanese-text">連続学習</p>
-              <div className="flex items-center gap-2">
-                <p className="text-lg font-bold">{user.currentStreak}</p>
-                <p className="text-xs text-orange-600">days</p>
-              </div>
-              <div className="grid grid-cols-7 gap-0.5 mt-1">
-                {Array.from({ length: 7 }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      i < user.currentStreak % 7 ? 'bg-orange-400' : 'bg-muted'
-                    }`}
+          {/* Accuracy Rate */}
+          <div className="zen-card p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Accuracy</p>
+                <p className="text-2xl font-bold text-foreground">{stats.accuracy}%</p>
+                <div className="zen-progress h-2 w-16 mt-1">
+                  <div 
+                    className="zen-progress-fill h-full"
+                    style={{ width: `${stats.accuracy}%` }}
                   />
-                ))}
+                </div>
+              </div>
+              <div className="relative">
+                <Target className="h-6 w-6 text-green-500" />
+                {stats.accuracy >= 90 && (
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
+                )}
               </div>
             </div>
           </div>
 
-          {/* Accuracy with Progress Bar */}
-          <div className="zen-card p-3">
-            <div>
-              <p className="text-xs text-green-600 japanese-text">正確性</p>
-              <p className="text-lg font-bold">{stats.accuracy}%</p>
-              <div className="zen-progress h-1 mt-1">
-                <div 
-                  className="zen-progress-fill h-full"
-                  style={{ width: `${stats.accuracy}%` }}
-                />
+          {/* Cards Mastered */}
+          <div className="zen-card p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Mastered</p>
+                <p className="text-2xl font-bold text-foreground">{stats.masteredCards}</p>
+                <p className="text-xs text-muted-foreground">of {stats.totalCards}</p>
               </div>
-            </div>
-          </div>
-
-          {/* Mastery with Mini Chart */}
-          <div className="zen-card p-3">
-            <div>
-              <p className="text-xs text-purple-600 japanese-text">習得済み</p>
-              <p className="text-lg font-bold">{stats.masteredCards}</p>
-              <div className="flex gap-0.5 h-2 mt-1">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 bg-gradient-to-t from-purple-200 to-purple-400 rounded-sm"
-                    style={{
-                      opacity: Math.min(1, (stats.masteredCards / stats.totalCards) + (i * 0.2))
-                    }}
-                  />
-                ))}
+              <div className="flex flex-col items-center gap-1">
+                <Trophy className="h-6 w-6 text-purple-500" />
+                <div className="flex gap-0.5 h-3">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`w-1 bg-purple-400 rounded-sm ${
+                        i < Math.floor((stats.masteredCards / stats.totalCards) * 5) ? 'opacity-100' : 'opacity-20'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Compact Tabs */}
-        <Tabs defaultValue="progress" className="space-y-3">
-          <div className="zen-card p-1">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent h-8">
-              <TabsTrigger value="progress" className="text-xs zen-nav-item h-6">進捗</TabsTrigger>
-              <TabsTrigger value="sessions" className="text-xs zen-nav-item h-6">学習</TabsTrigger>
-              <TabsTrigger value="achievements" className="text-xs zen-nav-item h-6">成果</TabsTrigger>
-              <TabsTrigger value="insights" className="text-xs zen-nav-item h-6">分析</TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="progress" className="space-y-3">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              {/* Belt Progress */}
-              <div className="zen-card p-4">
-                <h3 className="font-semibold japanese-heading text-sm mb-2">帯の進歩</h3>
-                <div className="flex gap-1 mb-2">
+        {/* Progress & Insights */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Belt & JLPT Progress */}
+          <div className="space-y-4">
+            {/* Belt Progress */}
+            <div className="zen-card p-4">
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <Award className="h-4 w-4 text-achievement" />
+                Belt Progression
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>{beltEmojis[user.currentBelt]} {user.currentBelt.charAt(0).toUpperCase() + user.currentBelt.slice(1)} Belt</span>
+                  {stats.nextBelt && <span className="text-muted-foreground">Next: {stats.nextBelt}</span>}
+                </div>
+                <div className="flex gap-1">
                   {beltOrder.map((belt, index) => (
                     <div
                       key={belt}
-                      className={`flex-1 h-4 rounded transition-all ${
+                      className={`flex-1 h-3 rounded transition-all ${
                         index <= beltIndex 
                           ? 'bg-gradient-to-t from-achievement to-achievement-gold' 
                           : 'bg-muted'
@@ -254,7 +297,7 @@ export default function Dashboard() {
                       title={`${belt} belt`}
                     >
                       <div className="flex items-center justify-center h-full">
-                        <span className="text-xs">{beltEmojis[belt]}</span>
+                        <span className="text-[10px]">{beltEmojis[belt]}</span>
                       </div>
                     </div>
                   ))}
@@ -266,42 +309,50 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
+            </div>
 
-              {/* JLPT Progress */}
-              <div className="zen-card p-4">
-                <h3 className="font-semibold japanese-heading text-sm mb-2">JLPT レベル</h3>
-                <div className="grid grid-cols-5 gap-1 mb-2">
-                  {['N5', 'N4', 'N3', 'N2', 'N1'].map((level, index) => (
-                    <div
-                      key={level}
-                      className={`text-center p-1 rounded text-xs ${
-                        level === user.currentJLPTLevel
-                          ? 'bg-gradient-to-t from-primary/20 to-matcha/20 border border-primary/30'
-                          : 'bg-muted/50'
-                      }`}
-                    >
-                      <div className="font-medium">{level}</div>
-                      <div className={`w-full h-0.5 rounded-full mt-0.5 ${
-                        index < ['N5', 'N4', 'N3', 'N2', 'N1'].indexOf(user.currentJLPTLevel) + 1
-                          ? 'bg-primary'
-                          : 'bg-muted'
-                      }`} />
-                    </div>
-                  ))}
-                </div>
+            {/* JLPT Progress */}
+            <div className="zen-card p-4">
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                JLPT Level Progress
+              </h3>
+              <div className="grid grid-cols-5 gap-1">
+                {['N5', 'N4', 'N3', 'N2', 'N1'].map((level, index) => (
+                  <div
+                    key={level}
+                    className={`text-center p-2 rounded text-xs transition-all ${
+                      level === user.currentJLPTLevel
+                        ? 'bg-gradient-to-t from-primary/20 to-matcha/20 border border-primary/30'
+                        : 'bg-muted/50'
+                    }`}
+                  >
+                    <div className="font-medium">{level}</div>
+                    <div className={`w-full h-1 rounded-full mt-1 ${
+                      index < ['N5', 'N4', 'N3', 'N2', 'N1'].indexOf(user.currentJLPTLevel) + 1
+                        ? 'bg-primary'
+                        : 'bg-muted'
+                    }`} />
+                  </div>
+                ))}
               </div>
             </div>
-          </TabsContent>
+          </div>
 
-          <TabsContent value="sessions" className="space-y-3">
+          {/* Recent Activity & Recommendations */}
+          <div className="space-y-4">
+            {/* Recent Sessions */}
             <div className="zen-card p-4">
-              <h3 className="font-semibold japanese-heading text-sm mb-2">最近の学習</h3>
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-primary" />
+                Recent Study Sessions
+              </h3>
               {recentSessions.length > 0 ? (
                 <div className="space-y-2">
-                  {recentSessions.slice(0, 3).map((session) => (
+                  {recentSessions.slice(0, 3).map((session: any) => (
                     <div key={session.id} className="flex items-center justify-between p-2 bg-muted/30 rounded">
                       <div className="flex items-center gap-3 text-sm">
-                        <span className="font-medium">{session.cardsReviewed}</span>
+                        <span className="font-medium">{session.cardsReviewed} cards</span>
                         <span className="text-muted-foreground">{Math.round((session.cardsCorrect / Math.max(session.cardsReviewed, 1)) * 100)}%</span>
                         <span className="text-muted-foreground">{session.timeSpentMinutes}min</span>
                       </div>
@@ -310,17 +361,20 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-center py-2 text-muted-foreground text-sm japanese-text">まだ学習セッションがありません</p>
+                <p className="text-center py-2 text-muted-foreground text-sm">No recent sessions</p>
               )}
             </div>
-          </TabsContent>
 
-          <TabsContent value="achievements" className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {/* Achievements Preview */}
+            <div className="zen-card p-4">
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-achievement" />
+                Recent Achievements
+              </h3>
               {achievements.length > 0 ? (
-                achievements.slice(0, 4).map((userAchievement) => (
-                  <div key={userAchievement.id} className="zen-card p-3 bg-gradient-to-r from-achievement/10 to-achievement-gold/10">
-                    <div className="flex items-center gap-2">
+                <div className="space-y-2">
+                  {achievements.slice(0, 2).map((userAchievement: any) => (
+                    <div key={userAchievement.id} className="flex items-center gap-3 p-2 bg-gradient-to-r from-achievement/10 to-achievement-gold/10 rounded">
                       <span className="text-lg">{userAchievement.achievement.icon}</span>
                       <div className="flex-1">
                         <h4 className="font-medium text-sm">{userAchievement.achievement.name}</h4>
@@ -328,47 +382,36 @@ export default function Dashboard() {
                       </div>
                       <span className="text-xs font-medium text-achievement">+{userAchievement.achievement.xpReward}</span>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               ) : (
-                <p className="col-span-full text-center py-2 text-muted-foreground text-sm japanese-text">成果はまだありません</p>
+                <p className="text-center py-2 text-muted-foreground text-sm">No achievements yet</p>
               )}
             </div>
-          </TabsContent>
+          </div>
+        </div>
 
-          <TabsContent value="insights" className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="zen-card p-3">
-                <h3 className="font-semibold japanese-heading text-sm mb-2">学習の推奨</h3>
-                <div className="space-y-2">
-                  <button className="zen-button w-full text-sm py-2">
-                    <BookOpen className="mr-2 h-3 w-3" />
-                    復習 {stats.reviewQueue} カード
-                  </button>
-                  {stats.nextBelt && (
-                    <div className="zen-card p-2 text-xs text-center">
-                      次の帯: {stats.nextBelt}
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <div className="zen-card p-3">
-                <h3 className="font-semibold japanese-heading text-sm mb-2">今週の統計</h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-center p-2 bg-muted/30 rounded">
-                    <div className="font-bold">{user.currentStreak}</div>
-                    <div className="text-xs text-muted-foreground">連続日数</div>
-                  </div>
-                  <div className="text-center p-2 bg-muted/30 rounded">
-                    <div className="font-bold">{stats.accuracy}%</div>
-                    <div className="text-xs text-muted-foreground">正確性</div>
-                  </div>
-                </div>
-              </div>
+        {/* Quick Insights */}
+        <div className="zen-card p-4">
+          <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+            <Brain className="h-4 w-4 text-primary" />
+            Study Insights
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-3 bg-muted/20 rounded">
+              <div className="text-lg font-bold text-foreground">{user.currentStreak}</div>
+              <div className="text-xs text-muted-foreground">Day Streak</div>
             </div>
-          </TabsContent>
-        </Tabs>
+            <div className="text-center p-3 bg-muted/20 rounded">
+              <div className="text-lg font-bold text-foreground">{stats.accuracy}%</div>
+              <div className="text-xs text-muted-foreground">Accuracy</div>
+            </div>
+            <div className="text-center p-3 bg-muted/20 rounded">
+              <div className="text-lg font-bold text-foreground">{Math.round((stats.masteredCards / stats.totalCards) * 100)}%</div>
+              <div className="text-xs text-muted-foreground">Mastery Rate</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
