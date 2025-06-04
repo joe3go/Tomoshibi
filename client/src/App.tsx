@@ -304,6 +304,7 @@ function App() {
             <AppHeader />
             <Toaster />
             <Router />
+            <InstallPrompt />
           </div>
         </TooltipProvider>
       </LanguageContext.Provider>
