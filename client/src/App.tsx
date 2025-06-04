@@ -61,6 +61,7 @@ function App() {
 
   // Save to localStorage when changed
   const handleLanguageChange = (mode: LanguageMode) => {
+    console.log('Language changing to:', mode);
     setLanguageMode(mode);
     localStorage.setItem('language-mode', mode);
   };
