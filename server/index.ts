@@ -2,6 +2,14 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Set Google OAuth environment variables
+if (!process.env.GOOGLE_CLIENT_ID) {
+  process.env.GOOGLE_CLIENT_ID = "987588088299-aoanoslrg37u75no0jqna9ivum5lb2t1.apps.googleusercontent.com";
+}
+if (!process.env.GOOGLE_CLIENT_SECRET) {
+  process.env.GOOGLE_CLIENT_SECRET = "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";
+}
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

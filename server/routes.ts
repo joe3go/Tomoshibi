@@ -19,6 +19,7 @@ import {
   getPasswordResetExpiry 
 } from "./auth";
 import { sendVerificationEmail, sendPasswordResetEmail } from "./emailService";
+import { setupGoogleAuth } from "./googleAuth";
 
 // WaniKani API client for kanji, radicals, and vocabulary tracking
 class WaniKaniClient {
@@ -184,6 +185,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (storage instanceof DatabaseStorage) {
     await storage.seedAchievements();
   }
+
+  // Set up Google OAuth authentication
+  setupGoogleAuth(app);
 
   // Simplified Email Registration Routes (for demo - email verification disabled)
   app.post('/api/auth/register', async (req, res) => {
