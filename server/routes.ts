@@ -177,26 +177,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get review queue
+  // Get study options for user
+  app.get("/api/study-options", async (req, res) => {
+    try {
+      const userId = 1; // Demo user ID
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Get review counts by content type
+      const allItems = await storage.getReviewQueue(userId, 1000);
+      const sentenceCards = await Promise.all(
+        allItems.map(item => storage.getSentenceCard(item.sentenceCardId))
+      );
+
+      const reviewCounts = {
+        kanji: sentenceCards.filter(card => card?.grammarPoints?.includes('kanji')).length,
+        grammar: sentenceCards.filter(card => card?.grammarPoints && card.grammarPoints.length > 0).length,
+        vocabulary: sentenceCards.filter(card => card?.vocabulary && card.vocabulary.length > 0).length,
+        total: allItems.length
+      };
+
+      // Calculate available new items based on JLPT level
+      const jlptLevels = ["N5", "N4", "N3", "N2", "N1"];
+      const currentLevelIndex = jlptLevels.indexOf(user.currentJLPTLevel);
+      
+      const newItemCounts = {
+        kanji: Math.max(0, 50 - (currentLevelIndex * 10)), // Simulate available items
+        grammar: Math.max(0, 30 - (currentLevelIndex * 5)),
+        vocabulary: Math.max(0, 100 - (currentLevelIndex * 15))
+      };
+
+      res.json({
+        reviews: reviewCounts,
+        newItems: newItemCounts,
+        currentLevel: user.currentJLPTLevel
+      });
+    } catch (error) {
+      console.error("Error fetching study options:", error);
+      res.status(500).json({ error: "Failed to fetch study options" });
+    }
+  });
+
+  // Get review queue with content type filtering
   app.get("/api/review-queue", async (req, res) => {
     try {
       const userId = 1; // Demo user
+      const mode = req.query.mode as string;
       const limit = parseInt(req.query.limit as string) || 20;
       
-      const reviewItems = await storage.getReviewQueue(userId, limit);
+      const items = await storage.getReviewQueue(userId, 1000); // Get more to filter
       
-      // Get sentence cards for each SRS item
-      const reviewCardsWithContent = await Promise.all(
-        reviewItems.map(async (item) => {
-          const sentenceCard = await storage.getSentenceCard(item.sentenceCardId);
-          return {
-            srsItem: item,
-            sentenceCard
-          };
-        })
-      );
-
-      res.json(reviewCardsWithContent);
+      let filteredItems = items;
+      
+      if (mode && mode !== 'all-reviews') {
+        const sentenceCards = await Promise.all(
+          items.map(item => storage.getSentenceCard(item.sentenceCardId))
+        );
+        
+        const filteredIndices: number[] = [];
+        
+        sentenceCards.forEach((card, index) => {
+          if (!card) return;
+          
+          switch (mode) {
+            case 'kanji-reviews':
+              if (card.grammarPoints?.includes('kanji') || card.japanese.match(/[\u4e00-\u9faf]/)) {
+                filteredIndices.push(index);
+              }
+              break;
+            case 'grammar-reviews':
+              if (card.grammarPoints && card.grammarPoints.length > 0) {
+                filteredIndices.push(index);
+              }
+              break;
+            case 'vocabulary-reviews':
+              if (card.vocabulary && card.vocabulary.length > 0) {
+                filteredIndices.push(index);
+              }
+              break;
+            case 'learn-kanji':
+            case 'learn-grammar':
+            case 'learn-vocabulary':
+              // For learning new content, return a subset for demonstration
+              if (index < 5) filteredIndices.push(index);
+              break;
+          }
+        });
+        
+        filteredItems = filteredIndices.map(i => items[i]).slice(0, limit);
+      } else {
+        filteredItems = items.slice(0, limit);
+      }
+      
+      const reviewCards = await Promise.all(filteredItems.map(async (srsItem) => {
+        const sentenceCard = await storage.getSentenceCard(srsItem.sentenceCardId);
+        return {
+          srsItem,
+          sentenceCard
+        };
+      }));
+      
+      res.json(reviewCards);
     } catch (error) {
       console.error("Error fetching review queue:", error);
       res.status(500).json({ error: "Failed to fetch review queue" });

@@ -77,9 +77,18 @@ export default function StudyPage() {
     }
   };
 
-  // Fetch review queue
+  // Get study mode from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const studyMode = urlParams.get('mode') || 'all-reviews';
+
+  // Fetch review queue with mode filtering
   const { data: reviewQueue, isLoading, error } = useQuery<ReviewCard[]>({
-    queryKey: ["/api/review-queue"],
+    queryKey: ["/api/review-queue", studyMode],
+    queryFn: async () => {
+      const response = await fetch(`/api/review-queue?mode=${studyMode}`);
+      if (!response.ok) throw new Error('Failed to fetch review queue');
+      return response.json();
+    },
     refetchOnWindowFocus: false
   });
 
