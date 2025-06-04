@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage, DatabaseStorage } from "./storage";
+import { db } from "./db";
 import { 
   apiKeySetupSchema, 
   insertStudySessionSchema,
@@ -9,6 +10,10 @@ import {
   verifyEmailSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  grammarPoints,
+  kanji,
+  vocabulary,
+  srsItems
 } from "@shared/schema";
 import { z } from "zod";
 import { 
@@ -964,7 +969,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SRS Learning System routes
   app.get('/api/grammar', async (req, res) => {
     try {
-      const result = await db.select().from(grammarPoints).orderBy(grammarPoints.difficulty, grammarPoints.id);
+      const result = await storage.getAllGrammarPoints();
       res.json(result);
     } catch (error) {
       console.error('Error fetching grammar points:', error);
@@ -974,7 +979,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/kanji', async (req, res) => {
     try {
-      const result = await db.select().from(kanji).orderBy(kanji.strokeCount);
+      const result = await storage.getAllKanji();
       res.json(result);
     } catch (error) {
       console.error('Error fetching kanji:', error);
@@ -984,7 +989,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/vocabulary', async (req, res) => {
     try {
-      const result = await db.select().from(vocabulary).orderBy(vocabulary.difficulty, vocabulary.id);
+      const result = await storage.getAllVocabulary();
       res.json(result);
     } catch (error) {
       console.error('Error fetching vocabulary:', error);
