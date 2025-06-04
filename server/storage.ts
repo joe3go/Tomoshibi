@@ -326,6 +326,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.username === username);
   }
 
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.googleId === googleId);
+  }
+
   async createUser(userData: InsertUser): Promise<User> {
     const user: User = {
       id: this.currentUserId++,

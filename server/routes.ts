@@ -148,7 +148,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get dashboard data
   app.get("/api/dashboard", async (req, res) => {
     try {
-      const userId = 1; // Demo user
+      // Get userId from authenticated user or default to demo user
+      const userId = req.isAuthenticated() ? (req.user as any)?.id : 1;
       const user = await storage.getUser(userId);
       const srsItems = await storage.getUserSrsItems(userId);
       const studySessions = await storage.getUserStudySessions(userId, 10);
