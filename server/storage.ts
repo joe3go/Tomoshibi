@@ -114,6 +114,12 @@ export class MemStorage implements IStorage {
   private currentUserAchievementId: number;
   private currentStudySessionId: number;
   private currentUserProgressId: number;
+  
+  // JLPT N5 Learning Content
+  private grammarPoints: any[];
+  private kanji: any[];
+  private vocabulary: any[];
+  private srsItems: any[];
 
   constructor() {
     this.users = new Map();
@@ -126,6 +132,41 @@ export class MemStorage implements IStorage {
     this.currentUserAchievementId = 1;
     this.currentStudySessionId = 1;
     this.currentUserProgressId = 1;
+    
+    // Initialize JLPT N5 learning content
+    this.grammarPoints = [
+      { id: 1, pattern: "は (wa)", meaning: "Topic marker", difficulty: "N5", example: "私は学生です。", translation: "I am a student." },
+      { id: 2, pattern: "が (ga)", meaning: "Subject marker", difficulty: "N5", example: "猫がいます。", translation: "There is a cat." },
+      { id: 3, pattern: "を (wo)", meaning: "Object marker", difficulty: "N5", example: "りんごを食べます。", translation: "I eat an apple." },
+      { id: 4, pattern: "に (ni)", meaning: "Direction/time marker", difficulty: "N5", example: "学校に行きます。", translation: "I go to school." },
+      { id: 5, pattern: "で (de)", meaning: "Location/method marker", difficulty: "N5", example: "電車で行きます。", translation: "I go by train." }
+    ];
+    
+    this.kanji = [
+      { id: 1, character: "人", readings: ["じん", "にん", "ひと"], meaning: "person", strokes: 2, frequency: 1 },
+      { id: 2, character: "日", readings: ["にち", "ひ"], meaning: "day, sun", strokes: 4, frequency: 2 },
+      { id: 3, character: "本", readings: ["ほん", "もと"], meaning: "book, origin", strokes: 5, frequency: 3 },
+      { id: 4, character: "学", readings: ["がく", "まな"], meaning: "study, learn", strokes: 8, frequency: 4 },
+      { id: 5, character: "校", readings: ["こう"], meaning: "school", strokes: 10, frequency: 5 },
+      { id: 6, character: "先", readings: ["せん", "さき"], meaning: "previous, ahead", strokes: 6, frequency: 6 },
+      { id: 7, character: "生", readings: ["せい", "い"], meaning: "life, birth", strokes: 5, frequency: 7 },
+      { id: 8, character: "年", readings: ["ねん", "とし"], meaning: "year", strokes: 6, frequency: 8 }
+    ];
+    
+    this.vocabulary = [
+      { id: 1, word: "こんにちは", reading: "konnichiwa", meaning: "hello", difficulty: "N5" },
+      { id: 2, word: "ありがとう", reading: "arigatou", meaning: "thank you", difficulty: "N5" },
+      { id: 3, word: "さようなら", reading: "sayounara", meaning: "goodbye", difficulty: "N5" },
+      { id: 4, word: "すみません", reading: "sumimasen", meaning: "excuse me", difficulty: "N5" },
+      { id: 5, word: "はじめまして", reading: "hajimemashite", meaning: "nice to meet you", difficulty: "N5" },
+      { id: 6, word: "学生", reading: "gakusei", meaning: "student", difficulty: "N5" },
+      { id: 7, word: "先生", reading: "sensei", meaning: "teacher", difficulty: "N5" },
+      { id: 8, word: "友達", reading: "tomodachi", meaning: "friend", difficulty: "N5" },
+      { id: 9, word: "家族", reading: "kazoku", meaning: "family", difficulty: "N5" },
+      { id: 10, word: "日本語", reading: "nihongo", meaning: "Japanese language", difficulty: "N5" }
+    ];
+    
+    this.srsItems = [];
     
     this.seedAchievements();
   }
@@ -593,39 +634,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   // SRS Learning System implementations
-  async getAllGrammarPoints(): Promise<GrammarPoint[]> {
-    const result = await db.select().from(grammarPoints).orderBy(grammarPoints.difficulty, grammarPoints.id);
-    return result;
+  async getAllGrammarPoints() {
+    return this.grammarPoints;
   }
 
-  async getGrammarPoint(id: number): Promise<GrammarPoint | undefined> {
-    const [result] = await db.select().from(grammarPoints).where(eq(grammarPoints.id, id));
-    return result;
+  async getGrammarPoint(id: number) {
+    return this.grammarPoints.find(gp => gp.id === id);
   }
 
-  async getAllKanji(): Promise<Kanji[]> {
-    const result = await db.select().from(kanji).orderBy(kanji.frequency, kanji.strokeCount);
-    return result;
+  async getAllKanji() {
+    return this.kanji;
   }
 
-  async getKanji(id: number): Promise<Kanji | undefined> {
-    const [result] = await db.select().from(kanji).where(eq(kanji.id, id));
-    return result;
+  async getKanji(id: number) {
+    return this.kanji.find(k => k.id === id);
   }
 
-  async getAllVocabulary(): Promise<Vocabulary[]> {
-    const result = await db.select().from(vocabulary).orderBy(vocabulary.difficulty, vocabulary.id);
-    return result;
+  async getAllVocabulary() {
+    return this.vocabulary;
   }
 
-  async getVocabulary(id: number): Promise<Vocabulary | undefined> {
-    const [result] = await db.select().from(vocabulary).where(eq(vocabulary.id, id));
-    return result;
+  async getVocabulary(id: number) {
+    return this.vocabulary.find(v => v.id === id);
   }
 
-  async getUserSrsItems(userId: number): Promise<SrsItem[]> {
-    const result = await db.select().from(srsItems).where(eq(srsItems.userId, userId));
-    return result;
+  async getUserSrsItems(userId: number) {
+    return this.srsItems.filter(item => item.userId === userId);
   }
 
   async getSrsItem(id: number): Promise<SrsItem | undefined> {
