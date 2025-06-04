@@ -3,548 +3,154 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base layer styles */
-
 :root {
   /* Light Theme - Japanese Traditional */
-  --background: 43 45% 93%; /* Warm washi paper beige */
-  --foreground: 30 20% 25%; /* Dark charcoal sumi ink */
-  --card: 45 50% 95%; /* Soft cream card */
+  --background: 43 45% 93%;
+  --foreground: 30 20% 25%;
+  --card: 45 50% 95%;
   --card-foreground: 30 20% 25%;
   --popover: 45 50% 95%;
   --popover-foreground: 30 20% 25%;
   
-  /* Primary colors - neon purple for contrast */
-  --primary: 280 100% 70%; /* Neon purple */
+  --primary: 280 100% 70%;
   --primary-foreground: 0 0% 100%;
   
-  /* Secondary colors - soft sakura */
-  --secondary: 350 25% 92%; /* Pale sakura pink */
+  --secondary: 350 25% 92%;
   --secondary-foreground: 30 20% 25%;
   
-  /* Muted tones */
-  --muted: 45 40% 94%; /* Light beige */
+  --muted: 45 40% 94%;
   --muted-foreground: 30 15% 50%;
   
-  /* Accent - warm bamboo */
-  --accent: 60 35% 88%; /* Warm bamboo beige */
+  --accent: 60 35% 88%;
   --accent-foreground: 30 20% 25%;
   
-  /* Utility colors */
-  --destructive: 0 65% 65%; /* Muted red */
+  --destructive: 0 65% 65%;
   --destructive-foreground: 45 60% 98%;
-  --border: 45 30% 88%; /* Soft border */
+  --border: 45 30% 88%;
   --input: 45 40% 94%;
   --ring: 280 100% 70%;
   
   --radius: 0.75rem;
-  
-  /* Japanese Traditional Colors */
-  --sakura: 350 40% 85%; /* Soft cherry blossom */
-  --matcha: 140 30% 45%; /* Earthy green tea */
-  --bamboo: 60 35% 70%; /* Natural bamboo */
-  --achievement: 45 70% 65%; /* Warm golden */
-  --achievement-gold: 45 80% 55%; /* Rich gold */
-  --neon-pink: 320 100% 75%; /* Hot pink neon */
-  --neon-cyan: 180 100% 75%; /* Cyan neon */
-  --neon-orange: 30 100% 65%; /* Orange neon */
 }
 
 .dark {
-  /* Dark Theme - Readable Shinjuku Bar */
-  --background: 220 20% 11%; /* Smoky Charcoal #1A1C1F */
-  --foreground: 45 25% 90%; /* Soft Beige / Bone White #EDEAE5 */
-  --card: 220 25% 14%; /* Deep Indigo-Navy #23262C */
-  --card-foreground: 45 25% 90%; /* Soft Beige text */
-  --popover: 220 25% 16%; /* Slightly elevated navy */
+  --background: 220 20% 11%;
+  --foreground: 45 25% 90%;
+  --card: 220 25% 14%;
+  --card-foreground: 45 25% 90%;
+  --popover: 220 25% 14%;
   --popover-foreground: 45 25% 90%;
   
-  /* Warm amber primary - whisky glow */
-  --primary: 38 75% 67%; /* Whisky Amber / Gold #F4B860 */
-  --primary-foreground: 220 20% 11%; /* Dark text on amber */
+  --primary: 38 75% 67%;
+  --primary-foreground: 220 20% 11%;
   
-  --secondary: 220 20% 18%; /* Elevated card surface */
-  --secondary-foreground: 45 20% 85%; /* Lighter beige */
+  --secondary: 220 15% 16%;
+  --secondary-foreground: 45 25% 90%;
   
-  --muted: 220 15% 16%; /* Muted card background */
-  --muted-foreground: 45 10% 62%; /* Stone Gray #A09E9B */
+  --muted: 220 15% 16%;
+  --muted-foreground: 45 10% 62%;
   
-  --accent: 220 25% 20%; /* Accent surfaces */
+  --accent: 220 15% 16%;
   --accent-foreground: 45 25% 90%;
   
-  --destructive: 0 50% 55%; /* Readable red for warnings */
-  --destructive-foreground: 45 25% 90%;
-  --border: 220 15% 22%; /* Subtle borders */
-  --input: 220 20% 16%; /* Input backgrounds */
-  --ring: 38 75% 67%; /* Amber focus ring */
-  
-  /* Atmospheric bar colors */
-  --bourbon-amber: 38 75% 67%; /* #F4B860 - Main warm lighting */
-  --neon-cherry: 348 70% 60%; /* #EF5DA8 - Muted Sakura Pink */
-  --smoky-teal: 180 30% 50%; /* Muted teal accents */
-  --sakura: 348 70% 60%; /* Muted sakura pink */
-  --achievement: 38 75% 67%; /* Whisky amber */
-  --achievement-gold: 45 75% 65%; /* Warm gold */
-  --neon-pink: 348 70% 60%; /* Muted cherry blossom */
-  --neon-cyan: 180 30% 50%; /* Smoky teal */
-  --neon-orange: 38 75% 67%; /* Bourbon amber */
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 85% 97%;
+  --border: 220 15% 22%;
+  --input: 220 15% 16%;
+  --ring: 38 75% 67%;
 }
-
-/* Remove duplicate dark theme - only use :root */
 
 @layer base {
   * {
     @apply border-border;
   }
-
-  html, body {
-    @apply antialiased;
+  
+  html {
     font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
   }
 }
 
-/* Japanese typography styles */
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .mobile-nav {
+    @apply bg-background border-border;
+  }
+  
+  .zen-card {
+    @apply bg-card text-card-foreground border-border;
+  }
+}
+
+/* Component styles */
+.zen-card {
+  @apply bg-card text-card-foreground rounded-lg border border-border p-4;
+}
+
+.app-header {
+  @apply bg-background/90 backdrop-blur-lg border-border;
+}
+
+/* Japanese typography */
 .japanese-text {
   font-family: 'Noto Sans JP', sans-serif;
   font-weight: 400;
-  letter-spacing: 0.05em;
-  line-height: 1.7;
+  letter-spacing: 0.02em;
 }
 
-.japanese-heading {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+.furigana {
+  font-size: 0.6em;
+  line-height: 1;
+  color: hsl(var(--muted-foreground));
 }
 
-.japanese-welcome {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 600;
-  font-size: 1.5rem;
-  background: linear-gradient(135deg, hsl(140, 30%, 45%), hsl(350, 40%, 70%));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.1em;
+/* Progress bars */
+.progress-bar {
+  @apply bg-muted rounded-full overflow-hidden;
 }
 
-/* Traditional color utilities */
-.bg-sakura { background-color: hsl(var(--sakura)); }
-.bg-matcha { background-color: hsl(var(--matcha)); }
-.bg-bamboo { background-color: hsl(var(--bamboo)); }
-.bg-washi { background-color: hsl(var(--washi)); }
-.bg-sumi { background-color: hsl(var(--sumi)); }
-.bg-ume { background-color: hsl(var(--ume)); }
-
-.text-sakura { color: hsl(var(--sakura)); }
-.text-matcha { color: hsl(var(--matcha)); }
-.text-bamboo { color: hsl(var(--bamboo)); }
-.text-sumi { color: hsl(var(--sumi)); }
-.text-ume { color: hsl(var(--ume)); }
-
-/* JLPT Level Colors */
-.bg-jlpt-n5 { background-color: hsl(var(--jlpt-n5)); }
-.bg-jlpt-n4 { background-color: hsl(var(--jlpt-n4)); }
-.bg-jlpt-n3 { background-color: hsl(var(--jlpt-n3)); }
-.bg-jlpt-n2 { background-color: hsl(var(--jlpt-n2)); }
-.bg-jlpt-n1 { background-color: hsl(var(--jlpt-n1)); }
-
-.text-jlpt-n5 { color: hsl(var(--jlpt-n5)); }
-.text-jlpt-n4 { color: hsl(var(--jlpt-n4)); }
-.text-jlpt-n3 { color: hsl(var(--jlpt-n3)); }
-.text-jlpt-n2 { color: hsl(var(--jlpt-n2)); }
-.text-jlpt-n1 { color: hsl(var(--jlpt-n1)); }
-
-.border-jlpt-n5 { border-color: hsl(var(--jlpt-n5)); }
-.border-jlpt-n4 { border-color: hsl(var(--jlpt-n4)); }
-.border-jlpt-n3 { border-color: hsl(var(--jlpt-n3)); }
-.border-jlpt-n2 { border-color: hsl(var(--jlpt-n2)); }
-.border-jlpt-n1 { border-color: hsl(var(--jlpt-n1)); }
-
-/* Achievement colors */
-.bg-achievement { background-color: hsl(var(--achievement)); }
-.bg-achievement-gold { background-color: hsl(var(--achievement-gold)); }
-.text-achievement { color: hsl(var(--achievement)); }
-.text-achievement-gold { color: hsl(var(--achievement-gold)); }
-.border-achievement { border-color: hsl(var(--achievement)); }
-
-/* Washi paper texture effect */
-.washi-texture {
-  background: linear-gradient(135deg, 
-    hsl(43, 45%, 93%) 0%, 
-    hsl(45, 40%, 91%) 25%, 
-    hsl(44, 43%, 92%) 50%, 
-    hsl(43, 47%, 90%) 100%);
-  position: relative;
+.progress-fill {
+  @apply bg-primary h-full transition-all duration-300 ease-out;
 }
 
-.washi-texture::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    radial-gradient(circle at 25% 25%, hsl(45, 35%, 89%) 0%, transparent 2%),
-    radial-gradient(circle at 75% 75%, hsl(43, 30%, 87%) 0%, transparent 1.5%),
-    radial-gradient(circle at 50% 100%, hsl(44, 33%, 88%) 0%, transparent 1%);
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* Sakura blossom gradient */
-.sakura-gradient {
-  background: linear-gradient(135deg,
-    hsl(350, 40%, 90%) 0%,
-    hsl(350, 35%, 85%) 100%);
-}
-
-/* Matcha gradient */
-.matcha-gradient {
-  background: linear-gradient(135deg,
-    hsl(140, 35%, 50%) 0%,
-    hsl(140, 30%, 45%) 100%);
-}
-
-/* Shoji screen pattern effect */
-.shoji-pattern {
-  background-image: 
-    linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px),
-    linear-gradient(hsl(var(--border)) 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.2;
-}
-
-/* Gentle animations inspired by Japanese aesthetics */
-@keyframes gentle-float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-3px) rotate(0.5deg); }
-}
-
-@keyframes sakura-fall {
-  0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(10px) rotate(5deg); opacity: 0; }
-}
-
-@keyframes zen-pulse {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.02); }
-}
-
-@keyframes celebrate-achievement {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.05) rotate(1deg); }
-  75% { transform: scale(1.05) rotate(-1deg); }
-}
-
-.gentle-float {
-  animation: gentle-float 4s ease-in-out infinite;
-}
-
-.sakura-fall {
-  animation: sakura-fall 6s ease-in-out infinite;
-}
-
-.zen-pulse {
-  animation: zen-pulse 3s ease-in-out infinite;
-}
-
-.celebrate-achievement {
-  animation: celebrate-achievement 0.8s ease-in-out;
-}
-
-/* Card styling with Japanese aesthetics */
-.japanese-card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-  box-shadow: 
-    0 2px 8px hsl(var(--foreground) / 0.04),
-    0 1px 3px hsl(var(--foreground) / 0.06);
-  transition: all 0.3s ease;
-}
-
-.japanese-card:hover {
-  box-shadow: 
-    0 4px 16px hsl(var(--foreground) / 0.08),
-    0 2px 6px hsl(var(--foreground) / 0.1);
-  transform: translateY(-1px);
-}
-
-/* Custom scrollbar with Japanese aesthetics */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary));
-  border-radius: 4px;
-  border: 1px solid hsl(var(--background));
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.8);
-}
-
-/* Focus states with Japanese aesthetics */
-.focus-japanese:focus {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
-}
-
-/* Responsive text scaling for mobile */
-@media (max-width: 640px) {
-  .japanese-welcome {
-    font-size: 1.25rem;
-  }
-  
-  .japanese-heading {
-    font-size: 1.1rem;
-  }
-}
-
-/* Peaceful loading state */
-.peaceful-loading {
-  background: linear-gradient(90deg, 
-    hsl(var(--muted)) 25%, 
-    hsl(var(--accent)) 50%, 
-    hsl(var(--muted)) 75%);
-  background-size: 200% 100%;
-  animation: peaceful-shimmer 2s ease-in-out infinite;
-}
-
-@keyframes peaceful-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Shinjuku Bar Atmosphere UI Components */
-.zen-card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.75rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(8px);
-}
-
-.zen-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    linear-gradient(135deg, 
-      hsl(var(--bourbon-amber) / 0.02) 0%, 
-      transparent 30%,
-      hsl(var(--neon-cherry) / 0.01) 70%,
-      transparent 100%);
-  pointer-events: none;
-}
-
-.zen-card:hover {
-  transform: translateY(-1px);
-  border-color: hsl(var(--bourbon-amber) / 0.2);
-  box-shadow: 
-    0 4px 20px hsl(var(--ink-black) / 0.3),
-    0 0 40px hsl(var(--bourbon-amber) / 0.05);
-}
-
-/* Floating sakura petals */
-.sakura-float {
-  position: fixed;
-  pointer-events: none;
-  z-index: 1;
-  animation: sakuraFloat 12s infinite linear;
-  opacity: 0.4;
-}
-
-@keyframes sakuraFloat {
-  0% { 
-    transform: translateY(100vh) translateX(-10px) rotate(0deg); 
-    opacity: 0; 
-  }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { 
-    transform: translateY(-10vh) translateX(100px) rotate(360deg); 
-    opacity: 0; 
-  }
-}
-
-/* Study session card styling */
-.study-card {
-  @apply zen-card;
-  background: linear-gradient(135deg,
-    hsl(var(--card)) 0%,
-    hsl(var(--washi)) 50%,
-    hsl(var(--card)) 100%);
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-/* Progress indicators with zen styling */
-.zen-progress {
-  background: hsl(var(--muted));
-  border-radius: 1rem;
-  overflow: hidden;
-  position: relative;
-}
-
-.zen-progress-fill {
-  background: linear-gradient(90deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--matcha)) 100%);
-  height: 100%;
-  border-radius: 1rem;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.zen-progress-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    hsl(var(--primary-foreground) / 0.2) 50%,
-    transparent 100%);
-  animation: progress-shimmer 2s ease-in-out infinite;
-}
-
-@keyframes progress-shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* Japanese-inspired buttons */
-.zen-button {
-  @apply px-6 py-3 rounded-xl font-medium transition-all duration-300;
-  background: linear-gradient(135deg, 
-    hsl(var(--primary)) 0%, 
-    hsl(var(--matcha)) 100%);
-  color: hsl(var(--primary-foreground));
-  border: 1px solid hsl(var(--primary) / 0.3);
-  box-shadow: 
-    0 2px 8px hsl(var(--primary) / 0.1),
-    inset 0 1px 0 hsl(var(--primary-foreground) / 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.zen-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    hsl(var(--primary-foreground) / 0.1), 
-    transparent);
-  transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.zen-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 
-    0 4px 16px hsl(var(--primary) / 0.15),
-    inset 0 1px 0 hsl(var(--primary-foreground) / 0.2);
-}
-
-.zen-button:hover::before {
-  left: 100%;
-}
-
-.zen-button:active {
-  transform: translateY(0);
-  box-shadow: 
-    0 1px 4px hsl(var(--primary) / 0.2),
-    inset 0 1px 0 hsl(var(--primary-foreground) / 0.1);
-}
-
-/* Achievement celebration */
+/* Achievement styles */
 .achievement-glow {
-  animation: achievementGlow 2s ease-in-out;
-  box-shadow: 
-    0 0 20px hsl(var(--achievement) / 0.4),
-    0 0 40px hsl(var(--achievement) / 0.2),
-    0 0 60px hsl(var(--achievement) / 0.1);
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
 }
 
-@keyframes achievementGlow {
-  0%, 100% { 
-    box-shadow: 
-      0 0 20px hsl(var(--achievement) / 0.4),
-      0 0 40px hsl(var(--achievement) / 0.2);
+/* Neon accents for achievements */
+.neon-pink {
+  color: hsl(320, 100%, 75%);
+  text-shadow: 0 0 10px hsl(320, 100%, 75% / 0.5);
+}
+
+.neon-cyan {
+  color: hsl(180, 100%, 75%);
+  text-shadow: 0 0 10px hsl(180, 100%, 75% / 0.5);
+}
+
+.neon-orange {
+  color: hsl(30, 100%, 65%);
+  text-shadow: 0 0 10px hsl(30, 100%, 65% / 0.5);
+}
+
+/* Mobile PWA styles */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
-  50% { 
-    box-shadow: 
-      0 0 30px hsl(var(--achievement) / 0.6),
-      0 0 60px hsl(var(--achievement) / 0.4),
-      0 0 90px hsl(var(--achievement) / 0.2);
+}
+
+/* Force theme application on mobile */
+@media (max-width: 1024px) {
+  html, body, #root {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
   }
-}
-
-/* Navigation with zen styling */
-.zen-nav-item {
-  @apply rounded-xl transition-all duration-300;
-  background: linear-gradient(135deg,
-    hsl(var(--card)) 0%,
-    hsl(var(--muted)) 100%);
-  border: 1px solid hsl(var(--border));
-  position: relative;
-  overflow: hidden;
-}
-
-.zen-nav-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg,
-    hsl(var(--primary) / 0.05) 0%,
-    transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.zen-nav-item:hover::before {
-  opacity: 1;
-}
-
-.zen-nav-item.active {
-  background: linear-gradient(135deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--matcha)) 100%);
-  color: hsl(var(--primary-foreground));
-  border-color: hsl(var(--primary));
-  box-shadow: 
-    0 4px 12px hsl(var(--primary) / 0.2),
-    inset 0 1px 0 hsl(var(--primary-foreground) / 0.1);
 }

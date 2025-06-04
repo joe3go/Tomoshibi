@@ -20,43 +20,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const body = document.body;
     
-    // Remove existing theme classes
+    // Clear all existing theme classes
     root.classList.remove('light', 'dark');
     body.classList.remove('light', 'dark');
     
-    // Add current theme class to both html and body
+    // Add current theme class
     root.classList.add(theme);
     body.classList.add(theme);
     
-    // Force apply theme colors with highest priority
-    if (theme === 'dark') {
-      root.style.setProperty('--background', '220 20% 11%', 'important');
-      root.style.setProperty('--foreground', '45 25% 90%', 'important');
-      root.style.setProperty('--card', '220 25% 14%', 'important');
-      root.style.setProperty('--card-foreground', '45 25% 90%', 'important');
-      root.style.setProperty('--muted', '220 15% 16%', 'important');
-      root.style.setProperty('--muted-foreground', '45 10% 62%', 'important');
-      root.style.setProperty('--border', '220 15% 22%', 'important');
-      root.style.setProperty('--primary', '38 75% 67%', 'important');
-      
-      root.style.backgroundColor = 'hsl(220, 20%, 11%)';
-      root.style.color = 'hsl(45, 25%, 90%)';
-      body.style.backgroundColor = 'hsl(220, 20%, 11%)';
-      body.style.color = 'hsl(45, 25%, 90%)';
-    } else {
-      root.style.setProperty('--background', '43 45% 93%', 'important');
-      root.style.setProperty('--foreground', '30 20% 25%', 'important');
-      root.style.setProperty('--card', '45 50% 95%', 'important');
-      root.style.setProperty('--card-foreground', '30 20% 25%', 'important');
-      root.style.setProperty('--muted', '45 40% 94%', 'important');
-      root.style.setProperty('--muted-foreground', '30 15% 50%', 'important');
-      root.style.setProperty('--border', '45 30% 88%', 'important');
-      root.style.setProperty('--primary', '280 100% 70%', 'important');
-      
-      root.style.backgroundColor = 'hsl(43, 45%, 93%)';
-      root.style.color = 'hsl(30, 20%, 25%)';
-      body.style.backgroundColor = 'hsl(43, 45%, 93%)';
-      body.style.color = 'hsl(30, 20%, 25%)';
+    // Force immediate style application on mobile
+    const forceStyleUpdate = () => {
+      // Get all elements and force style recalculation
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.display = 'none';
+          el.offsetHeight; // Trigger reflow
+          el.style.display = '';
+        }
+      });
+    };
+    
+    // Apply mobile-specific fixes
+    if (window.innerWidth <= 768) {
+      setTimeout(forceStyleUpdate, 50);
     }
     
     // Save to localStorage
