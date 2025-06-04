@@ -9,6 +9,7 @@ import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth";
+import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
 
 // Language types and context
@@ -54,16 +55,18 @@ function Router() {
     );
   }
 
-  if (!user) {
-    return <AuthPage />;
-  }
-
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/social" component={Social} />
-      <Route path="/achievements" component={Achievements} />
-      <Route path="/settings" component={Settings} />
+      {user ? (
+        <>
+          <Route path="/" component={Dashboard} />
+          <Route path="/social" component={Social} />
+          <Route path="/achievements" component={Achievements} />
+          <Route path="/settings" component={Settings} />
+        </>
+      ) : (
+        <Route path="/" component={Landing} />
+      )}
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
