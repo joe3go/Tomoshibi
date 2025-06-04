@@ -29,9 +29,9 @@ export default function Sidebar({ user }: SidebarProps) {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-3 left-3 z-[60] w-10 h-10 bg-gradient-to-br from-momiji to-ume rounded-lg shadow-lg flex items-center justify-center"
+        className="lg:hidden fixed top-2 left-2 z-[60] w-8 h-8 bg-gradient-to-br from-momiji to-ume rounded-lg shadow-lg flex items-center justify-center"
       >
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isMobileMenuOpen ? (
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           ) : (
