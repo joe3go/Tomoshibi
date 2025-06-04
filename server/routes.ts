@@ -9,6 +9,7 @@ import {
   insertStudySessionSchema, 
   insertUserAchievementSchema 
 } from "@shared/schema";
+import { comparePasswords } from "./auth";
 
 // SRS Algorithm Implementation
 class SRSAlgorithm {
@@ -125,19 +126,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Google OAuth
   setupGoogleAuth(app);
 
+  // Login route
+  app.post("/api/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+
+      const user = await storage.getUserByUsername(username);
+      if (!user || !user.password) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      const isValidPassword = await comparePasswords(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Set user in session
+      req.session.userId = user.id;
+      
+      // Return user without password
+      const { password: _, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Logout route
+  app.post("/api/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
   // Get current user (with authentication support)
   app.get("/api/user", async (req, res) => {
     try {
-      if (req.isAuthenticated()) {
-        // Return authenticated user
+      if (req.session.userId) {
+        const user = await storage.getUser(req.session.userId);
+        if (!user) {
+          return res.status(401).json({ error: "User not found" });
+        }
+        // Return user without password
+        const { password: _, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
+      } else if (req.isAuthenticated()) {
+        // Return authenticated user from passport
         res.json(req.user);
       } else {
-        // Return demo user for development
-        const user = await storage.getUser(1);
-        if (!user) {
-          return res.status(404).json({ error: "User not found" });
-        }
-        res.json(user);
+        res.status(401).json({ error: "Not authenticated" });
       }
     } catch (error) {
       console.error("Error fetching user:", error);

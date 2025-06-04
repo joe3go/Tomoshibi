@@ -39,30 +39,21 @@ function Router() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError
+  } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false
+  });
+
   useEffect(() => {
-    // Auto-login with demo user for testing authentic JLPT N5 content
-    const demoUser = {
-      id: 1,
-      username: "demo_user",
-      email: "demo@japsense.com",
-      displayName: "Akira Tanaka",
-      totalXP: 1250,
-      currentStreak: 7,
-      bestStreak: 12,
-      currentBelt: "yellow",
-      currentJLPTLevel: "N5",
-      studyGoal: "Understand anime without subtitles",
-      dailyGoalMinutes: 30,
-      dailyGoalKanji: 5,
-      dailyGoalGrammar: 3,
-      dailyGoalVocabulary: 10,
-      preferredStudyTime: "evening",
-      lastStudyDate: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
-    setUser(demoUser);
-    setIsLoading(false);
-  }, []);
+    if (!isUserLoading) {
+      setUser(userData || null);
+      setIsLoading(false);
+    }
+  }, [userData, isUserLoading]);
 
   if (isLoading) {
     return (

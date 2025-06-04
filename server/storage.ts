@@ -146,6 +146,33 @@ export class MemStorage implements IStorage {
     };
     this.users.set(1, demoUser);
 
+    // Create test user for latibulize
+    const testUser: User = {
+      id: 2,
+      username: "latibulize",
+      email: "latibulize@japsense.com",
+      password: "acba280f3695c23ca7eb736838b91cefabb25186d1214a71e336d6cd474d54a9fda1dff64f2e961d6de22728f57cf1ff62688f14a5f47f820632837d575d92bf.1a9cb67274cd3bd0a0fb2bbfd9d26310", // hashed "123"
+      displayName: "Latibulize",
+      profileImageUrl: null,
+      googleId: null,
+      currentBelt: "white",
+      currentJLPTLevel: "N5",
+      totalXP: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      lastStudyDate: null,
+      studyGoal: "Master JLPT N5",
+      dailyGoalMinutes: 20,
+      dailyGoalKanji: 5,
+      dailyGoalGrammar: 3,
+      dailyGoalVocabulary: 10,
+      preferredStudyTime: "morning",
+      enableReminders: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(2, testUser);
+
     // Generate authentic JLPT N5 sentence cards from vocabulary data
     n5Vocabulary.slice(0, 20).forEach((vocab, index) => {
       const card: SentenceCard = {
