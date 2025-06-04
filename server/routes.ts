@@ -539,6 +539,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User settings routes
+  app.get("/api/user/settings", async (req, res) => {
+    try {
+      const userId = 1; // Demo user
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        currentBelt: user.currentBelt,
+        currentJLPTLevel: user.currentJLPTLevel,
+        studyGoal: user.studyGoal,
+        dailyGoalMinutes: user.dailyGoalMinutes,
+        dailyGoalKanji: user.dailyGoalKanji || 5,
+        dailyGoalGrammar: user.dailyGoalGrammar || 3,
+        dailyGoalVocabulary: user.dailyGoalVocabulary || 10,
+        enableReminders: user.enableReminders,
+        preferredStudyTime: user.preferredStudyTime,
+        currentStreak: user.currentStreak
+      });
+    } catch (error) {
+      console.error("Error fetching user settings:", error);
+      res.status(500).json({ error: "Failed to fetch settings" });
+    }
+  });
+
+  app.put("/api/user/settings", async (req, res) => {
+    try {
+      const userId = 1; // Demo user
+      const updates = req.body;
+
+      const updatedUser = await storage.updateUser(userId, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        id: updatedUser.id,
+        displayName: updatedUser.displayName,
+        email: updatedUser.email,
+        currentBelt: updatedUser.currentBelt,
+        currentJLPTLevel: updatedUser.currentJLPTLevel,
+        studyGoal: updatedUser.studyGoal,
+        dailyGoalMinutes: updatedUser.dailyGoalMinutes,
+        dailyGoalKanji: updatedUser.dailyGoalKanji || 5,
+        dailyGoalGrammar: updatedUser.dailyGoalGrammar || 3,
+        dailyGoalVocabulary: updatedUser.dailyGoalVocabulary || 10,
+        enableReminders: updatedUser.enableReminders,
+        preferredStudyTime: updatedUser.preferredStudyTime,
+        currentStreak: updatedUser.currentStreak
+      });
+    } catch (error) {
+      console.error("Error updating user settings:", error);
+      res.status(500).json({ error: "Failed to update settings" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

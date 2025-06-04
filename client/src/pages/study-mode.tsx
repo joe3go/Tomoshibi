@@ -20,6 +20,16 @@ interface StudyOptions {
     vocabulary: number;
   };
   currentLevel: string;
+  todayProgress: {
+    kanjiLearned: number;
+    grammarLearned: number;
+    vocabularyLearned: number;
+    goals: {
+      kanji: number;
+      grammar: number;
+      vocabulary: number;
+    };
+  };
 }
 
 export default function StudyModePage() {
@@ -202,6 +212,141 @@ export default function StudyModePage() {
                 Expand your knowledge with {studyOptions.currentLevel} level content
               </p>
             </div>
+
+            {/* Daily Goals Progress */}
+            <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+              <CardHeader>
+                <CardTitle className="text-center">Today's Learning Goals</CardTitle>
+                <CardDescription className="text-center">
+                  Track your daily progress in each category
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Kanji Progress */}
+                  <div className="text-center">
+                    <div className="relative w-20 h-20 mx-auto mb-2">
+                      <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          className="text-gray-200"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                          className="text-purple-600"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          strokeDasharray={`${(studyOptions.todayProgress.kanjiLearned / studyOptions.todayProgress.goals.kanji) * 100}, 100`}
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-lg font-bold text-purple-600">
+                          {studyOptions.todayProgress.kanjiLearned}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="font-semibold text-gray-900">Kanji</div>
+                    <div className="text-sm text-gray-600">
+                      {studyOptions.todayProgress.kanjiLearned} of {studyOptions.todayProgress.goals.kanji}
+                    </div>
+                    <Badge 
+                      variant={studyOptions.todayProgress.kanjiLearned >= studyOptions.todayProgress.goals.kanji ? "default" : "secondary"}
+                      className="mt-1"
+                    >
+                      {studyOptions.todayProgress.kanjiLearned >= studyOptions.todayProgress.goals.kanji ? "Complete!" : "In Progress"}
+                    </Badge>
+                  </div>
+
+                  {/* Grammar Progress */}
+                  <div className="text-center">
+                    <div className="relative w-20 h-20 mx-auto mb-2">
+                      <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          className="text-gray-200"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                          className="text-green-600"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          strokeDasharray={`${(studyOptions.todayProgress.grammarLearned / studyOptions.todayProgress.goals.grammar) * 100}, 100`}
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-lg font-bold text-green-600">
+                          {studyOptions.todayProgress.grammarLearned}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="font-semibold text-gray-900">Grammar</div>
+                    <div className="text-sm text-gray-600">
+                      {studyOptions.todayProgress.grammarLearned} of {studyOptions.todayProgress.goals.grammar}
+                    </div>
+                    <Badge 
+                      variant={studyOptions.todayProgress.grammarLearned >= studyOptions.todayProgress.goals.grammar ? "default" : "secondary"}
+                      className="mt-1"
+                    >
+                      {studyOptions.todayProgress.grammarLearned >= studyOptions.todayProgress.goals.grammar ? "Complete!" : "In Progress"}
+                    </Badge>
+                  </div>
+
+                  {/* Vocabulary Progress */}
+                  <div className="text-center">
+                    <div className="relative w-20 h-20 mx-auto mb-2">
+                      <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          className="text-gray-200"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                          className="text-orange-600"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          strokeDasharray={`${(studyOptions.todayProgress.vocabularyLearned / studyOptions.todayProgress.goals.vocabulary) * 100}, 100`}
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-lg font-bold text-orange-600">
+                          {studyOptions.todayProgress.vocabularyLearned}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="font-semibold text-gray-900">Vocabulary</div>
+                    <div className="text-sm text-gray-600">
+                      {studyOptions.todayProgress.vocabularyLearned} of {studyOptions.todayProgress.goals.vocabulary}
+                    </div>
+                    <Badge 
+                      variant={studyOptions.todayProgress.vocabularyLearned >= studyOptions.todayProgress.goals.vocabulary ? "default" : "secondary"}
+                      className="mt-1"
+                    >
+                      {studyOptions.todayProgress.vocabularyLearned >= studyOptions.todayProgress.goals.vocabulary ? "Complete!" : "In Progress"}
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="text-center mt-4">
+                  <Link href="/settings">
+                    <Button variant="outline" size="sm">
+                      Adjust Goals
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Learn Kanji */}
