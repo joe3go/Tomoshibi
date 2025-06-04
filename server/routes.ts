@@ -89,9 +89,9 @@ class BunproClient {
       throw new Error('Bunpro API key is required');
     }
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const url = `${this.baseUrl}${endpoint}?api_key=${this.apiKey}`;
+    const response = await fetch(url, {
       headers: {
-        'Authorization': `Token ${this.apiKey}`,
         'Content-Type': 'application/json'
       }
     });
