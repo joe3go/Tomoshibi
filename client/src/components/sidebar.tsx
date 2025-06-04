@@ -51,7 +51,7 @@ export default function Sidebar({ user }: SidebarProps) {
       {/* Sidebar */}
       <div className={`
         fixed lg:relative inset-y-0 left-0 z-40 w-64 lg:w-64 
-        bg-gradient-to-b from-washi to-white shadow-lg border-r border-gray-200 
+        bg-white/95 backdrop-blur-sm shadow-xl border-r border-gray-300 
         flex flex-col transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
@@ -70,8 +70,8 @@ export default function Sidebar({ user }: SidebarProps) {
               <span className="text-white text-xl font-bold">日</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-sumi">Nihongo Journey</h1>
-              <p className="text-sm text-momiji font-medium">日本語の旅路</p>
+              <h1 className="text-lg lg:text-xl font-bold text-gray-900">Nihongo Journey</h1>
+              <p className="text-xs lg:text-sm text-gray-700 font-medium">日本語の旅路</p>
             </div>
           </div>
           
@@ -84,7 +84,7 @@ export default function Sidebar({ user }: SidebarProps) {
                   className={`flex items-center gap-4 px-4 py-4 lg:py-3 rounded-xl font-medium transition-all duration-200 text-base lg:text-sm ${
                     location === item.path
                       ? "text-white bg-gradient-to-r from-momiji to-ume shadow-lg"
-                      : "text-sumi hover:text-momiji hover:bg-sakura/20"
+                      : "text-gray-900 hover:text-momiji hover:bg-gray-100"
                   }`}
                 >
                   <i className={`${item.icon} w-5 text-lg lg:text-base`}></i>
