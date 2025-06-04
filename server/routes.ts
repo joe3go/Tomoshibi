@@ -1,6 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupGoogleAuth } from "./googleAuth";
+import session from "express-session";
+import passport from "passport";
 import { 
   insertSrsItemSchema, 
   insertStudySessionSchema, 
@@ -107,14 +110,35 @@ async function checkAchievements(userId: number) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get current user (demo mode)
+  // Setup session middleware for authentication
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'dev-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+  }));
+
+  // Setup passport middleware
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Setup Google OAuth
+  setupGoogleAuth(app);
+
+  // Get current user (with authentication support)
   app.get("/api/user", async (req, res) => {
     try {
-      const user = await storage.getUser(1); // Demo user
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
+      if (req.isAuthenticated()) {
+        // Return authenticated user
+        res.json(req.user);
+      } else {
+        // Return demo user for development
+        const user = await storage.getUser(1);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        res.json(user);
       }
-      res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ error: "Failed to fetch user" });
