@@ -3,176 +3,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mobile responsive fixes */
+/* Force dark theme globally */
+* {
+  background-color: hsl(220, 20%, 11%) !important;
+  color: hsl(45, 25%, 90%) !important;
+}
+
+/* Override specific elements */
+div, main, section, article, aside, header, footer, nav {
+  background-color: hsl(220, 20%, 11%) !important;
+  color: hsl(45, 25%, 90%) !important;
+}
+
+/* Mobile responsive fixes - dark theme only */
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
-  }
-  
-  /* Fix z-index layering for mobile */
-  .mobile-menu-toggle {
-    z-index: 60 !important;
-  }
-  
-  .mobile-sidebar {
-    z-index: 50 !important;
-  }
-  
-  .mobile-overlay {
-    z-index: 40 !important;
-  }
-  
-  .app-header {
-    z-index: 30 !important;
-  }
-  
-  .container {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    max-width: 100% !important;
-  }
-  
-  * {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    line-height: 1.2;
-    word-break: break-word;
-    font-size: 85% !important;
-  }
-  
-  .grid {
-    grid-template-columns: 1fr !important;
-    gap: 0.75rem !important;
-  }
-  
-  .space-y-6 > * + * {
-    margin-top: 1rem !important;
-  }
-  
-  .space-y-4 > * + * {
-    margin-top: 0.75rem !important;
-  }
-  
-  /* Fix main content positioning */
-  .flex-1 {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-  
-  /* Ensure main content is not hidden behind sidebar */
-  main {
-    padding-top: 3rem !important;
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
-  
-  .dashboard-header {
-    padding-top: 3rem !important;
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
-  
-  /* Mobile header optimizations */
-  .app-header {
-    height: 3rem !important;
-  }
-  
-  .app-header .container {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
-  
-  .truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  /* Card spacing fixes */
-  .japanese-card {
-    padding: 0.75rem !important;
-    margin: 0.5rem 0 !important;
-  }
-  
-  /* Button sizing */
-  button {
-    padding: 0.5rem 0.75rem !important;
-    font-size: 0.875rem !important;
-  }
-  
-  /* Progress circle sizing */
-  .progress-circle {
-    width: 80px !important;
-    height: 80px !important;
-  }
-  
-  /* Sidebar mobile improvements */
-  .sidebar-mobile {
-    background: rgba(255, 255, 255, 0.98) !important;
-    backdrop-filter: blur(10px) !important;
-  }
-  
-  /* Text contrast improvements for mobile */
-  .sidebar-text {
-    color: #1f2937 !important;
-    font-weight: 500 !important;
-  }
-  
-  .sidebar-subtitle {
-    color: #374151 !important;
-    font-weight: 400 !important;
-  }
-  
-  /* Global text contrast fixes */
-  .text-white {
-    color: #1f2937 !important;
-  }
-  
-  .text-muted-foreground {
-    color: #374151 !important;
-  }
-  
-  .japanese-welcome {
-    color: #1f2937 !important;
-    font-weight: 600 !important;
-  }
-  
-  .japanese-text {
-    color: #374151 !important;
-  }
-  
-  /* Card text improvements */
-  .card {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid #e5e7eb !important;
-  }
-  
-  .card h3, .card h4, .card h5 {
-    color: #1f2937 !important;
-  }
-  
-  .card p {
-    color: #374151 !important;
-  }
-  
-  /* Navigation improvements */
-  .nav-item {
-    background: rgba(243, 244, 246, 0.8) !important;
-    border: 1px solid #e5e7eb !important;
-  }
-  
-  .nav-item:hover {
-    background: rgba(229, 231, 235, 1) !important;
-  }
-  
-  .nav-item.active {
-    background: linear-gradient(to right, #dc2626, #7c2d12) !important;
-    color: white !important;
-    border: 1px solid #dc2626 !important;
+    background-color: hsl(220, 20%, 11%) !important;
+    color: hsl(45, 25%, 90%) !important;
   }
 }
 

@@ -236,22 +236,22 @@ function SimpleLanguageToggle() {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100">
+    <header style={{ backgroundColor: 'hsl(220, 20%, 11%)', borderBottom: '1px solid hsl(220, 15%, 22%)' }} className="sticky top-0 z-30 w-full backdrop-blur-lg">
       <div className="flex h-12 items-center justify-between px-3 lg:px-4 lg:ml-64">
         <div className="flex items-center gap-2 ml-12 lg:ml-0">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
             <span className="text-white text-xs font-bold">日</span>
           </div>
-          <h1 className="hidden sm:block text-base font-semibold text-gray-900">
+          <h1 className="hidden sm:block text-base font-semibold" style={{ color: 'hsl(45, 25%, 90%)' }}>
             Journey
           </h1>
         </div>
         
         <div className="flex items-center gap-2">
           <SimpleLanguageToggle />
-          <div className="hidden md:flex items-center gap-1 px-2 py-0.5 bg-emerald-50 rounded-full">
-            <div className="w-1 h-1 bg-emerald-500 rounded-full"></div>
-            <span className="text-xs font-medium text-emerald-700">Live</span>
+          <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(38, 75%, 67%, 0.2)' }}>
+            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: 'hsl(38, 75%, 67%)' }}></div>
+            <span className="text-xs font-medium" style={{ color: 'hsl(38, 75%, 67%)' }}>Live</span>
           </div>
         </div>
       </div>
@@ -264,6 +264,15 @@ function App() {
     const saved = localStorage.getItem('language-mode');
     return (saved as LanguageMode) || "en";
   });
+
+  // Force dark theme on HTML element
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.backgroundColor = 'hsl(220, 20%, 11%)';
+    document.documentElement.style.color = 'hsl(45, 25%, 90%)';
+    document.body.style.backgroundColor = 'hsl(220, 20%, 11%)';
+    document.body.style.color = 'hsl(45, 25%, 90%)';
+  }, []);
 
   const setLanguageMode = (mode: LanguageMode) => {
     setLanguageModeState(mode);
@@ -279,7 +288,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageContext.Provider value={contextValue}>
         <TooltipProvider>
-          <div className="min-h-screen bg-background">
+          <div className="min-h-screen" style={{ backgroundColor: 'hsl(220, 20%, 11%)', color: 'hsl(45, 25%, 90%)' }}>
             <AppHeader />
             <Toaster />
             <Router />
