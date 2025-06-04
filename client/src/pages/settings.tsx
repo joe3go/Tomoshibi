@@ -21,20 +21,41 @@ export default function Settings() {
   });
 
   const setupMutation = useMutation({
-    mutationFn: setupApiKeys,
+    mutationFn: async (data: { wanikaniApiKey?: string; bunproApiKey?: string }) => {
+      const user = localStorage.getItem("user");
+      if (!user) throw new Error("Not authenticated");
+      
+      const userData = JSON.parse(user);
+      const response = await fetch("/api/user/api-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userData.id,
+          wanikaniApiKey: data.wanikaniApiKey,
+          bunproApiKey: data.bunproApiKey,
+        }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update API keys");
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "API keys updated",
-        description: "Your API keys have been saved successfully",
+        description: "Your WaniKani and Bunpro API keys have been securely saved",
       });
       setWanikaniKey("");
       setBunproKey("");
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Failed to update API keys",
+        description: error.message || "Failed to update API keys",
         variant: "destructive",
       });
     },

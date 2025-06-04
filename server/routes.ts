@@ -185,41 +185,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await storage.seedAchievements();
   }
 
-  // Manual Email Registration Routes
+  // Simplified Email Registration Routes (for demo - email verification disabled)
   app.post('/api/auth/register', async (req, res) => {
     try {
       const { email, password, displayName, username } = registerSchema.parse(req.body);
       
       // Check if user already exists
-      const existingUser = await storage.getUserByEmail?.(email) || await storage.getUserByUsername(username);
+      const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
-        return res.status(400).json({ message: "User already exists with this email or username" });
+        return res.status(400).json({ message: "Username already exists" });
       }
       
-      // Hash password and generate verification token
+      // Hash password
       const hashedPassword = await hashPassword(password);
-      const verificationToken = generateVerificationToken();
       
-      // Create user with unverified email
+      // Create user (simplified without email verification for demo)
       const newUser = await storage.createUser({
         username,
         displayName,
-        email,
         password: hashedPassword,
-        emailVerified: false,
-        emailVerificationToken: verificationToken,
-        totalXP: 0,
-        currentStreak: 0,
-        bestStreak: 0,
-        currentJLPTLevel: "N5",
       });
       
-      // Send verification email
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      await sendVerificationEmail(email, verificationToken, baseUrl);
+      console.log(`New user registered: ${username} (${email})`);
       
       res.status(201).json({ 
-        message: "Registration successful! Please check your email to verify your account.",
+        message: "Registration successful! You can now log in.",
         userId: newUser.id 
       });
     } catch (error) {
@@ -235,25 +225,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = loginSchema.parse(req.body);
       
-      const user = await storage.getUserByEmail?.(email);
+      // Find user by username (treating email field as username for simplicity)
+      const user = await storage.getUserByUsername(email);
       if (!user || !user.password) {
-        return res.status(401).json({ message: "Invalid email or password" });
+        return res.status(401).json({ message: "Invalid username or password" });
       }
       
       const isValidPassword = await comparePasswords(password, user.password);
       if (!isValidPassword) {
-        return res.status(401).json({ message: "Invalid email or password" });
+        return res.status(401).json({ message: "Invalid username or password" });
       }
       
-      if (!user.emailVerified) {
-        return res.status(401).json({ message: "Please verify your email before logging in" });
-      }
-      
-      // Set user session (simplified - in production use proper session management)
-      req.session = req.session || {};
-      (req.session as any).userId = user.id;
-      
-      const { password: _, emailVerificationToken, passwordResetToken, ...safeUser } = user;
+      const { password: _, ...safeUser } = user;
       res.json({ user: safeUser });
     } catch (error) {
       console.error("Login error:", error);
@@ -337,40 +320,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/auth/logout', (req, res) => {
-    req.session = null;
-    res.json({ message: "Logged out successfully" });
-  });
-
-  app.get('/api/auth/user', async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-      
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-      
-      const { password, emailVerificationToken, passwordResetToken, ...safeUser } = user;
-      res.json(safeUser);
-    } catch (error) {
-      console.error("Get user error:", error);
-      res.status(500).json({ message: "Failed to get user" });
-    }
-  });
-
-  // API Key Management Routes
+  // API Key Management Routes (simplified for demo)
   app.post('/api/user/api-keys', async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
+      const { userId, wanikaniApiKey, bunproApiKey } = req.body;
       
-      const { wanikaniApiKey, bunproApiKey } = apiKeySetupSchema.parse(req.body);
+      if (!userId) {
+        return res.status(400).json({ message: "User ID required" });
+      }
       
       await storage.updateUser(userId, {
         wanikaniApiKey,
