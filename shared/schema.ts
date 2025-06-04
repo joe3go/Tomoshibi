@@ -510,30 +510,94 @@ export type InsertLearningPath = typeof learningPaths.$inferInsert;
 export type UserLearningProgress = typeof userLearningProgress.$inferSelect;
 export type InsertUserLearningProgress = typeof userLearningProgress.$inferInsert;
 
-// SRS Algorithm Constants
-export const SRS_INTERVALS = [
-  4 * 60 * 60 * 1000,      // 4 hours (apprentice 1)
-  8 * 60 * 60 * 1000,      // 8 hours (apprentice 2)
-  24 * 60 * 60 * 1000,     // 1 day (apprentice 3)
-  3 * 24 * 60 * 60 * 1000, // 3 days (apprentice 4)
-  7 * 24 * 60 * 60 * 1000, // 1 week (guru 1)
-  14 * 24 * 60 * 60 * 1000, // 2 weeks (guru 2)
-  30 * 24 * 60 * 60 * 1000, // 1 month (master)
-  120 * 24 * 60 * 60 * 1000, // 4 months (enlightened)
-]; // burned items don't come back for review
-
-export const SRS_LEVEL_NAMES = [
-  'lesson',
-  'apprentice_1',
-  'apprentice_2', 
-  'apprentice_3',
-  'apprentice_4',
-  'guru_1',
-  'guru_2',
-  'master',
-  'enlightened',
-  'burned'
+// Traditional Japanese Dojo SRS Progression System (10 Levels)
+export const SRS_LEVELS = [
+  {
+    "level": 1,
+    "englishTitle": "Initiate",
+    "japaneseTitle": "入門者",
+    "description": "Just beginning your training journey. First exposure to new material.",
+    "icon": "🚪",
+    "interval": 4 * 60 * 60 * 1000 // 4 hours
+  },
+  {
+    "level": 2,
+    "englishTitle": "Student",
+    "japaneseTitle": "学習者",
+    "description": "Starting to grasp the basics. Building initial understanding.",
+    "icon": "📝",
+    "interval": 8 * 60 * 60 * 1000 // 8 hours
+  },
+  {
+    "level": 3,
+    "englishTitle": "Apprentice",
+    "japaneseTitle": "弟子",
+    "description": "Under guidance, developing fundamental skills and knowledge.",
+    "icon": "👥",
+    "interval": 24 * 60 * 60 * 1000 // 1 day
+  },
+  {
+    "level": 4,
+    "englishTitle": "Practitioner",
+    "japaneseTitle": "修行者",
+    "description": "Actively practicing and refining your understanding through repetition.",
+    "icon": "🥋",
+    "interval": 3 * 24 * 60 * 60 * 1000 // 3 days
+  },
+  {
+    "level": 5,
+    "englishTitle": "Disciple",
+    "japaneseTitle": "門下生",
+    "description": "Committed to the path, showing consistent progress and dedication.",
+    "icon": "🏯",
+    "interval": 7 * 24 * 60 * 60 * 1000 // 1 week
+  },
+  {
+    "level": 6,
+    "englishTitle": "Warrior",
+    "japaneseTitle": "武士",
+    "description": "Demonstrating strength and competence in your studies.",
+    "icon": "⚔️",
+    "interval": 14 * 24 * 60 * 60 * 1000 // 2 weeks
+  },
+  {
+    "level": 7,
+    "englishTitle": "Master",
+    "japaneseTitle": "師匠",
+    "description": "Achieved mastery of the material. Knowledge is now well-established.",
+    "icon": "🎌",
+    "interval": 30 * 24 * 60 * 60 * 1000 // 1 month
+  },
+  {
+    "level": 8,
+    "englishTitle": "Sage",
+    "japaneseTitle": "賢者",
+    "description": "Wisdom and deep understanding guide your knowledge.",
+    "icon": "🧘",
+    "interval": 60 * 24 * 60 * 60 * 1000 // 2 months
+  },
+  {
+    "level": 9,
+    "englishTitle": "Enlightened",
+    "japaneseTitle": "悟り",
+    "description": "Reached enlightenment. Knowledge flows naturally and effortlessly.",
+    "icon": "✨",
+    "interval": 120 * 24 * 60 * 60 * 1000 // 4 months
+  },
+  {
+    "level": 10,
+    "englishTitle": "Immortal",
+    "japaneseTitle": "不滅",
+    "description": "Permanent mastery achieved. This knowledge is burned into memory forever.",
+    "icon": "🌸",
+    "interval": null // Never comes back for review
+  }
 ];
+
+// SRS Algorithm Constants
+export const SRS_INTERVALS = SRS_LEVELS.map(level => level.interval);
+
+export const SRS_LEVEL_NAMES = SRS_LEVELS.map(level => level.englishTitle.toLowerCase());
 
 // Validation schemas for SRS operations
 export const submitReviewSchema = z.object({
