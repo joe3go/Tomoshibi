@@ -177,76 +177,7 @@
 }
 
 :root {
-  /* Shinjuku Nightlife Theme - Light mode (for contrast) */
-  --background: 43 45% 93%; /* Warm washi paper beige */
-  --foreground: 30 20% 25%; /* Dark charcoal sumi ink */
-  --card: 45 50% 95%; /* Soft cream card */
-  --card-foreground: 30 20% 25%;
-  --popover: 45 50% 95%;
-  --popover-foreground: 30 20% 25%;
-  
-  /* Primary colors - neon purple for contrast */
-  --primary: 280 100% 70%; /* Neon purple */
-  --primary-foreground: 0 0% 100%;
-  
-  /* Secondary colors - soft sakura */
-  --secondary: 350 25% 92%; /* Pale sakura pink */
-  --secondary-foreground: 30 20% 25%;
-  
-  /* Muted tones */
-  --muted: 45 40% 94%; /* Light beige */
-  --muted-foreground: 30 15% 50%;
-  
-  /* Accent - warm bamboo */
-  --accent: 60 35% 88%; /* Warm bamboo beige */
-  --accent-foreground: 30 20% 25%;
-  
-  /* Utility colors */
-  --destructive: 0 65% 65%; /* Muted red */
-  --destructive-foreground: 45 60% 98%;
-  --border: 45 30% 88%; /* Soft border */
-  --input: 45 40% 94%;
-  --ring: 280 100% 70%;
-  
-  /* Chart colors - Japanese inspired */
-  --chart-1: 140 40% 55%; /* Matcha */
-  --chart-2: 350 40% 70%; /* Sakura */
-  --chart-3: 25 45% 65%; /* Autumn maple */
-  --chart-4: 60 40% 70%; /* Bamboo */
-  --chart-5: 220 30% 65%; /* Evening sky */
-  
-  --radius: 0.75rem;
-  
-  /* Japanese Traditional Colors */
-  --sakura: 350 40% 85%; /* Soft cherry blossom */
-  --matcha: 140 30% 45%; /* Earthy green tea */
-  --bamboo: 60 35% 70%; /* Natural bamboo */
-  --washi: 43 50% 96%; /* Paper texture */
-  --sumi: 30 20% 25%; /* Ink calligraphy */
-  --ume: 340 35% 80%; /* Plum blossom */
-  --take-green: 140 25% 35%; /* Deep bamboo */
-  
-  /* JLPT Level Colors - Harmonious Japanese palette */
-  --jlpt-n5: 140 40% 55%; /* Gentle matcha green */
-  --jlpt-n4: 210 45% 60%; /* Serene sky blue */
-  --jlpt-n3: 35 50% 60%; /* Warm autumn orange */
-  --jlpt-n2: 25 55% 55%; /* Deep persimmon */
-  --jlpt-n1: 270 40% 50%; /* Noble purple */
-  
-  /* Achievement Colors */
-  --achievement: 45 70% 65%; /* Warm golden */
-  --achievement-gold: 45 80% 55%; /* Rich gold */
-  
-  /* Nightlife neon colors */
-  --neon-pink: 320 100% 75%; /* Hot pink neon */
-  --neon-cyan: 180 100% 75%; /* Cyan neon */
-  --neon-orange: 30 100% 65%; /* Orange neon */
-  --tokyo-night: 240 15% 8%; /* Deep night blue */
-  --street-glow: 270 60% 25%; /* Purple street glow */
-}
-
-.dark {
-  /* Readable Shinjuku Bar Theme - Warm & Cozy */
+  /* Only Dark Theme - Readable Shinjuku Bar */
   --background: 220 20% 11%; /* Smoky Charcoal #1A1C1F */
   --foreground: 45 25% 90%; /* Soft Beige / Bone White #EDEAE5 */
   --card: 220 25% 14%; /* Deep Indigo-Navy #23262C */
@@ -273,6 +204,8 @@
   --input: 220 20% 16%; /* Input backgrounds */
   --ring: 38 75% 67%; /* Amber focus ring */
   
+  --radius: 0.75rem;
+  
   /* Atmospheric bar colors */
   --bourbon-amber: 38 75% 67%; /* #F4B860 - Main warm lighting */
   --neon-cherry: 348 70% 60%; /* #EF5DA8 - Muted Sakura Pink */
@@ -283,28 +216,7 @@
   --soft-beige: 45 25% 90%; /* Primary text color */
   --stone-gray: 45 10% 62%; /* Secondary text color */
   
-  /* Traditional Japanese accents */
-  --washi-paper: 45 30% 92%; /* Light paper texture */
-  --frosted-glass: 220 15% 28%; /* Glass surfaces */
-  --lantern-glow: 38 80% 70%; /* Paper lantern warmth */
-  
-  /* Atmospheric lighting effects */
-  --warm-glow: 38 75% 67%; /* Main ambient light */
-  --cool-reflection: 180 30% 50%; /* Glass/water reflections */
-  --neon-accent: 348 70% 60%; /* Bright neon highlights */
-  
-  /* Material elevation with proper contrast */
-  --surface-1dp: 220 22% 16%; /* Cards - subtle elevation */
-  --surface-2dp: 220 20% 18%; /* Elevated cards */
-  --surface-3dp: 220 18% 20%; /* Higher elevation */
-  --surface-4dp: 220 16% 22%; /* Prominent surfaces */
-  --surface-6dp: 220 14% 24%; /* Modal backgrounds */
-  --surface-8dp: 220 12% 26%; /* App bars */
-  --surface-12dp: 220 10% 28%; /* Navigation */
-  --surface-16dp: 220 8% 30%; /* Highest elements */
-  --surface-24dp: 220 6% 32%; /* Top-most surfaces */
-  
-  /* Legacy color mappings for compatibility */
+  /* Legacy color mappings */
   --matcha: 140 30% 50%; /* Readable green */
   --bamboo: 60 25% 70%; /* Natural bamboo */
   --sakura: 348 70% 60%; /* Muted sakura pink */
@@ -316,6 +228,8 @@
   --tokyo-night: 220 20% 11%; /* Smoky charcoal */
   --street-glow: 38 50% 40%; /* Dim amber glow */
 }
+
+/* Remove duplicate dark theme - only use :root */
 
 @layer base {
   * {
