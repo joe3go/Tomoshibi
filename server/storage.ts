@@ -1,263 +1,317 @@
 import { 
-  users, 
-  achievements, 
-  userAchievements, 
-  studySessions, 
-  userProgress,
-  type User, 
-  type InsertUser, 
-  type Achievement, 
-  type InsertAchievement,
-  type UserAchievement,
-  type InsertUserAchievement,
-  type StudySession,
-  type InsertStudySession,
-  type UserProgress,
-  type InsertUserProgress
+  User, InsertUser, 
+  SentenceCard, InsertSentenceCard,
+  SrsItem, InsertSrsItem,
+  StudySession, InsertStudySession,
+  Achievement, InsertAchievement,
+  UserAchievement, InsertUserAchievement,
+  LearningPath, UserPathProgress
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  getUserByGoogleId(googleId: string): Promise<User | undefined>;
-  getUserByVerificationToken(token: string): Promise<User | undefined>;
-  getUserByPasswordResetToken(token: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
 
-  // Achievement operations
-  getAllAchievements(): Promise<Achievement[]>;
-  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
-  
-  // User achievement operations
-  getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]>;
-  unlockAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement>;
-  hasUserAchievement(userId: number, achievementId: number): Promise<boolean>;
+  // Sentence card operations
+  getSentenceCards(filters?: {
+    jlptLevel?: string;
+    register?: string;
+    theme?: string;
+    difficulty?: number;
+  }): Promise<SentenceCard[]>;
+  getSentenceCard(id: number): Promise<SentenceCard | undefined>;
+  createSentenceCard(card: InsertSentenceCard): Promise<SentenceCard>;
 
-  // Study session operations
-  createStudySession(session: InsertStudySession): Promise<StudySession>;
-  getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]>;
-
-  // User progress operations
-  getUserProgress(userId: number): Promise<UserProgress | undefined>;
-  updateUserProgress(userId: number, progress: InsertUserProgress): Promise<UserProgress>;
-
-  // Social features operations
-  // Study Groups
-  getAllStudyGroups(): Promise<StudyGroup[]>;
-  getStudyGroup(id: number): Promise<StudyGroup | undefined>;
-  createStudyGroup(group: InsertStudyGroup): Promise<StudyGroup>;
-  joinStudyGroup(groupId: number, userId: number): Promise<GroupMember>;
-  getGroupMembers(groupId: number): Promise<GroupMember[]>;
-  getUserGroups(userId: number): Promise<StudyGroup[]>;
-
-  // Challenges
-  getAllChallenges(): Promise<Challenge[]>;
-  getActiveUserChallenges(userId: number): Promise<UserChallenge[]>;
-  joinChallenge(userId: number, challengeId: number): Promise<UserChallenge>;
-  updateChallengeProgress(userId: number, challengeId: number, progress: number): Promise<UserChallenge>;
-
-  // Leaderboards
-  getLeaderboard(period: string, metric: string): Promise<Leaderboard[]>;
-  updateUserLeaderboard(userId: number, period: string, metric: string, value: number): Promise<void>;
-
-  // Study Buddies
-  getStudyBuddies(userId: number): Promise<StudyBuddyPair[]>;
-  getBuddyRequests(userId: number): Promise<StudyBuddyRequest[]>;
-  sendBuddyRequest(request: InsertStudyBuddyRequest): Promise<StudyBuddyRequest>;
-  acceptBuddyRequest(requestId: number): Promise<StudyBuddyPair>;
-
-  // Forums
-  getForumCategories(): Promise<ForumCategory[]>;
-  getForumTopics(categoryId: number): Promise<ForumTopic[]>;
-  getForumPosts(topicId: number): Promise<ForumPost[]>;
-  createForumTopic(topic: InsertForumTopic): Promise<ForumTopic>;
-  createForumPost(post: InsertForumPost): Promise<ForumPost>;
-
-  // SRS Learning System
-  // Grammar operations
-  getAllGrammarPoints(): Promise<GrammarPoint[]>;
-  getGrammarPoint(id: number): Promise<GrammarPoint | undefined>;
-  
-  // Kanji operations
-  getAllKanji(): Promise<Kanji[]>;
-  getKanji(id: number): Promise<Kanji | undefined>;
-  
-  // Vocabulary operations
-  getAllVocabulary(): Promise<Vocabulary[]>;
-  getVocabulary(id: number): Promise<Vocabulary | undefined>;
-  
   // SRS operations
   getUserSrsItems(userId: number): Promise<SrsItem[]>;
   getSrsItem(id: number): Promise<SrsItem | undefined>;
   createSrsItem(item: InsertSrsItem): Promise<SrsItem>;
   updateSrsItem(id: number, updates: Partial<SrsItem>): Promise<SrsItem | undefined>;
-  getReviewQueue(userId: number): Promise<SrsItem[]>;
+  getReviewQueue(userId: number, limit?: number): Promise<SrsItem[]>;
   
-  // Review operations
-  createReviewSession(session: InsertReviewSession): Promise<ReviewSession>;
-  getUserReviewSessions(userId: number, limit?: number): Promise<ReviewSession[]>;
+  // Study session operations
+  createStudySession(session: InsertStudySession): Promise<StudySession>;
+  getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]>;
+  updateStudySession(id: number, updates: Partial<StudySession>): Promise<StudySession | undefined>;
+
+  // Achievement operations
+  getAllAchievements(): Promise<Achievement[]>;
+  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]>;
+  unlockAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement>;
+  hasUserAchievement(userId: number, achievementId: number): Promise<boolean>;
+
+  // Learning path operations
+  getAllLearningPaths(): Promise<LearningPath[]>;
+  getUserPathProgress(userId: number): Promise<UserPathProgress[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
+  private sentenceCards: Map<number, SentenceCard>;
+  private srsItems: Map<number, SrsItem>;
+  private studySessions: Map<number, StudySession>;
   private achievements: Map<number, Achievement>;
   private userAchievements: Map<number, UserAchievement>;
-  private studySessions: Map<number, StudySession>;
-  private userProgress: Map<number, UserProgress>;
+  private learningPaths: Map<number, LearningPath>;
+  private userPathProgress: Map<number, UserPathProgress>;
+  
   private currentUserId: number;
+  private currentCardId: number;
+  private currentSrsItemId: number;
+  private currentSessionId: number;
   private currentAchievementId: number;
   private currentUserAchievementId: number;
-  private currentStudySessionId: number;
-  private currentUserProgressId: number;
-  
-  // JLPT N5 Learning Content
-  private grammarPoints: any[];
-  private kanji: any[];
-  private vocabulary: any[];
-  private srsItems: any[];
 
   constructor() {
     this.users = new Map();
+    this.sentenceCards = new Map();
+    this.srsItems = new Map();
+    this.studySessions = new Map();
     this.achievements = new Map();
     this.userAchievements = new Map();
-    this.studySessions = new Map();
-    this.userProgress = new Map();
+    this.learningPaths = new Map();
+    this.userPathProgress = new Map();
+    
     this.currentUserId = 1;
+    this.currentCardId = 1;
+    this.currentSrsItemId = 1;
+    this.currentSessionId = 1;
     this.currentAchievementId = 1;
     this.currentUserAchievementId = 1;
-    this.currentStudySessionId = 1;
-    this.currentUserProgressId = 1;
     
-    // Initialize JLPT N5 learning content
-    this.grammarPoints = [
-      { id: 1, pattern: "は (wa)", meaning: "Topic marker", difficulty: "N5", example: "私は学生です。", translation: "I am a student." },
-      { id: 2, pattern: "が (ga)", meaning: "Subject marker", difficulty: "N5", example: "猫がいます。", translation: "There is a cat." },
-      { id: 3, pattern: "を (wo)", meaning: "Object marker", difficulty: "N5", example: "りんごを食べます。", translation: "I eat an apple." },
-      { id: 4, pattern: "に (ni)", meaning: "Direction/time marker", difficulty: "N5", example: "学校に行きます。", translation: "I go to school." },
-      { id: 5, pattern: "で (de)", meaning: "Location/method marker", difficulty: "N5", example: "電車で行きます。", translation: "I go by train." }
-    ];
-    
-    this.kanji = [
-      { id: 1, character: "人", readings: ["じん", "にん", "ひと"], meaning: "person", strokes: 2, frequency: 1 },
-      { id: 2, character: "日", readings: ["にち", "ひ"], meaning: "day, sun", strokes: 4, frequency: 2 },
-      { id: 3, character: "本", readings: ["ほん", "もと"], meaning: "book, origin", strokes: 5, frequency: 3 },
-      { id: 4, character: "学", readings: ["がく", "まな"], meaning: "study, learn", strokes: 8, frequency: 4 },
-      { id: 5, character: "校", readings: ["こう"], meaning: "school", strokes: 10, frequency: 5 },
-      { id: 6, character: "先", readings: ["せん", "さき"], meaning: "previous, ahead", strokes: 6, frequency: 6 },
-      { id: 7, character: "生", readings: ["せい", "い"], meaning: "life, birth", strokes: 5, frequency: 7 },
-      { id: 8, character: "年", readings: ["ねん", "とし"], meaning: "year", strokes: 6, frequency: 8 }
-    ];
-    
-    this.vocabulary = [
-      { id: 1, word: "こんにちは", reading: "konnichiwa", meaning: "hello", difficulty: "N5" },
-      { id: 2, word: "ありがとう", reading: "arigatou", meaning: "thank you", difficulty: "N5" },
-      { id: 3, word: "さようなら", reading: "sayounara", meaning: "goodbye", difficulty: "N5" },
-      { id: 4, word: "すみません", reading: "sumimasen", meaning: "excuse me", difficulty: "N5" },
-      { id: 5, word: "はじめまして", reading: "hajimemashite", meaning: "nice to meet you", difficulty: "N5" },
-      { id: 6, word: "学生", reading: "gakusei", meaning: "student", difficulty: "N5" },
-      { id: 7, word: "先生", reading: "sensei", meaning: "teacher", difficulty: "N5" },
-      { id: 8, word: "友達", reading: "tomodachi", meaning: "friend", difficulty: "N5" },
-      { id: 9, word: "家族", reading: "kazoku", meaning: "family", difficulty: "N5" },
-      { id: 10, word: "日本語", reading: "nihongo", meaning: "Japanese language", difficulty: "N5" }
-    ];
-    
-    this.srsItems = [];
-    
-    this.seedAchievements();
+    this.seedData();
   }
 
-  private seedAchievements() {
-    const defaultAchievements: InsertAchievement[] = [
+  private seedData() {
+    // Create demo user
+    const demoUser: User = {
+      id: 1,
+      username: "demo_user",
+      email: "demo@example.com",
+      password: null,
+      displayName: "Akira Tanaka",
+      profileImageUrl: null,
+      currentBelt: "yellow",
+      currentJLPTLevel: "N5",
+      totalXP: 1250,
+      currentStreak: 7,
+      bestStreak: 12,
+      lastStudyDate: new Date(),
+      studyGoal: "Understand anime without subtitles",
+      dailyGoalMinutes: 30,
+      preferredStudyTime: "evening",
+      enableReminders: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(1, demoUser);
+
+    // Seed authentic Japanese sentence cards
+    const sentenceCards: SentenceCard[] = [
       {
-        name: "First Steps",
-        description: "Complete your first study session",
-        icon: "fas fa-baby",
-        xpReward: 25,
-        category: "milestone",
-        threshold: 1
+        id: 1,
+        japanese: "私は学生です。",
+        reading: "わたし は がくせい です。",
+        english: "I am a student.",
+        audioUrl: null,
+        jlptLevel: "N5",
+        difficulty: 1,
+        register: "polite",
+        theme: "self_introduction",
+        source: "textbook",
+        grammarPoints: ["は particle", "です copula"],
+        vocabulary: ["私", "学生"],
+        culturalNotes: "This is the standard polite way to introduce yourself as a student.",
+        createdAt: new Date()
       },
       {
-        name: "Kanji Apprentice",
-        description: "Learn 50 kanji characters",
-        icon: "fas fa-language",
-        xpReward: 100,
-        category: "kanji",
-        threshold: 50
+        id: 2,
+        japanese: "今日はいい天気ですね。",
+        reading: "きょう は いい てんき です ね。",
+        english: "It's nice weather today, isn't it?",
+        audioUrl: null,
+        jlptLevel: "N5",
+        difficulty: 2,
+        register: "polite",
+        theme: "daily_conversation",
+        source: "common_phrases",
+        grammarPoints: ["は particle", "です copula", "ね particle"],
+        vocabulary: ["今日", "いい", "天気"],
+        culturalNotes: "Weather is a common conversation starter in Japan.",
+        createdAt: new Date()
       },
       {
-        name: "Kanji Master",
-        description: "Learn 300 kanji characters",
-        icon: "fas fa-medal",
-        xpReward: 500,
-        category: "kanji",
-        threshold: 300
+        id: 3,
+        japanese: "ちょっと待って！",
+        reading: "ちょっと まって！",
+        english: "Wait a moment!",
+        audioUrl: null,
+        jlptLevel: "N5",
+        difficulty: 3,
+        register: "casual",
+        theme: "anime",
+        source: "My Hero Academia",
+        grammarPoints: ["te-form", "imperative"],
+        vocabulary: ["ちょっと", "待つ"],
+        culturalNotes: "Very common expression in anime and casual conversation.",
+        createdAt: new Date()
       },
       {
-        name: "Vocabulary Builder",
-        description: "Learn 500 vocabulary words",
-        icon: "fas fa-book",
-        xpReward: 200,
-        category: "vocabulary",
-        threshold: 500
+        id: 4,
+        japanese: "お疲れ様でした。",
+        reading: "おつかれさま でした。",
+        english: "Thank you for your hard work.",
+        audioUrl: null,
+        jlptLevel: "N5",
+        difficulty: 4,
+        register: "polite",
+        theme: "workplace",
+        source: "business_japanese",
+        grammarPoints: ["past tense", "honorific language"],
+        vocabulary: ["お疲れ様"],
+        culturalNotes: "Essential phrase for workplace courtesy in Japan.",
+        createdAt: new Date()
       },
       {
-        name: "Grammar Guru",
-        description: "Master 100 grammar points",
-        icon: "fas fa-graduation-cap",
-        xpReward: 300,
-        category: "grammar",
-        threshold: 100
-      },
-      {
-        name: "Streak Starter",
-        description: "Study for 3 days in a row",
-        icon: "fas fa-fire",
-        xpReward: 50,
-        category: "streak",
-        threshold: 3
-      },
-      {
-        name: "Streak Master",
-        description: "Study for 10 days in a row",
-        icon: "fas fa-fire",
-        xpReward: 150,
-        category: "streak",
-        threshold: 10
-      },
-      {
-        name: "Dedication",
-        description: "Study for 30 days in a row",
-        icon: "fas fa-crown",
-        xpReward: 500,
-        category: "streak",
-        threshold: 30
-      },
-      {
-        name: "N5 Champion",
-        description: "Complete JLPT N5 level",
-        icon: "fas fa-trophy",
-        xpReward: 1000,
-        category: "jlpt",
-        threshold: 5
-      },
-      {
-        name: "N4 Warrior",
-        description: "Complete JLPT N4 level",
-        icon: "fas fa-shield-alt",
-        xpReward: 1500,
-        category: "jlpt",
-        threshold: 4
+        id: 5,
+        japanese: "やばい！遅刻しちゃう！",
+        reading: "やばい！ちこく しちゃう！",
+        english: "Oh no! I'm going to be late!",
+        audioUrl: null,
+        jlptLevel: "N4",
+        difficulty: 5,
+        register: "casual",
+        theme: "anime",
+        source: "slice_of_life_anime",
+        grammarPoints: ["casual speech", "ちゃう contraction", "future tense"],
+        vocabulary: ["やばい", "遅刻"],
+        culturalNotes: "やばい is very common slang, especially among young people.",
+        createdAt: new Date()
       }
     ];
 
-    defaultAchievements.forEach(achievement => {
-      this.createAchievement(achievement);
+    sentenceCards.forEach(card => {
+      this.sentenceCards.set(card.id, card);
+      this.currentCardId = Math.max(this.currentCardId, card.id + 1);
     });
+
+    // Create SRS items for demo user
+    sentenceCards.slice(0, 3).forEach((card, index) => {
+      const srsItem: SrsItem = {
+        id: index + 1,
+        userId: 1,
+        sentenceCardId: card.id,
+        interval: index === 0 ? 1 : index === 1 ? 3 : 7,
+        easeFactor: 2.5,
+        repetitions: index,
+        lastReviewed: new Date(Date.now() - (index * 24 * 60 * 60 * 1000)),
+        nextReview: new Date(Date.now() + (index * 24 * 60 * 60 * 1000)),
+        correctCount: index * 2,
+        incorrectCount: index,
+        mastery: index === 0 ? "new" : index === 1 ? "learning" : "review",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.srsItems.set(srsItem.id, srsItem);
+    });
+
+    // Seed achievements
+    const achievements: Achievement[] = [
+      {
+        id: 1,
+        name: "First Steps",
+        description: "Complete your first study session",
+        icon: "🚪",
+        category: "milestone",
+        threshold: 1,
+        beltRequired: null,
+        xpReward: 50,
+        createdAt: new Date()
+      },
+      {
+        id: 2,
+        name: "Consistency Master",
+        description: "Study for 7 days in a row",
+        icon: "🔥",
+        category: "streak",
+        threshold: 7,
+        beltRequired: null,
+        xpReward: 200,
+        createdAt: new Date()
+      },
+      {
+        id: 3,
+        name: "Yellow Belt",
+        description: "Achieve yellow belt mastery",
+        icon: "🥋",
+        category: "belt",
+        threshold: null,
+        beltRequired: "yellow",
+        xpReward: 500,
+        createdAt: new Date()
+      },
+      {
+        id: 4,
+        name: "Anime Enthusiast",
+        description: "Master 50 anime-style sentences",
+        icon: "📺",
+        category: "content",
+        threshold: 50,
+        beltRequired: null,
+        xpReward: 300,
+        createdAt: new Date()
+      },
+      {
+        id: 5,
+        name: "Casual Speaker",
+        description: "Master casual Japanese conversation",
+        icon: "💬",
+        category: "register",
+        threshold: 25,
+        beltRequired: null,
+        xpReward: 250,
+        createdAt: new Date()
+      }
+    ];
+
+    achievements.forEach(achievement => {
+      this.achievements.set(achievement.id, achievement);
+    });
+
+    // Unlock some achievements for demo user
+    const userAchievement1: UserAchievement = {
+      id: 1,
+      userId: 1,
+      achievementId: 1,
+      unlockedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+    };
+    const userAchievement2: UserAchievement = {
+      id: 2,
+      userId: 1,
+      achievementId: 2,
+      unlockedAt: new Date()
+    };
+
+    this.userAchievements.set(1, userAchievement1);
+    this.userAchievements.set(2, userAchievement2);
+
+    // Create a recent study session
+    const studySession: StudySession = {
+      id: 1,
+      userId: 1,
+      sessionType: "review",
+      cardsReviewed: 15,
+      cardsCorrect: 13,
+      timeSpentMinutes: 18,
+      xpEarned: 85,
+      startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      completedAt: new Date(Date.now() - 2 * 60 * 60 * 1000 + 18 * 60 * 1000)
+    };
+    this.studySessions.set(1, studySession);
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -268,25 +322,23 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.username === username);
   }
 
-  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.googleId === googleId);
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
+  async createUser(userData: InsertUser): Promise<User> {
     const user: User = {
-      ...insertUser,
-      id,
+      id: this.currentUserId++,
+      ...userData,
+      currentBelt: "white",
+      currentJLPTLevel: "N5",
       totalXP: 0,
       currentStreak: 0,
       bestStreak: 0,
-      currentJLPTLevel: "N5",
-      wanikaniApiKey: null,
-      bunproApiKey: null,
       lastStudyDate: null,
+      dailyGoalMinutes: 20,
+      enableReminders: true,
       createdAt: new Date(),
+      updatedAt: new Date()
     };
-    this.users.set(id, user);
+    
+    this.users.set(user.id, user);
     return user;
   }
 
@@ -294,41 +346,149 @@ export class MemStorage implements IStorage {
     const user = this.users.get(id);
     if (!user) return undefined;
     
-    const updatedUser = { ...user, ...updates };
+    const updatedUser = { ...user, ...updates, updatedAt: new Date() };
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+
+  async getSentenceCards(filters?: {
+    jlptLevel?: string;
+    register?: string;
+    theme?: string;
+    difficulty?: number;
+  }): Promise<SentenceCard[]> {
+    let cards = Array.from(this.sentenceCards.values());
+    
+    if (filters?.jlptLevel) {
+      cards = cards.filter(card => card.jlptLevel === filters.jlptLevel);
+    }
+    if (filters?.register) {
+      cards = cards.filter(card => card.register === filters.register);
+    }
+    if (filters?.theme) {
+      cards = cards.filter(card => card.theme === filters.theme);
+    }
+    if (filters?.difficulty) {
+      cards = cards.filter(card => card.difficulty <= filters.difficulty);
+    }
+    
+    return cards;
+  }
+
+  async getSentenceCard(id: number): Promise<SentenceCard | undefined> {
+    return this.sentenceCards.get(id);
+  }
+
+  async createSentenceCard(cardData: InsertSentenceCard): Promise<SentenceCard> {
+    const card: SentenceCard = {
+      id: this.currentCardId++,
+      ...cardData,
+      createdAt: new Date()
+    };
+    
+    this.sentenceCards.set(card.id, card);
+    return card;
+  }
+
+  async getUserSrsItems(userId: number): Promise<SrsItem[]> {
+    return Array.from(this.srsItems.values()).filter(item => item.userId === userId);
+  }
+
+  async getSrsItem(id: number): Promise<SrsItem | undefined> {
+    return this.srsItems.get(id);
+  }
+
+  async createSrsItem(itemData: InsertSrsItem): Promise<SrsItem> {
+    const item: SrsItem = {
+      id: this.currentSrsItemId++,
+      ...itemData,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.srsItems.set(item.id, item);
+    return item;
+  }
+
+  async updateSrsItem(id: number, updates: Partial<SrsItem>): Promise<SrsItem | undefined> {
+    const item = this.srsItems.get(id);
+    if (!item) return undefined;
+    
+    const updatedItem = { ...item, ...updates, updatedAt: new Date() };
+    this.srsItems.set(id, updatedItem);
+    return updatedItem;
+  }
+
+  async getReviewQueue(userId: number, limit?: number): Promise<SrsItem[]> {
+    const userItems = Array.from(this.srsItems.values())
+      .filter(item => item.userId === userId && item.nextReview <= new Date())
+      .sort((a, b) => a.nextReview.getTime() - b.nextReview.getTime());
+    
+    return limit ? userItems.slice(0, limit) : userItems;
+  }
+
+  async createStudySession(sessionData: InsertStudySession): Promise<StudySession> {
+    const session: StudySession = {
+      id: this.currentSessionId++,
+      startedAt: new Date(),
+      ...sessionData
+    };
+    
+    this.studySessions.set(session.id, session);
+    return session;
+  }
+
+  async getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]> {
+    const sessions = Array.from(this.studySessions.values())
+      .filter(session => session.userId === userId)
+      .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
+    
+    return limit ? sessions.slice(0, limit) : sessions;
+  }
+
+  async updateStudySession(id: number, updates: Partial<StudySession>): Promise<StudySession | undefined> {
+    const session = this.studySessions.get(id);
+    if (!session) return undefined;
+    
+    const updatedSession = { ...session, ...updates };
+    this.studySessions.set(id, updatedSession);
+    return updatedSession;
   }
 
   async getAllAchievements(): Promise<Achievement[]> {
     return Array.from(this.achievements.values());
   }
 
-  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
-    const id = this.currentAchievementId++;
-    const newAchievement: Achievement = { ...achievement, id };
-    this.achievements.set(id, newAchievement);
-    return newAchievement;
+  async createAchievement(achievementData: InsertAchievement): Promise<Achievement> {
+    const achievement: Achievement = {
+      id: this.currentAchievementId++,
+      ...achievementData,
+      createdAt: new Date()
+    };
+    
+    this.achievements.set(achievement.id, achievement);
+    return achievement;
   }
 
   async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
     const userAchievements = Array.from(this.userAchievements.values())
       .filter(ua => ua.userId === userId);
     
-    return userAchievements.map(ua => ({
-      ...ua,
-      achievement: this.achievements.get(ua.achievementId)!
-    }));
+    return userAchievements.map(ua => {
+      const achievement = this.achievements.get(ua.achievementId)!;
+      return { ...ua, achievement };
+    });
   }
 
-  async unlockAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
-    const id = this.currentUserAchievementId++;
-    const newUserAchievement: UserAchievement = {
-      ...userAchievement,
-      id,
-      unlockedAt: new Date(),
+  async unlockAchievement(userAchievementData: InsertUserAchievement): Promise<UserAchievement> {
+    const userAchievement: UserAchievement = {
+      id: this.currentUserAchievementId++,
+      ...userAchievementData,
+      unlockedAt: new Date()
     };
-    this.userAchievements.set(id, newUserAchievement);
-    return newUserAchievement;
+    
+    this.userAchievements.set(userAchievement.id, userAchievement);
+    return userAchievement;
   }
 
   async hasUserAchievement(userId: number, achievementId: number): Promise<boolean> {
@@ -336,379 +496,14 @@ export class MemStorage implements IStorage {
       .some(ua => ua.userId === userId && ua.achievementId === achievementId);
   }
 
-  async createStudySession(session: InsertStudySession): Promise<StudySession> {
-    const id = this.currentStudySessionId++;
-    const newSession: StudySession = {
-      ...session,
-      id,
-      date: new Date(),
-    };
-    this.studySessions.set(id, newSession);
-    return newSession;
+  async getAllLearningPaths(): Promise<LearningPath[]> {
+    return Array.from(this.learningPaths.values());
   }
 
-  async getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]> {
-    const sessions = Array.from(this.studySessions.values())
-      .filter(session => session.userId === userId)
-      .sort((a, b) => b.date.getTime() - a.date.getTime());
-    
-    return limit ? sessions.slice(0, limit) : sessions;
-  }
-
-  async getUserProgress(userId: number): Promise<UserProgress | undefined> {
-    return Array.from(this.userProgress.values())
-      .find(progress => progress.userId === userId);
-  }
-
-  async updateUserProgress(userId: number, progressData: InsertUserProgress): Promise<UserProgress> {
-    const existingProgress = await this.getUserProgress(userId);
-    
-    if (existingProgress) {
-      const updatedProgress: UserProgress = {
-        ...existingProgress,
-        ...progressData,
-        lastSyncedAt: new Date(),
-      };
-      this.userProgress.set(existingProgress.id, updatedProgress);
-      return updatedProgress;
-    } else {
-      const id = this.currentUserProgressId++;
-      const newProgress: UserProgress = {
-        ...progressData,
-        id,
-        lastSyncedAt: new Date(),
-      };
-      this.userProgress.set(id, newProgress);
-      return newProgress;
-    }
+  async getUserPathProgress(userId: number): Promise<UserPathProgress[]> {
+    return Array.from(this.userPathProgress.values())
+      .filter(progress => progress.userId === userId);
   }
 }
 
-// DatabaseStorage implementation using PostgreSQL
-export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
-  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.googleId, googleId));
-    return user || undefined;
-  }
-
-  async getUserByVerificationToken(token: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.emailVerificationToken, token));
-    return user || undefined;
-  }
-
-  async getUserByPasswordResetToken(token: string): Promise<User | undefined> {
-    const now = new Date();
-    const [user] = await db.select().from(users).where(
-      and(
-        eq(users.passwordResetToken, token),
-        // Check if token hasn't expired (valid for 1 hour)
-      )
-    );
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
-  }
-
-  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
-    const [user] = await db
-      .update(users)
-      .set(updates)
-      .where(eq(users.id, id))
-      .returning();
-    return user || undefined;
-  }
-
-  async getAllAchievements(): Promise<Achievement[]> {
-    return await db.select().from(achievements);
-  }
-
-  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
-    const [newAchievement] = await db
-      .insert(achievements)
-      .values(achievement)
-      .returning();
-    return newAchievement;
-  }
-
-  async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
-    const userAchievementsWithDetails = await db
-      .select()
-      .from(userAchievements)
-      .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
-      .where(eq(userAchievements.userId, userId));
-
-    return userAchievementsWithDetails.map(row => ({
-      ...row.user_achievements,
-      achievement: row.achievements
-    }));
-  }
-
-  async unlockAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
-    const [newUserAchievement] = await db
-      .insert(userAchievements)
-      .values(userAchievement)
-      .returning();
-    return newUserAchievement;
-  }
-
-  async hasUserAchievement(userId: number, achievementId: number): Promise<boolean> {
-    const [existing] = await db
-      .select()
-      .from(userAchievements)
-      .where(
-        and(
-          eq(userAchievements.userId, userId),
-          eq(userAchievements.achievementId, achievementId)
-        )
-      )
-      .limit(1);
-    return !!existing;
-  }
-
-  async createStudySession(session: InsertStudySession): Promise<StudySession> {
-    const [newSession] = await db
-      .insert(studySessions)
-      .values(session)
-      .returning();
-    return newSession;
-  }
-
-  async getUserStudySessions(userId: number, limit?: number): Promise<StudySession[]> {
-    if (limit) {
-      return await db
-        .select()
-        .from(studySessions)
-        .where(eq(studySessions.userId, userId))
-        .orderBy(desc(studySessions.date))
-        .limit(limit);
-    }
-
-    return await db
-      .select()
-      .from(studySessions)
-      .where(eq(studySessions.userId, userId))
-      .orderBy(desc(studySessions.date));
-  }
-
-  async getUserProgress(userId: number): Promise<UserProgress | undefined> {
-    const [progress] = await db
-      .select()
-      .from(userProgress)
-      .where(eq(userProgress.userId, userId));
-    return progress || undefined;
-  }
-
-  async updateUserProgress(userId: number, progressData: InsertUserProgress): Promise<UserProgress> {
-    // Try to update existing progress first
-    const [updated] = await db
-      .update(userProgress)
-      .set(progressData)
-      .where(eq(userProgress.userId, userId))
-      .returning();
-
-    if (updated) {
-      return updated;
-    }
-
-    // If no existing progress, create new
-    const [created] = await db
-      .insert(userProgress)
-      .values(progressData)
-      .returning();
-    return created;
-  }
-
-  // Seed default achievements in database
-  async seedAchievements(): Promise<void> {
-    const defaultAchievements: InsertAchievement[] = [
-      {
-        name: "First Steps",
-        description: "Complete your first study session",
-        icon: "fas fa-baby",
-        xpReward: 25,
-        category: "milestone",
-        threshold: 1
-      },
-      {
-        name: "Kanji Apprentice", 
-        description: "Learn 50 kanji characters",
-        icon: "fas fa-language",
-        xpReward: 100,
-        category: "kanji",
-        threshold: 50
-      },
-      {
-        name: "Kanji Master",
-        description: "Learn 300 kanji characters", 
-        icon: "fas fa-medal",
-        xpReward: 500,
-        category: "kanji",
-        threshold: 300
-      },
-      {
-        name: "Vocabulary Builder",
-        description: "Learn 500 vocabulary words",
-        icon: "fas fa-book", 
-        xpReward: 200,
-        category: "vocabulary",
-        threshold: 500
-      },
-      {
-        name: "Grammar Guru",
-        description: "Master 100 grammar points",
-        icon: "fas fa-graduation-cap",
-        xpReward: 300,
-        category: "grammar", 
-        threshold: 100
-      },
-      {
-        name: "Streak Starter",
-        description: "Study for 3 days in a row",
-        icon: "fas fa-fire",
-        xpReward: 50,
-        category: "streak",
-        threshold: 3
-      },
-      {
-        name: "Streak Master", 
-        description: "Study for 10 days in a row",
-        icon: "fas fa-fire",
-        xpReward: 150,
-        category: "streak",
-        threshold: 10
-      },
-      {
-        name: "Dedication",
-        description: "Study for 30 days in a row",
-        icon: "fas fa-crown", 
-        xpReward: 500,
-        category: "streak",
-        threshold: 30
-      },
-      {
-        name: "N5 Champion",
-        description: "Complete JLPT N5 level",
-        icon: "fas fa-trophy",
-        xpReward: 1000,
-        category: "jlpt",
-        threshold: 5
-      },
-      {
-        name: "N4 Warrior", 
-        description: "Complete JLPT N4 level",
-        icon: "fas fa-shield-alt",
-        xpReward: 1500,
-        category: "jlpt",
-        threshold: 4
-      }
-    ];
-
-    // Check if achievements already exist to avoid duplicates
-    const existingAchievements = await this.getAllAchievements();
-    if (existingAchievements.length === 0) {
-      for (const achievement of defaultAchievements) {
-        await this.createAchievement(achievement);
-      }
-    }
-  }
-
-  // SRS Learning System implementations
-  async getAllGrammarPoints() {
-    return this.grammarPoints;
-  }
-
-  async getGrammarPoint(id: number) {
-    return this.grammarPoints.find(gp => gp.id === id);
-  }
-
-  async getAllKanji() {
-    return this.kanji;
-  }
-
-  async getKanji(id: number) {
-    return this.kanji.find(k => k.id === id);
-  }
-
-  async getAllVocabulary() {
-    return this.vocabulary;
-  }
-
-  async getVocabulary(id: number) {
-    return this.vocabulary.find(v => v.id === id);
-  }
-
-  async getUserSrsItems(userId: number) {
-    return this.srsItems.filter(item => item.userId === userId);
-  }
-
-  async getSrsItem(id: number): Promise<SrsItem | undefined> {
-    const [result] = await db.select().from(srsItems).where(eq(srsItems.id, id));
-    return result;
-  }
-
-  async createSrsItem(item: InsertSrsItem): Promise<SrsItem> {
-    const [result] = await db.insert(srsItems).values(item).returning();
-    return result;
-  }
-
-  async updateSrsItem(id: number, updates: Partial<SrsItem>): Promise<SrsItem | undefined> {
-    const [result] = await db.update(srsItems).set({
-      ...updates,
-      updatedAt: new Date()
-    }).where(eq(srsItems.id, id)).returning();
-    return result;
-  }
-
-  async getReviewQueue(userId: number): Promise<SrsItem[]> {
-    const now = new Date();
-    const result = await db.select().from(srsItems)
-      .where(
-        and(
-          eq(srsItems.userId, userId),
-          lte(srsItems.nextReviewAt, now)
-        )
-      )
-      .orderBy(srsItems.nextReviewAt);
-    return result;
-  }
-
-  async createReviewSession(session: InsertReviewSession): Promise<ReviewSession> {
-    const [result] = await db.insert(reviewSessions).values(session).returning();
-    return result;
-  }
-
-  async getUserReviewSessions(userId: number, limit?: number): Promise<ReviewSession[]> {
-    let query = db.select().from(reviewSessions)
-      .where(eq(reviewSessions.userId, userId))
-      .orderBy(desc(reviewSessions.reviewedAt));
-    
-    if (limit) {
-      query = query.limit(limit);
-    }
-    
-    return await query;
-  }
-}
-
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();

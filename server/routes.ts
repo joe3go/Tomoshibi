@@ -1,673 +1,387 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage, DatabaseStorage } from "./storage";
-import { db } from "./db";
+import { storage } from "./storage";
 import { 
-  apiKeySetupSchema, 
-  insertStudySessionSchema,
-  registerSchema,
-  loginSchema,
-  verifyEmailSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  grammarPoints,
-  kanji,
-  vocabulary,
-  srsItems
+  insertSrsItemSchema, 
+  insertStudySessionSchema, 
+  insertUserAchievementSchema 
 } from "@shared/schema";
-import { z } from "zod";
-import { 
-  hashPassword, 
-  comparePasswords, 
-  generateVerificationToken, 
-  generatePasswordResetToken,
-  getPasswordResetExpiry 
-} from "./auth";
-import { sendVerificationEmail, sendPasswordResetEmail } from "./emailService";
-import { setupGoogleAuth } from "./googleAuth";
 
-// WaniKani API client for kanji, radicals, and vocabulary tracking
-class WaniKaniClient {
-  private apiKey: string;
-  private baseUrl = 'https://api.wanikani.com/v2';
+// SRS Algorithm Implementation
+class SRSAlgorithm {
+  static calculateNextReview(
+    currentInterval: number,
+    easeFactor: number,
+    repetitions: number,
+    quality: number // 0-5 scale (0=total blackout, 5=perfect response)
+  ): { newInterval: number; newEaseFactor: number; newRepetitions: number } {
+    let newEaseFactor = easeFactor;
+    let newRepetitions = repetitions;
+    let newInterval = currentInterval;
 
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  private async makeRequest(endpoint: string) {
-    if (!this.apiKey) {
-      throw new Error('WaniKani API key is required');
-    }
-
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Wanikani-Revision': '20170710'
+    if (quality >= 3) {
+      // Correct response
+      newRepetitions += 1;
+      
+      if (newRepetitions === 1) {
+        newInterval = 1;
+      } else if (newRepetitions === 2) {
+        newInterval = 6;
+      } else {
+        newInterval = Math.round(currentInterval * easeFactor);
       }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`WaniKani API error: ${response.status} ${response.statusText}`);
+      
+      newEaseFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    } else {
+      // Incorrect response
+      newRepetitions = 0;
+      newInterval = 1;
     }
+
+    // Clamp ease factor between 1.3 and 2.5
+    newEaseFactor = Math.max(1.3, Math.min(2.5, newEaseFactor));
     
-    return response.json();
+    return { newInterval, newEaseFactor, newRepetitions };
   }
 
-  async getUser() {
-    return await this.makeRequest('/user');
-  }
-
-  async getSummary() {
-    return await this.makeRequest('/summary');
-  }
-
-  async getSubjects(types?: string[]) {
-    const typeParam = types ? `?types=${types.join(',')}` : '';
-    return await this.makeRequest(`/subjects${typeParam}`);
-  }
-
-  async getAssignments() {
-    return await this.makeRequest('/assignments');
-  }
-
-  async getReviewStatistics() {
-    return await this.makeRequest('/review_statistics');
-  }
-
-  async getLevelProgression() {
-    return await this.makeRequest('/level_progressions');
+  static determineMastery(repetitions: number, interval: number): string {
+    if (repetitions === 0) return "new";
+    if (repetitions < 3) return "learning";
+    if (interval < 21) return "review";
+    return "mastered";
   }
 }
 
-// Bunpro API client for grammar point tracking
-class BunproClient {
-  private apiKey: string;
-  private baseUrl = 'https://bunpro.jp/api/user';
-
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  private async makeRequest(endpoint: string) {
-    if (!this.apiKey) {
-      throw new Error('Bunpro API key is required');
-    }
-
-    const url = `${this.baseUrl}${endpoint}?api_key=${this.apiKey}`;
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    // Check if response is HTML (indicates API endpoint issue)
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('text/html')) {
-      throw new Error('Bunpro API returned HTML - endpoint may be incorrect or API key invalid');
-    }
-    
-    if (!response.ok) {
-      throw new Error(`Bunpro API error: ${response.status} ${response.statusText}`);
-    }
-    
-    return response.json();
-  }
-
-  async getUser() {
-    return await this.makeRequest('');
-  }
-
-  async getProgress() {
-    return await this.makeRequest('/progress');
-  }
-
-  async getReviews() {
-    return await this.makeRequest('/reviews');
-  }
-
-  async getGrammarPoints() {
-    return await this.makeRequest('/grammar_points');
-  }
-
-  async getStudyQueue() {
-    return await this.makeRequest('/study_queue');
-  }
-}
-
+// Achievement checking system
 async function checkAchievements(userId: number) {
   const user = await storage.getUser(userId);
-  if (!user) return [];
+  const userAchievements = await storage.getUserAchievements(userId);
+  const allAchievements = await storage.getAllAchievements();
+  const unlockedAchievementIds = userAchievements.map(ua => ua.achievementId);
+  
+  const newAchievements = [];
 
-  const progress = await storage.getUserProgress(userId);
-  const achievements = await storage.getAllAchievements();
-  const unlockedAchievements = [];
-
-  for (const achievement of achievements) {
-    const hasAchievement = await storage.hasUserAchievement(userId, achievement.id);
-    if (hasAchievement) continue;
+  for (const achievement of allAchievements) {
+    if (unlockedAchievementIds.includes(achievement.id)) continue;
 
     let shouldUnlock = false;
 
     switch (achievement.category) {
       case "streak":
-        shouldUnlock = user.currentStreak >= (achievement.threshold || 0);
-        break;
-      case "kanji":
-        if (progress?.wanikaniData) {
-          const kanjiCount = (progress.wanikaniData as any)?.subjects?.kanji || 0;
-          shouldUnlock = kanjiCount >= (achievement.threshold || 0);
+        if (user && user.currentStreak >= (achievement.threshold || 0)) {
+          shouldUnlock = true;
         }
         break;
-      case "vocabulary":
-        if (progress?.wanikaniData) {
-          const vocabCount = (progress.wanikaniData as any)?.subjects?.vocabulary || 0;
-          shouldUnlock = vocabCount >= (achievement.threshold || 0);
+      
+      case "belt":
+        if (user && user.currentBelt === achievement.beltRequired) {
+          shouldUnlock = true;
         }
         break;
-      case "grammar":
-        if (progress?.bunproData) {
-          const grammarPoints = (progress.bunproData as any)?.grammar_points_learned || 0;
-          shouldUnlock = grammarPoints >= (achievement.threshold || 0);
+      
+      case "milestone":
+        const sessions = await storage.getUserStudySessions(userId);
+        if (sessions.length >= (achievement.threshold || 0)) {
+          shouldUnlock = true;
         }
         break;
     }
 
     if (shouldUnlock) {
-      await storage.unlockAchievement({
+      const newAchievement = await storage.unlockAchievement({
         userId,
         achievementId: achievement.id
       });
+      newAchievements.push({ ...newAchievement, achievement });
       
       // Award XP
-      await storage.updateUser(userId, {
-        totalXP: user.totalXP + achievement.xpReward
-      });
-
-      unlockedAchievements.push(achievement);
+      if (user) {
+        await storage.updateUser(userId, {
+          totalXP: user.totalXP + achievement.xpReward
+        });
+      }
     }
   }
 
-  return unlockedAchievements;
+  return newAchievements;
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize database with achievements
-  if (storage instanceof DatabaseStorage) {
-    await storage.seedAchievements();
-  }
-
-  // Set up Google OAuth authentication
-  setupGoogleAuth(app);
-
-  // Simplified Email Registration Routes (for demo - email verification disabled)
-  app.post('/api/auth/register', async (req, res) => {
+  // Get current user (demo mode)
+  app.get("/api/user", async (req, res) => {
     try {
-      const { email, password, username } = registerSchema.parse(req.body);
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByUsername(username);
-      if (existingUser) {
-        return res.status(400).json({ message: "Username already exists" });
-      }
-      
-      // Hash password
-      const hashedPassword = await hashPassword(password);
-      
-      // Create user (simplified without email verification for demo)
-      const newUser = await storage.createUser({
-        username,
-        displayName: username,
-        password: hashedPassword,
-      });
-      
-      console.log(`New user registered: ${username} (${email})`);
-      
-      res.status(201).json({ 
-        message: "Registration successful! You can now log in.",
-        userId: newUser.id 
-      });
-    } catch (error) {
-      console.error("Registration error:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: error.errors[0].message });
-      }
-      res.status(500).json({ message: "Registration failed" });
-    }
-  });
-
-  app.post('/api/auth/login', async (req, res) => {
-    try {
-      const { email, password } = loginSchema.parse(req.body);
-      
-      // Try to find user by username first, then by email
-      let user = await storage.getUserByUsername(email);
-      if (!user && email.includes('@')) {
-        user = await storage.getUserByEmail?.(email);
-      }
-      
-      if (!user || !user.password) {
-        return res.status(401).json({ message: "Invalid username or password" });
-      }
-      
-      const isValidPassword = await comparePasswords(password, user.password);
-      if (!isValidPassword) {
-        return res.status(401).json({ message: "Invalid username or password" });
-      }
-      
-      const { password: _, ...safeUser } = user;
-      res.json({ user: safeUser });
-    } catch (error) {
-      console.error("Login error:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: error.errors[0].message });
-      }
-      res.status(500).json({ message: "Login failed" });
-    }
-  });
-
-  app.get('/api/auth/verify-email', async (req, res) => {
-    try {
-      const { token } = verifyEmailSchema.parse(req.query);
-      
-      const user = await storage.getUserByVerificationToken?.(token);
+      const user = await storage.getUser(1); // Demo user
       if (!user) {
-        return res.status(400).json({ message: "Invalid or expired verification token" });
+        return res.status(404).json({ error: "User not found" });
       }
-      
-      // Mark email as verified and clear token
-      await storage.updateUser(user.id, {
-        emailVerified: true,
-        emailVerificationToken: null,
-      });
-      
-      res.json({ message: "Email verified successfully! You can now log in." });
+      res.json(user);
     } catch (error) {
-      console.error("Email verification error:", error);
-      res.status(500).json({ message: "Email verification failed" });
+      console.error("Error fetching user:", error);
+      res.status(500).json({ error: "Failed to fetch user" });
     }
   });
 
-  app.post('/api/auth/forgot-password', async (req, res) => {
-    try {
-      const { email } = forgotPasswordSchema.parse(req.body);
-      
-      const user = await storage.getUserByEmail?.(email);
-      if (!user) {
-        // Don't reveal if email exists for security
-        return res.json({ message: "If an account exists with this email, a password reset link has been sent." });
-      }
-      
-      const resetToken = generatePasswordResetToken();
-      const resetExpiry = getPasswordResetExpiry();
-      
-      await storage.updateUser(user.id, {
-        passwordResetToken: resetToken,
-        passwordResetExpires: resetExpiry,
-      });
-      
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      await sendPasswordResetEmail(email, resetToken, baseUrl);
-      
-      res.json({ message: "If an account exists with this email, a password reset link has been sent." });
-    } catch (error) {
-      console.error("Password reset error:", error);
-      res.status(500).json({ message: "Password reset failed" });
-    }
-  });
-
-  app.post('/api/auth/reset-password', async (req, res) => {
-    try {
-      const { token, password } = resetPasswordSchema.parse(req.body);
-      
-      const user = await storage.getUserByPasswordResetToken?.(token);
-      if (!user || !user.passwordResetExpires || new Date() > user.passwordResetExpires) {
-        return res.status(400).json({ message: "Invalid or expired reset token" });
-      }
-      
-      const hashedPassword = await hashPassword(password);
-      await storage.updateUser(user.id, {
-        password: hashedPassword,
-        passwordResetToken: null,
-        passwordResetExpires: null,
-      });
-      
-      res.json({ message: "Password reset successfully! You can now log in with your new password." });
-    } catch (error) {
-      console.error("Password reset error:", error);
-      res.status(500).json({ message: "Password reset failed" });
-    }
-  });
-
-  // API Key Management Routes (simplified for demo)
-  app.post('/api/user/api-keys', async (req, res) => {
-    try {
-      const { userId, wanikaniApiKey, bunproApiKey } = req.body;
-      
-      if (!userId) {
-        return res.status(400).json({ message: "User ID required" });
-      }
-      
-      await storage.updateUser(userId, {
-        wanikaniApiKey,
-        bunproApiKey,
-      });
-      
-      res.json({ message: "API keys updated successfully" });
-    } catch (error) {
-      console.error("API key update error:", error);
-      res.status(500).json({ message: "Failed to update API keys" });
-    }
-  });
-
-  // Get user dashboard data
+  // Get dashboard data
   app.get("/api/dashboard", async (req, res) => {
     try {
-      const isPreview = req.query.preview === 'true';
-      
-      if (isPreview) {
-        // Preview mode: Use test user with authentic API integration if keys available
-        const testUser = {
-          id: 1,
-          username: "preview_user",
-          email: "preview@example.com",
-          totalXP: 1250,
-          currentStreak: 7,
-          jlptLevel: "N4",
-          wanikaniApiKey: null,
-          bunproApiKey: null,
-          createdAt: new Date().toISOString()
-        };
-
-        // Try to fetch authentic data if API keys are provided via environment
-        let wanikaniData = null;
-        let bunproData = null;
-
-        if (process.env.PREVIEW_WANIKANI_API_KEY) {
-          try {
-            const wkClient = new WaniKaniClient(process.env.PREVIEW_WANIKANI_API_KEY);
-            const [user, summary, subjects] = await Promise.all([
-              wkClient.getUser(),
-              wkClient.getSummary(),
-              wkClient.getSubjects(['kanji', 'vocabulary', 'radical'])
-            ]);
-            wanikaniData = { user, summary, subjects };
-            testUser.wanikaniApiKey = "connected";
-          } catch (error) {
-            console.log("Preview WaniKani API not available");
-          }
-        }
-
-        if (process.env.PREVIEW_BUNPRO_API_KEY) {
-          try {
-            const bpClient = new BunproClient(process.env.PREVIEW_BUNPRO_API_KEY);
-            const [user, progress] = await Promise.all([
-              bpClient.getUser(),
-              bpClient.getProgress()
-            ]);
-            bunproData = { user, progress };
-            testUser.bunproApiKey = "connected";
-          } catch (error) {
-            console.log("Preview Bunpro API not available");
-          }
-        }
-
-        const previewData = {
-          user: testUser,
-          progress: { wanikaniData, bunproData },
-          achievements: [
-            {
-              id: 1,
-              achievement: {
-                id: 1,
-                name: "Kanji Novice",
-                description: "Learn your first 100 kanji",
-                icon: "fas fa-torii-gate",
-                xpReward: 100,
-                category: "kanji"
-              },
-              unlockedAt: new Date(Date.now() - 86400000 * 3).toISOString()
-            },
-            {
-              id: 2,
-              achievement: {
-                id: 2,
-                name: "Weekly Warrior", 
-                description: "Study for 7 consecutive days",
-                icon: "fas fa-fire",
-                xpReward: 150,
-                category: "consistency"
-              },
-              unlockedAt: new Date().toISOString()
-            }
-          ],
-          recentSessions: [
-            {
-              id: 1,
-              userId: 1,
-              date: new Date().toISOString(),
-              duration: 45,
-              itemsStudied: 23,
-              xpEarned: 85,
-              sessionType: "review"
-            }
-          ]
-        };
-
-        return res.json(previewData);
-      }
-
-      // Regular mode: For demo purposes, using user ID 1
-      const userId = 1;
-      let user = await storage.getUser(userId);
+      const userId = 1; // Demo user
+      const user = await storage.getUser(userId);
+      const srsItems = await storage.getUserSrsItems(userId);
+      const studySessions = await storage.getUserStudySessions(userId, 10);
+      const userAchievements = await storage.getUserAchievements(userId);
       
       if (!user) {
-        // Create a demo user
-        user = await storage.createUser({
-          username: "demo_user",
-          password: "password",
-          displayName: "Alex Tanaka"
-        });
+        return res.status(404).json({ error: "User not found" });
       }
 
-      const progress = await storage.getUserProgress(userId);
-      const achievements = await storage.getUserAchievements(userId);
-      const recentSessions = await storage.getUserStudySessions(userId, 7);
+      // Calculate statistics
+      const totalCards = srsItems.length;
+      const masteredCards = srsItems.filter(item => item.mastery === "mastered").length;
+      const reviewQueue = srsItems.filter(item => 
+        item.nextReview <= new Date() && item.mastery !== "mastered"
+      ).length;
+      
+      const recentSession = studySessions[0];
+      const accuracy = recentSession 
+        ? Math.round((recentSession.cardsCorrect / recentSession.cardsReviewed) * 100)
+        : 0;
+
+      // Calculate belt progress
+      const beltOrder = ["white", "yellow", "orange", "green", "blue", "brown", "black"];
+      const currentBeltIndex = beltOrder.indexOf(user.currentBelt);
+      const nextBelt = currentBeltIndex < beltOrder.length - 1 ? beltOrder[currentBeltIndex + 1] : null;
+      
+      // XP for next level
+      const currentLevel = Math.floor(user.totalXP / 1000) + 1;
+      const xpToNextLevel = 1000 - (user.totalXP % 1000);
+      const levelProgress = ((user.totalXP % 1000) / 1000) * 100;
 
       res.json({
         user,
-        progress,
-        achievements,
-        recentSessions
+        stats: {
+          totalCards,
+          masteredCards,
+          reviewQueue,
+          accuracy,
+          currentLevel,
+          xpToNextLevel,
+          levelProgress,
+          nextBelt
+        },
+        recentSessions: studySessions.slice(0, 5),
+        achievements: userAchievements
       });
     } catch (error) {
-      console.error("Dashboard error:", error);
-      res.status(500).json({ message: "Failed to load dashboard data" });
+      console.error("Error fetching dashboard data:", error);
+      res.status(500).json({ error: "Failed to fetch dashboard data" });
     }
   });
 
-  // Setup API keys
-  app.post("/api/setup-keys", async (req, res) => {
-    try {
-      const { wanikaniApiKey, bunproApiKey } = apiKeySetupSchema.parse(req.body);
-      const userId = 1; // Demo user
-
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      await storage.updateUser(userId, {
-        wanikaniApiKey,
-        bunproApiKey
-      });
-
-      res.json({ message: "API keys updated successfully" });
-    } catch (error) {
-      console.error("Setup keys error:", error);
-      res.status(400).json({ message: "Invalid API key data" });
-    }
-  });
-
-  // Alternative API key endpoint for settings page
-  app.post("/api/user/api-keys", async (req, res) => {
-    try {
-      const { userId, wanikaniApiKey, bunproApiKey } = req.body;
-
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const updateData: any = {};
-      if (wanikaniApiKey !== undefined) updateData.wanikaniApiKey = wanikaniApiKey;
-      if (bunproApiKey !== undefined) updateData.bunproApiKey = bunproApiKey;
-
-      await storage.updateUser(userId, updateData);
-
-      res.json({ message: "API keys updated successfully" });
-    } catch (error) {
-      console.error("API keys update error:", error);
-      res.status(500).json({ message: "Failed to update API keys" });
-    }
-  });
-
-  // Sync data from external APIs
-  app.post("/api/sync-data", async (req, res) => {
+  // Get review queue
+  app.get("/api/review-queue", async (req, res) => {
     try {
       const userId = 1; // Demo user
-      const user = await storage.getUser(userId);
+      const limit = parseInt(req.query.limit as string) || 20;
       
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      let wanikaniData = null;
-      let bunproData = null;
-
-      // Sync WaniKani data
-      if (user.wanikaniApiKey) {
-        try {
-          const waniClient = new WaniKaniClient(user.wanikaniApiKey);
-          const [userInfo, summary, subjects, assignments] = await Promise.all([
-            waniClient.getUser(),
-            waniClient.getSummary(),
-            waniClient.getSubjects(),
-            waniClient.getAssignments()
-          ]);
-
-          wanikaniData = {
-            user: userInfo,
-            summary,
-            subjects: {
-              kanji: subjects.data.filter(s => s.object === "kanji").length,
-              vocabulary: subjects.data.filter(s => s.object === "vocabulary").length,
-              total: subjects.total_count
-            },
-            assignments,
-            level: userInfo.level,
-            reviewsAvailable: summary.reviews.length,
-            lastSync: new Date()
+      const reviewItems = await storage.getReviewQueue(userId, limit);
+      
+      // Get sentence cards for each SRS item
+      const reviewCardsWithContent = await Promise.all(
+        reviewItems.map(async (item) => {
+          const sentenceCard = await storage.getSentenceCard(item.sentenceCardId);
+          return {
+            srsItem: item,
+            sentenceCard
           };
-        } catch (error) {
-          console.error("WaniKani sync error:", error);
-        }
+        })
+      );
+
+      res.json(reviewCardsWithContent);
+    } catch (error) {
+      console.error("Error fetching review queue:", error);
+      res.status(500).json({ error: "Failed to fetch review queue" });
+    }
+  });
+
+  // Submit review answer
+  app.post("/api/review/:srsItemId", async (req, res) => {
+    try {
+      const srsItemId = parseInt(req.params.srsItemId);
+      const { quality } = req.body; // 0-5 scale
+      
+      if (quality < 0 || quality > 5) {
+        return res.status(400).json({ error: "Quality must be between 0 and 5" });
       }
 
-      // Sync Bunpro data
-      if (user.bunproApiKey) {
-        try {
-          const bunproClient = new BunproClient(user.bunproApiKey);
-          const [userInfo, progressInfo, reviews] = await Promise.all([
-            bunproClient.getUser(),
-            bunproClient.getProgress(),
-            bunproClient.getReviews()
-          ]);
-
-          bunproData = {
-            user: userInfo,
-            progress: progressInfo,
-            reviews,
-            grammar_points_learned: progressInfo.grammar_points_learned,
-            accuracy: progressInfo.accuracy_percentage,
-            srs_average: progressInfo.average_srs_level,
-            reviewsAvailable: reviews.reviews_available,
-            lastSync: new Date()
-          };
-        } catch (error) {
-          console.error("Bunpro sync error:", error);
-        }
+      const srsItem = await storage.getSrsItem(srsItemId);
+      if (!srsItem) {
+        return res.status(404).json({ error: "SRS item not found" });
       }
 
-      // Update user progress
-      await storage.updateUserProgress(userId, {
-        userId,
-        wanikaniData,
-        bunproData
+      // Calculate new SRS values
+      const { newInterval, newEaseFactor, newRepetitions } = SRSAlgorithm.calculateNextReview(
+        srsItem.interval,
+        srsItem.easeFactor,
+        srsItem.repetitions,
+        quality
+      );
+
+      const nextReview = new Date();
+      nextReview.setDate(nextReview.getDate() + newInterval);
+
+      const newMastery = SRSAlgorithm.determineMastery(newRepetitions, newInterval);
+
+      // Update SRS item
+      const updatedItem = await storage.updateSrsItem(srsItemId, {
+        interval: newInterval,
+        easeFactor: newEaseFactor,
+        repetitions: newRepetitions,
+        lastReviewed: new Date(),
+        nextReview,
+        correctCount: quality >= 3 ? srsItem.correctCount + 1 : srsItem.correctCount,
+        incorrectCount: quality < 3 ? srsItem.incorrectCount + 1 : srsItem.incorrectCount,
+        mastery: newMastery
       });
-
-      // Check for new achievements
-      const newAchievements = await checkAchievements(userId);
 
       res.json({
-        message: "Data synced successfully",
-        wanikaniSynced: !!wanikaniData,
-        bunproSynced: !!bunproData,
-        newAchievements
+        updatedItem,
+        wasCorrect: quality >= 3,
+        nextReviewDate: nextReview
       });
     } catch (error) {
-      console.error("Sync data error:", error);
-      res.status(500).json({ message: "Failed to sync data" });
+      console.error("Error submitting review:", error);
+      res.status(500).json({ error: "Failed to submit review" });
     }
   });
 
-  // Record study session
+  // Start study session
   app.post("/api/study-session", async (req, res) => {
     try {
-      const sessionData = insertStudySessionSchema.parse(req.body);
       const userId = 1; // Demo user
-
+      const { sessionType } = req.body;
+      
       const session = await storage.createStudySession({
-        ...sessionData,
-        userId
+        userId,
+        sessionType: sessionType || "review",
+        cardsReviewed: 0,
+        cardsCorrect: 0,
+        timeSpentMinutes: 0,
+        xpEarned: 0
       });
 
-      // Update user streak
-      const user = await storage.getUser(userId);
-      if (user) {
-        const today = new Date();
-        const lastStudy = user.lastStudyDate;
-        let newStreak = 1;
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating study session:", error);
+      res.status(500).json({ error: "Failed to create study session" });
+    }
+  });
 
-        if (lastStudy) {
-          const daysDiff = Math.floor((today.getTime() - lastStudy.getTime()) / (1000 * 60 * 60 * 24));
-          if (daysDiff === 1) {
-            newStreak = user.currentStreak + 1;
-          } else if (daysDiff === 0) {
-            newStreak = user.currentStreak; // Same day
-          }
+  // Complete study session
+  app.put("/api/study-session/:sessionId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const { cardsReviewed, cardsCorrect, timeSpentMinutes } = req.body;
+      
+      const xpEarned = cardsCorrect * 10 + Math.min(timeSpentMinutes * 2, 50);
+      
+      const updatedSession = await storage.updateStudySession(sessionId, {
+        cardsReviewed,
+        cardsCorrect,
+        timeSpentMinutes,
+        xpEarned,
+        completedAt: new Date()
+      });
+
+      if (!updatedSession) {
+        return res.status(404).json({ error: "Study session not found" });
+      }
+
+      // Update user stats
+      const userId = updatedSession.userId;
+      const user = await storage.getUser(userId);
+      
+      if (user) {
+        const today = new Date().toDateString();
+        const lastStudyDate = user.lastStudyDate ? user.lastStudyDate.toDateString() : null;
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+        
+        let newStreak = user.currentStreak;
+        if (lastStudyDate === yesterday) {
+          newStreak = user.currentStreak + 1;
+        } else if (lastStudyDate !== today) {
+          newStreak = 1;
         }
 
         await storage.updateUser(userId, {
+          totalXP: user.totalXP + xpEarned,
           currentStreak: newStreak,
           bestStreak: Math.max(user.bestStreak, newStreak),
-          lastStudyDate: today,
-          totalXP: user.totalXP + (sessionData.xpEarned || 0)
+          lastStudyDate: new Date()
         });
 
         // Check for new achievements
         const newAchievements = await checkAchievements(userId);
-
+        
         res.json({
-          session,
-          newAchievements
+          session: updatedSession,
+          newAchievements,
+          streakUpdated: newStreak !== user.currentStreak
         });
       } else {
-        res.status(404).json({ message: "User not found" });
+        res.json({ session: updatedSession });
       }
     } catch (error) {
-      console.error("Study session error:", error);
-      res.status(400).json({ message: "Invalid session data" });
+      console.error("Error completing study session:", error);
+      res.status(500).json({ error: "Failed to complete study session" });
+    }
+  });
+
+  // Get sentence cards with filters
+  app.get("/api/sentence-cards", async (req, res) => {
+    try {
+      const { jlptLevel, register, theme, difficulty } = req.query;
+      
+      const filters: any = {};
+      if (jlptLevel) filters.jlptLevel = jlptLevel as string;
+      if (register) filters.register = register as string;
+      if (theme) filters.theme = theme as string;
+      if (difficulty) filters.difficulty = parseInt(difficulty as string);
+      
+      const cards = await storage.getSentenceCards(filters);
+      res.json(cards);
+    } catch (error) {
+      console.error("Error fetching sentence cards:", error);
+      res.status(500).json({ error: "Failed to fetch sentence cards" });
+    }
+  });
+
+  // Add new sentence card to SRS
+  app.post("/api/srs-items", async (req, res) => {
+    try {
+      const userId = 1; // Demo user
+      const { sentenceCardId } = req.body;
+      
+      // Check if user already has this card in SRS
+      const existingItems = await storage.getUserSrsItems(userId);
+      const exists = existingItems.some(item => item.sentenceCardId === sentenceCardId);
+      
+      if (exists) {
+        return res.status(400).json({ error: "Card already in SRS system" });
+      }
+
+      const srsItem = await storage.createSrsItem({
+        userId,
+        sentenceCardId,
+        interval: 1,
+        easeFactor: 2.5,
+        repetitions: 0,
+        nextReview: new Date()
+      });
+
+      res.json(srsItem);
+    } catch (error) {
+      console.error("Error adding card to SRS:", error);
+      res.status(500).json({ error: "Failed to add card to SRS" });
     }
   });
 
@@ -675,338 +389,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/achievements", async (req, res) => {
     try {
       const achievements = await storage.getAllAchievements();
+      res.json(achievements);
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      res.status(500).json({ error: "Failed to fetch achievements" });
+    }
+  });
+
+  // Get user achievements
+  app.get("/api/user-achievements", async (req, res) => {
+    try {
       const userId = 1; // Demo user
       const userAchievements = await storage.getUserAchievements(userId);
-
-      res.json({
-        achievements,
-        userAchievements
-      });
+      res.json(userAchievements);
     } catch (error) {
-      console.error("Achievements error:", error);
-      res.status(500).json({ message: "Failed to load achievements" });
+      console.error("Error fetching user achievements:", error);
+      res.status(500).json({ error: "Failed to fetch user achievements" });
     }
   });
 
-  // Social features endpoints
-  app.get("/api/social", async (req, res) => {
+  // Get learning statistics
+  app.get("/api/stats", async (req, res) => {
     try {
-      // Create realistic social data with authentic user interactions
-      const socialData = {
-        leaderboards: {
-          xp: [
-            { id: 1, displayName: "Sakura学習者", totalXP: 15420, profileImageUrl: null },
-            { id: 2, displayName: "KanjiMaster", totalXP: 14890, profileImageUrl: null },
-            { id: 3, displayName: "日本語頑張る", totalXP: 13650, profileImageUrl: null },
-            { id: 4, displayName: "TokyoBound", totalXP: 12780, profileImageUrl: null },
-            { id: 5, displayName: "AnimeFan学習", totalXP: 11920, profileImageUrl: null },
-            { id: 6, displayName: "N1目標", totalXP: 11340, profileImageUrl: null },
-            { id: 7, displayName: "GrammarGuru", totalXP: 10850, profileImageUrl: null },
-            { id: 8, displayName: "VocabVoyager", totalXP: 10200, profileImageUrl: null },
-            { id: 9, displayName: "JLPTチャレンジ", totalXP: 9780, profileImageUrl: null },
-            { id: 10, displayName: "漢字Love", totalXP: 9250, profileImageUrl: null }
-          ],
-          reviews: [
-            { id: 1, displayName: "ReviewRocket", reviewsCompleted: 2580, profileImageUrl: null },
-            { id: 2, displayName: "毎日復習", reviewsCompleted: 2340, profileImageUrl: null },
-            { id: 3, displayName: "SRSMaster", reviewsCompleted: 2180, profileImageUrl: null },
-            { id: 4, displayName: "復習王", reviewsCompleted: 1950, profileImageUrl: null },
-            { id: 5, displayName: "StudyStreak", reviewsCompleted: 1820, profileImageUrl: null },
-            { id: 6, displayName: "WaniWarrior", reviewsCompleted: 1690, profileImageUrl: null },
-            { id: 7, displayName: "BunproBooster", reviewsCompleted: 1540, profileImageUrl: null },
-            { id: 8, displayName: "FlashcardFan", reviewsCompleted: 1380, profileImageUrl: null },
-            { id: 9, displayName: "記憶マスター", reviewsCompleted: 1250, profileImageUrl: null },
-            { id: 10, displayName: "QuizQueen", reviewsCompleted: 1120, profileImageUrl: null }
-          ]
+      const userId = 1; // Demo user
+      const srsItems = await storage.getUserSrsItems(userId);
+      const studySessions = await storage.getUserStudySessions(userId, 30);
+      
+      // Calculate detailed statistics
+      const stats = {
+        totalCards: srsItems.length,
+        masteryBreakdown: {
+          new: srsItems.filter(item => item.mastery === "new").length,
+          learning: srsItems.filter(item => item.mastery === "learning").length,
+          review: srsItems.filter(item => item.mastery === "review").length,
+          mastered: srsItems.filter(item => item.mastery === "mastered").length
         },
-        studyGroups: [
-          {
-            id: 1,
-            name: "JLPT N5 Beginners Circle",
-            description: "Friendly group for absolute beginners learning hiragana, katakana, and basic vocabulary together.",
-            jlptLevel: "N5",
-            memberCount: 28,
-            isPrivate: false,
-            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 2,
-            name: "Anime & Manga Study Club",
-            description: "Learn Japanese through your favorite anime and manga! We discuss vocabulary, grammar, and cultural references.",
-            jlptLevel: "N4",
-            memberCount: 42,
-            isPrivate: false,
-            createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 3,
-            name: "N3 Grammar Warriors",
-            description: "Tackling intermediate grammar together. Daily practice sessions and group discussions.",
-            jlptLevel: "N3",
-            memberCount: 35,
-            isPrivate: false,
-            createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 4,
-            name: "Business Japanese Network",
-            description: "Professional Japanese for workplace communication. Keigo, business emails, and presentation skills.",
-            jlptLevel: "N2",
-            memberCount: 19,
-            isPrivate: false,
-            createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 5,
-            name: "Native-Level Conversation",
-            description: "Advanced discussions on literature, news, and complex topics. Native speakers welcome!",
-            jlptLevel: "N1",
-            memberCount: 15,
-            isPrivate: false,
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 6,
-            name: "Kanji Deep Dive",
-            description: "Exploring kanji etymology, radicals, and advanced readings. For serious kanji enthusiasts.",
-            jlptLevel: "Mixed",
-            memberCount: 23,
-            isPrivate: false,
-            createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        ],
-        challenges: [
-          {
-            id: 1,
-            title: "Weekly Review Streak",
-            description: "Complete at least 50 reviews every day for 7 consecutive days",
-            type: "weekly",
-            target: 350,
-            metric: "reviews",
-            xpReward: 500,
-            userProgress: 280,
-            isJoined: true,
-            startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true
-          },
-          {
-            id: 2,
-            title: "Kanji Master Challenge",
-            description: "Learn 100 new kanji this month through WaniKani lessons",
-            type: "monthly",
-            target: 100,
-            metric: "kanji_learned",
-            xpReward: 1000,
-            userProgress: 67,
-            isJoined: true,
-            startDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-            endDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true
-          },
-          {
-            id: 3,
-            title: "Grammar Point Speedrun",
-            description: "Complete 25 new grammar points on Bunpro in one week",
-            type: "weekly",
-            target: 25,
-            metric: "grammar_points",
-            xpReward: 300,
-            userProgress: 0,
-            isJoined: false,
-            startDate: new Date().toISOString(),
-            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true
-          },
-          {
-            id: 4,
-            title: "Daily Study Commitment",
-            description: "Study for at least 30 minutes every single day",
-            type: "daily",
-            target: 30,
-            metric: "study_minutes",
-            xpReward: 50,
-            userProgress: 25,
-            isJoined: true,
-            startDate: new Date().toISOString(),
-            endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true
-          },
-          {
-            id: 5,
-            title: "XP Accumulator",
-            description: "Earn 1000 XP this week through various study activities",
-            type: "weekly",
-            target: 1000,
-            metric: "xp_earned",
-            xpReward: 200,
-            userProgress: 450,
-            isJoined: true,
-            startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true
-          }
-        ],
-        studyBuddies: [
-          {
-            id: 1,
-            displayName: "YukiStudies",
-            currentJLPTLevel: "N4",
-            totalXP: 8500,
-            profileImageUrl: null,
-            lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 2,
-            displayName: "KenjiLearner",
-            currentJLPTLevel: "N3",
-            totalXP: 12300,
-            profileImageUrl: null,
-            lastActive: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 3,
-            displayName: "MikoGrammar",
-            currentJLPTLevel: "N2",
-            totalXP: 15800,
-            profileImageUrl: null,
-            lastActive: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-          }
-        ],
-        buddyRequests: [
-          {
-            id: 1,
-            displayName: "NewLearner2024",
-            message: "Hi! I'm also studying for N4 and would love to practice together. I'm particularly working on grammar patterns.",
-            currentJLPTLevel: "N4",
-            totalXP: 3200,
-            profileImageUrl: null,
-            requestedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: 2,
-            displayName: "TokyoDreamer",
-            message: "I saw you're also doing WaniKani! Want to motivate each other with daily check-ins?",
-            currentJLPTLevel: "N5",
-            totalXP: 1850,
-            profileImageUrl: null,
-            requestedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()
-          }
-        ]
+        averageAccuracy: studySessions.length > 0 
+          ? Math.round(
+              studySessions.reduce((sum, session) => 
+                sum + (session.cardsCorrect / Math.max(session.cardsReviewed, 1)) * 100, 0
+              ) / studySessions.length
+            )
+          : 0,
+        totalStudyTime: studySessions.reduce((sum, session) => sum + session.timeSpentMinutes, 0),
+        studyStreak: (await storage.getUser(userId))?.currentStreak || 0
       };
 
-      res.json(socialData);
+      res.json(stats);
     } catch (error) {
-      console.error("Error fetching social data:", error);
-      res.status(500).json({ message: "Failed to fetch social data" });
-    }
-  });
-
-  // Study Groups endpoints
-  app.post("/api/study-groups", async (req, res) => {
-    try {
-      const groupData = req.body;
-      // For now, return a mock created group
-      const newGroup = {
-        id: Date.now(),
-        ...groupData,
-        memberCount: 1,
-        createdAt: new Date().toISOString()
-      };
-      res.json(newGroup);
-    } catch (error) {
-      console.error("Error creating study group:", error);
-      res.status(500).json({ message: "Failed to create study group" });
-    }
-  });
-
-  app.post("/api/study-groups/:id/join", async (req, res) => {
-    try {
-      const groupId = parseInt(req.params.id);
-      // Return success response for joining
-      res.json({ success: true, groupId, message: "Successfully joined study group!" });
-    } catch (error) {
-      console.error("Error joining study group:", error);
-      res.status(500).json({ message: "Failed to join study group" });
-    }
-  });
-
-  // Challenges endpoints
-  app.post("/api/challenges/:id/join", async (req, res) => {
-    try {
-      const challengeId = parseInt(req.params.id);
-      // Return success response for joining
-      res.json({ success: true, challengeId, message: "Challenge joined! Good luck!" });
-    } catch (error) {
-      console.error("Error joining challenge:", error);
-      res.status(500).json({ message: "Failed to join challenge" });
-    }
-  });
-
-  // Study Buddy endpoints
-  app.post("/api/study-buddies/request", async (req, res) => {
-    try {
-      const requestData = req.body;
-      // Return success response for buddy request
-      res.json({ success: true, message: "Buddy request sent!" });
-    } catch (error) {
-      console.error("Error sending buddy request:", error);
-      res.status(500).json({ message: "Failed to send buddy request" });
-    }
-  });
-
-  app.post("/api/study-buddies/accept/:id", async (req, res) => {
-    try {
-      const requestId = parseInt(req.params.id);
-      // Return success response for accepting
-      res.json({ success: true, requestId, message: "Buddy request accepted!" });
-    } catch (error) {
-      console.error("Error accepting buddy request:", error);
-      res.status(500).json({ message: "Failed to accept buddy request" });
-    }
-  });
-
-  // SRS Learning System routes
-  app.get('/api/grammar', async (req, res) => {
-    try {
-      const result = await storage.getAllGrammarPoints();
-      res.json(result);
-    } catch (error) {
-      console.error('Error fetching grammar points:', error);
-      res.status(500).json({ error: 'Failed to fetch grammar points' });
-    }
-  });
-
-  app.get('/api/kanji', async (req, res) => {
-    try {
-      const result = await storage.getAllKanji();
-      res.json(result);
-    } catch (error) {
-      console.error('Error fetching kanji:', error);
-      res.status(500).json({ error: 'Failed to fetch kanji' });
-    }
-  });
-
-  app.get('/api/vocabulary', async (req, res) => {
-    try {
-      const result = await storage.getAllVocabulary();
-      res.json(result);
-    } catch (error) {
-      console.error('Error fetching vocabulary:', error);
-      res.status(500).json({ error: 'Failed to fetch vocabulary' });
-    }
-  });
-
-  app.get('/api/reviews/queue', async (req, res) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ error: 'Not authenticated' });
-      }
-      // Return empty queue for now - SRS items will be implemented as users unlock content
-      res.json([]);
-    } catch (error) {
-      console.error('Error fetching review queue:', error);
-      res.status(500).json({ error: 'Failed to fetch review queue' });
+      console.error("Error fetching statistics:", error);
+      res.status(500).json({ error: "Failed to fetch statistics" });
     }
   });
 

@@ -1,370 +1,454 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Languages, Type, Clock, Target, Award } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useLanguageContent } from "@/App";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { ChevronLeft, Volume2, Eye, EyeOff, RotateCcw, CheckCircle, XCircle, Star } from "lucide-react";
+import { Link } from "wouter";
 
-interface GrammarPoint {
-  id: number;
-  title: string;
-  titleJapanese: string;
-  jlptLevel: string;
-  structure: string;
-  meaning: string;
-  examples: Array<{
+interface ReviewCard {
+  srsItem: {
+    id: number;
+    interval: number;
+    repetitions: number;
+    mastery: string;
+    correctCount: number;
+    incorrectCount: number;
+  };
+  sentenceCard: {
+    id: number;
     japanese: string;
-    english: string;
     reading: string;
-  }>;
-  notes?: string;
-  tags?: string[];
-  difficulty: number;
+    english: string;
+    jlptLevel: string;
+    difficulty: number;
+    register: string;
+    theme: string;
+    source: string;
+    grammarPoints: string[];
+    vocabulary: string[];
+    culturalNotes: string;
+  };
 }
 
-interface Kanji {
+interface StudySession {
   id: number;
-  character: string;
-  jlptLevel: string;
-  meaning: string;
-  onyomi?: string[];
-  kunyomi?: string[];
-  radicals?: string[];
-  strokeCount: number;
-  frequency?: number;
-  examples: Array<{
-    word: string;
-    reading: string;
-    meaning: string;
-  }>;
-  mnemonics?: string;
-}
-
-interface Vocabulary {
-  id: number;
-  word: string;
-  reading: string;
-  meaning: string;
-  partOfSpeech: string;
-  jlptLevel: string;
-  kanjiIds?: number[];
-  examples: Array<{
-    japanese: string;
-    english: string;
-    reading: string;
-  }>;
-  difficulty: number;
+  cardsReviewed: number;
+  cardsCorrect: number;
+  timeSpentMinutes: number;
 }
 
 export default function StudyPage() {
-  const [selectedTab, setSelectedTab] = useState("overview");
-  const content = useLanguageContent("en");
-
-  const { data: grammarPoints = [], isLoading: grammarLoading } = useQuery<GrammarPoint[]>({
-    queryKey: ["/api/grammar"],
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [showReading, setShowReading] = useState(false);
+  const [sessionStartTime] = useState(Date.now());
+  const [currentSession, setCurrentSession] = useState<StudySession | null>(null);
+  const [sessionStats, setSessionStats] = useState({
+    cardsReviewed: 0,
+    cardsCorrect: 0,
+    totalCards: 0
   });
 
-  const { data: kanji = [], isLoading: kanjiLoading } = useQuery<Kanji[]>({
-    queryKey: ["/api/kanji"],
+  // Fetch review queue
+  const { data: reviewQueue, isLoading, error } = useQuery<ReviewCard[]>({
+    queryKey: ["/api/review-queue"],
+    refetchOnWindowFocus: false
   });
 
-  const { data: vocabulary = [], isLoading: vocabularyLoading } = useQuery<Vocabulary[]>({
-    queryKey: ["/api/vocabulary"],
+  // Start study session
+  const startSessionMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/study-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionType: "review" })
+      });
+      if (!response.ok) throw new Error("Failed to start session");
+      return response.json();
+    },
+    onSuccess: (session) => {
+      setCurrentSession(session);
+    }
   });
 
-  const { data: reviewQueue = [], isLoading: reviewLoading } = useQuery({
-    queryKey: ["/api/reviews/queue"],
+  // Submit review
+  const submitReviewMutation = useMutation({
+    mutationFn: async ({ srsItemId, quality }: { srsItemId: number; quality: number }) => {
+      const response = await fetch(`/api/review/${srsItemId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quality })
+      });
+      if (!response.ok) throw new Error("Failed to submit review");
+      return response.json();
+    },
+    onSuccess: () => {
+      // Refresh review queue
+      queryClient.invalidateQueries({ queryKey: ["/api/review-queue"] });
+    }
   });
 
-  if (grammarLoading || kanjiLoading || vocabularyLoading || reviewLoading) {
+  // Complete session
+  const completeSessionMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentSession) return null;
+      
+      const timeSpentMinutes = Math.round((Date.now() - sessionStartTime) / 60000);
+      const response = await fetch(`/api/study-session/${currentSession.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cardsReviewed: sessionStats.cardsReviewed,
+          cardsCorrect: sessionStats.cardsCorrect,
+          timeSpentMinutes
+        })
+      });
+      if (!response.ok) throw new Error("Failed to complete session");
+      return response.json();
+    }
+  });
+
+  // Start session on component mount
+  useEffect(() => {
+    if (!currentSession && reviewQueue && reviewQueue.length > 0) {
+      startSessionMutation.mutate();
+      setSessionStats(prev => ({ ...prev, totalCards: reviewQueue.length }));
+    }
+  }, [reviewQueue]);
+
+  const handleAnswer = async (quality: number) => {
+    if (!reviewQueue || !reviewQueue[currentCardIndex]) return;
+
+    const currentCard = reviewQueue[currentCardIndex];
+    const wasCorrect = quality >= 3;
+
+    // Submit review
+    await submitReviewMutation.mutateAsync({
+      srsItemId: currentCard.srsItem.id,
+      quality
+    });
+
+    // Update session stats
+    setSessionStats(prev => ({
+      ...prev,
+      cardsReviewed: prev.cardsReviewed + 1,
+      cardsCorrect: prev.cardsCorrect + (wasCorrect ? 1 : 0)
+    }));
+
+    // Move to next card or complete session
+    if (currentCardIndex < reviewQueue.length - 1) {
+      setCurrentCardIndex(prev => prev + 1);
+      setShowAnswer(false);
+      setShowReading(false);
+    } else {
+      // Session complete
+      completeSessionMutation.mutate();
+    }
+  };
+
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-600">Loading study content...</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to load review queue</h2>
+          <p className="text-gray-600">Please try refreshing the page</p>
         </div>
       </div>
     );
   }
 
-  const studyStats = {
-    grammar: {
-      total: grammarPoints.length,
-      learned: 0,
-      reviews: reviewQueue.filter((item: any) => item.itemType === 'grammar').length
-    },
-    kanji: {
-      total: kanji.length,
-      learned: 0,
-      reviews: reviewQueue.filter((item: any) => item.itemType === 'kanji').length
-    },
-    vocabulary: {
-      total: vocabulary.length,
-      learned: 0,
-      reviews: reviewQueue.filter((item: any) => item.itemType === 'vocabulary').length
-    }
+  if (!reviewQueue || reviewQueue.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <Link href="/">
+              <Button variant="outline">
+                <ChevronLeft className="mr-2 h-4 w-4" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
+
+          <div className="text-center py-16">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">All caught up!</h2>
+            <p className="text-gray-600 mb-6">
+              No cards are due for review right now. Great job on staying consistent!
+            </p>
+            <Link href="/">
+              <Button>Return to Dashboard</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Session completed
+  if (sessionStats.cardsReviewed >= reviewQueue.length) {
+    const accuracy = Math.round((sessionStats.cardsCorrect / sessionStats.cardsReviewed) * 100);
+    const timeSpent = Math.round((Date.now() - sessionStartTime) / 60000);
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-16">
+            <Star className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Session Complete!</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-2xl mx-auto">
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-blue-600">{sessionStats.cardsReviewed}</div>
+                  <div className="text-sm text-gray-600">Cards Reviewed</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-green-600">{accuracy}%</div>
+                  <div className="text-sm text-gray-600">Accuracy</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-purple-600">{timeSpent}</div>
+                  <div className="text-sm text-gray-600">Minutes</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <Link href="/">
+                <Button size="lg">
+                  Return to Dashboard
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentCard = reviewQueue[currentCardIndex];
+  const progress = ((currentCardIndex + 1) / reviewQueue.length) * 100;
+
+  // Register color coding
+  const registerColors: Record<string, string> = {
+    polite: "bg-blue-100 text-blue-800",
+    casual: "bg-green-100 text-green-800",
+    anime: "bg-purple-100 text-purple-800",
+    workplace: "bg-gray-100 text-gray-800"
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900">JLPT N5 Study Center</h1>
-        <p className="text-gray-600">Master Japanese grammar, kanji, and vocabulary with our spaced repetition system</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/">
+            <Button variant="outline">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-1">
+              Card {currentCardIndex + 1} of {reviewQueue.length}
+            </div>
+            <Progress value={progress} className="w-64" />
+          </div>
+          
+          <div className="text-sm text-gray-600">
+            {sessionStats.cardsCorrect}/{sessionStats.cardsReviewed} correct
+          </div>
+        </div>
 
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="grammar">Grammar</TabsTrigger>
-          <TabsTrigger value="kanji">Kanji</TabsTrigger>
-          <TabsTrigger value="vocabulary">Vocabulary</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-          {/* Review Queue */}
-          {reviewQueue.length > 0 && (
-            <Card className="border-orange-200 bg-orange-50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-800">
-                  <Clock className="h-5 w-5" />
-                  Reviews Available
-                </CardTitle>
-                <CardDescription>
-                  You have {reviewQueue.length} items ready for review
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full bg-orange-600 hover:bg-orange-700">
-                  Start Reviews ({reviewQueue.length})
+        {/* Main Card */}
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge className={registerColors[currentCard.sentenceCard.register] || "bg-gray-100 text-gray-800"}>
+                  {currentCard.sentenceCard.register}
+                </Badge>
+                <Badge variant="outline">{currentCard.sentenceCard.jlptLevel}</Badge>
+                <Badge variant="outline">{currentCard.sentenceCard.theme}</Badge>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowReading(!showReading)}
+                >
+                  {showReading ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  Reading
                 </Button>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Study Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-blue-600" />
-                  Grammar Points
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{studyStats.grammar.learned}/{studyStats.grammar.total}</span>
-                </div>
-                <Progress value={(studyStats.grammar.learned / studyStats.grammar.total) * 100} />
-                <div className="flex justify-between items-center">
-                  <Badge variant="secondary" className="text-xs">
-                    {studyStats.grammar.reviews} reviews
-                  </Badge>
-                  <Button size="sm" variant="outline">
-                    Study Grammar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Languages className="h-5 w-5 text-red-600" />
-                  Kanji
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{studyStats.kanji.learned}/{studyStats.kanji.total}</span>
-                </div>
-                <Progress value={(studyStats.kanji.learned / studyStats.kanji.total) * 100} />
-                <div className="flex justify-between items-center">
-                  <Badge variant="secondary" className="text-xs">
-                    {studyStats.kanji.reviews} reviews
-                  </Badge>
-                  <Button size="sm" variant="outline">
-                    Study Kanji
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Type className="h-5 w-5 text-green-600" />
-                  Vocabulary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{studyStats.vocabulary.learned}/{studyStats.vocabulary.total}</span>
-                </div>
-                <Progress value={(studyStats.vocabulary.learned / studyStats.vocabulary.total) * 100} />
-                <div className="flex justify-between items-center">
-                  <Badge variant="secondary" className="text-xs">
-                    {studyStats.vocabulary.reviews} reviews
-                  </Badge>
-                  <Button size="sm" variant="outline">
-                    Study Vocabulary
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="grammar" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Grammar Points</h2>
-            <Badge variant="outline">{grammarPoints.length} total</Badge>
-          </div>
+                <Button variant="outline" size="sm">
+                  <Volume2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
           
-          <div className="grid gap-4">
-            {grammarPoints.map((point) => (
-              <Card key={point.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{point.title}</CardTitle>
-                      <CardDescription className="text-lg font-japanese">
-                        {point.titleJapanese}
-                      </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">{point.jlptLevel}</Badge>
-                      <Badge variant="outline">Level {point.difficulty}</Badge>
-                    </div>
+          <CardContent className="space-y-6">
+            {/* Japanese Sentence */}
+            <div className="text-center">
+              <div className="text-4xl font-medium mb-2 text-gray-900 leading-relaxed">
+                {currentCard.sentenceCard.japanese}
+              </div>
+              {showReading && (
+                <div className="text-lg text-gray-600">
+                  {currentCard.sentenceCard.reading}
+                </div>
+              )}
+            </div>
+
+            {/* Show Answer Button */}
+            {!showAnswer && (
+              <div className="text-center">
+                <Button
+                  onClick={() => setShowAnswer(true)}
+                  size="lg"
+                  className="px-8"
+                >
+                  Show Answer
+                </Button>
+              </div>
+            )}
+
+            {/* Answer Section */}
+            {showAnswer && (
+              <div className="space-y-6">
+                {/* English Translation */}
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="text-xl text-gray-900">
+                    {currentCard.sentenceCard.english}
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
+                </div>
+
+                {/* Grammar Points */}
+                {currentCard.sentenceCard.grammarPoints && currentCard.sentenceCard.grammarPoints.length > 0 && (
                   <div>
-                    <p className="font-semibold text-sm">Structure:</p>
-                    <p className="text-sm text-gray-600">{point.structure}</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">Grammar Points:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {currentCard.sentenceCard.grammarPoints.map((point, index) => (
+                        <Badge key={index} variant="secondary">{point}</Badge>
+                      ))}
+                    </div>
                   </div>
+                )}
+
+                {/* Vocabulary */}
+                {currentCard.sentenceCard.vocabulary && currentCard.sentenceCard.vocabulary.length > 0 && (
                   <div>
-                    <p className="font-semibold text-sm">Meaning:</p>
-                    <p className="text-sm text-gray-600">{point.meaning}</p>
-                  </div>
-                  {point.examples && point.examples.length > 0 && (
-                    <div>
-                      <p className="font-semibold text-sm">Example:</p>
-                      <div className="bg-gray-50 p-3 rounded space-y-1">
-                        <p className="font-japanese text-lg">{point.examples[0].japanese}</p>
-                        <p className="text-sm text-gray-600">{point.examples[0].reading}</p>
-                        <p className="text-sm">{point.examples[0].english}</p>
-                      </div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Key Vocabulary:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {currentCard.sentenceCard.vocabulary.map((word, index) => (
+                        <Badge key={index} variant="outline">{word}</Badge>
+                      ))}
                     </div>
-                  )}
-                  <Button size="sm" className="w-full">
-                    Study This Grammar Point
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+                  </div>
+                )}
 
-        <TabsContent value="kanji" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Kanji Characters</h2>
-            <Badge variant="outline">{kanji.length} total</Badge>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {kanji.map((kanjiChar) => (
-              <Card key={kanjiChar.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="text-center">
-                  <div className="text-6xl font-bold text-gray-800 mb-2">
-                    {kanjiChar.character}
+                {/* Cultural Notes */}
+                {currentCard.sentenceCard.culturalNotes && (
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h3 className="font-semibold text-blue-900 mb-2">Cultural Note:</h3>
+                    <p className="text-blue-800">{currentCard.sentenceCard.culturalNotes}</p>
                   </div>
-                  <CardTitle className="text-lg">{kanjiChar.meaning}</CardTitle>
-                  <div className="flex justify-center gap-2">
-                    <Badge variant="secondary">{kanjiChar.jlptLevel}</Badge>
-                    <Badge variant="outline">{kanjiChar.strokeCount} strokes</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {kanjiChar.onyomi && kanjiChar.onyomi.length > 0 && (
-                    <div>
-                      <p className="font-semibold text-sm">On'yomi:</p>
-                      <p className="text-sm text-gray-600">{kanjiChar.onyomi.join(", ")}</p>
-                    </div>
-                  )}
-                  {kanjiChar.kunyomi && kanjiChar.kunyomi.length > 0 && (
-                    <div>
-                      <p className="font-semibold text-sm">Kun'yomi:</p>
-                      <p className="text-sm text-gray-600">{kanjiChar.kunyomi.join(", ")}</p>
-                    </div>
-                  )}
-                  {kanjiChar.examples && kanjiChar.examples.length > 0 && (
-                    <div>
-                      <p className="font-semibold text-sm">Example:</p>
-                      <div className="bg-gray-50 p-2 rounded text-sm">
-                        <p className="font-japanese">{kanjiChar.examples[0].word}</p>
-                        <p className="text-gray-600">{kanjiChar.examples[0].reading}</p>
-                        <p>{kanjiChar.examples[0].meaning}</p>
-                      </div>
-                    </div>
-                  )}
-                  <Button size="sm" className="w-full">
-                    Study This Kanji
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+                )}
 
-        <TabsContent value="vocabulary" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Vocabulary Words</h2>
-            <Badge variant="outline">{vocabulary.length} total</Badge>
-          </div>
-          
-          <div className="grid gap-4">
-            {vocabulary.map((word) => (
-              <Card key={word.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <CardTitle className="text-xl font-japanese">{word.word}</CardTitle>
-                      <CardDescription className="text-lg">{word.reading}</CardDescription>
-                      <p className="text-base">{word.meaning}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">{word.jlptLevel}</Badge>
-                      <Badge variant="outline">{word.partOfSpeech}</Badge>
-                      <Badge variant="outline">Level {word.difficulty}</Badge>
-                    </div>
+                {/* Source */}
+                {currentCard.sentenceCard.source && (
+                  <div className="text-sm text-gray-600 text-center">
+                    Source: {currentCard.sentenceCard.source}
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {word.examples && word.examples.length > 0 && (
-                    <div>
-                      <p className="font-semibold text-sm">Example:</p>
-                      <div className="bg-gray-50 p-3 rounded space-y-1">
-                        <p className="font-japanese text-lg">{word.examples[0].japanese}</p>
-                        <p className="text-sm text-gray-600">{word.examples[0].reading}</p>
-                        <p className="text-sm">{word.examples[0].english}</p>
-                      </div>
-                    </div>
-                  )}
-                  <Button size="sm" className="w-full">
-                    Study This Word
+                )}
+
+                {/* Answer Buttons */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Button
+                    onClick={() => handleAnswer(1)}
+                    variant="destructive"
+                    className="flex flex-col py-4 h-auto"
+                    disabled={submitReviewMutation.isPending}
+                  >
+                    <XCircle className="h-5 w-5 mb-1" />
+                    <span>Again</span>
+                    <span className="text-xs opacity-80">Hard</span>
                   </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+                  
+                  <Button
+                    onClick={() => handleAnswer(2)}
+                    variant="outline"
+                    className="flex flex-col py-4 h-auto border-orange-300 text-orange-700 hover:bg-orange-50"
+                    disabled={submitReviewMutation.isPending}
+                  >
+                    <RotateCcw className="h-5 w-5 mb-1" />
+                    <span>Hard</span>
+                    <span className="text-xs opacity-80">Difficult</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleAnswer(3)}
+                    variant="outline"
+                    className="flex flex-col py-4 h-auto border-blue-300 text-blue-700 hover:bg-blue-50"
+                    disabled={submitReviewMutation.isPending}
+                  >
+                    <CheckCircle className="h-5 w-5 mb-1" />
+                    <span>Good</span>
+                    <span className="text-xs opacity-80">Normal</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleAnswer(5)}
+                    variant="default"
+                    className="flex flex-col py-4 h-auto bg-green-600 hover:bg-green-700"
+                    disabled={submitReviewMutation.isPending}
+                  >
+                    <Star className="h-5 w-5 mb-1" />
+                    <span>Easy</span>
+                    <span className="text-xs opacity-80">Perfect</span>
+                  </Button>
+                </div>
+
+                {/* SRS Info */}
+                <div className="text-center text-sm text-gray-600 p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    Mastery: <span className="font-medium">{currentCard.srsItem.mastery}</span> •
+                    Interval: <span className="font-medium">{currentCard.srsItem.interval} days</span> •
+                    Reviews: <span className="font-medium">{currentCard.srsItem.repetitions}</span>
+                  </div>
+                  <div className="mt-1">
+                    Success Rate: <span className="font-medium">
+                      {currentCard.srsItem.correctCount + currentCard.srsItem.incorrectCount > 0
+                        ? Math.round((currentCard.srsItem.correctCount / (currentCard.srsItem.correctCount + currentCard.srsItem.incorrectCount)) * 100)
+                        : 0}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

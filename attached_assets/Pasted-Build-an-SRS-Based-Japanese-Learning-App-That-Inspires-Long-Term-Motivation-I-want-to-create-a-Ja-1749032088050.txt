@@ -1,0 +1,209 @@
+Build an SRS-Based Japanese Learning App That Inspires Long-Term Motivation
+
+> I want to create a Japanese learning web app (and eventually mobile app) that uses a serious, effective SRS (Spaced Repetition System) at its core — not a gamified or shallow learning tool like Duolingo. The #1 goal is to build consistency and motivation for long-term learners.
+
+This is for learners who want to truly understand and speak Japanese, especially natural, casual, anime-style, or conversational Japanese, not just textbook sentences. They are serious about progress but need help staying consistent through an exciting, emotionally engaging app that rewards commitment and mastery — not just tapping streaks.
+
+I want you to help me conceptualize, design, and describe the entire product, including:
+
+User journey
+
+SRS engine logic
+
+UI/UX design system
+
+Motivational systems
+
+Content structure (grammar, vocab, sentence decks)
+
+Leveling and progression systems
+
+Visual identity
+
+Features that support long-term learning and habit-building
+
+
+
+
+
+---
+
+🔁 Core Learning Engine
+
+Build a powerful SRS engine that tracks mastery over time.
+
+Each card can be:
+
+A vocabulary item (word, kanji)
+
+A grammar structure
+
+A full sentence with audio and breakdown
+
+
+Use intervals based on success/failure (customizable or pre-configured)
+
+Include options for:
+
+Listening-based review
+
+Sentence re-construction
+
+Furigana toggle
+
+Tone/politeness indicators
+
+
+Track performance across grammar types and speech levels (e.g., polite, casual, masculine/feminine styles)
+
+
+
+---
+
+🧭 User Journey (Flow)
+
+1. Onboarding:
+
+Choose a goal: “Understand anime,” “Pass JLPT N5,” “Speak casually,” etc.
+
+Initial placement or start from zero
+
+Set a review habit (time of day, reminder style)
+
+“Preview your journey” — show a future sentence they’ll be able to say
+
+
+
+2. Daily Flow:
+
+Quick warm-up / motivational screen
+
+Focused review session with clear SRS logic
+
+Earn visual progression (rank-up, dojo belt, mastery flame, etc.)
+
+Post-review summary showing growth (“You’re 23% fluent in casual N5 conversations”)
+
+
+
+3. Progression:
+
+A map or dojo path with unlockable milestones
+
+Cards evolve: plain → colorized → glowing → mastered
+
+Unlock new content as levels progress (e.g., “Polite speech module unlocked”)
+
+
+
+
+
+---
+
+🧱 Leveling System
+
+Replace XP and fake progress with a dojo belt or tier system
+
+Example structure:
+
+White → Yellow → Orange → Green → Blue → Black
+
+Each belt represents mastery of a set of phrases/grammar points
+
+
+User earns badges or titles (e.g., "Listener", "Phrase Builder", "Grammar Ronin")
+
+Display a progress bar for each level ("You’ve mastered 8/15 N5 casual structures")
+
+
+
+---
+
+✨ Motivation & Habit Building
+
+Daily streaks (optional, encouraging but forgiving)
+
+“Weekly mastery check-ins”: Show what was learned, highlight gains
+
+Soft failure recovery: e.g., “You missed 3 days, welcome back — here’s a light recovery session.”
+
+Streak rescue via reflection (“Why did I miss?” → Custom restart)
+
+Visual storytelling: See your growth as a path, with checkpoints and achievements
+
+"Why this matters" moments: Sentence previews from anime or real usage (e.g., “This line is from My Hero Academia”)
+
+
+
+---
+
+💬 Sentence Card System
+
+All learning is sentence-first — vocab and grammar live inside rich examples
+
+Each sentence card includes:
+
+Native audio
+
+Furigana toggle
+
+Translation
+
+Grammar breakdown
+
+Register/usage notes (e.g., “slang / polite / rude / school setting”)
+
+Optional typing input or sentence scramble for deeper recall
+
+
+
+
+---
+
+🎨 Visual & UI/UX Style
+
+Clean, modern, warm — not childish or overly busy
+
+Light zen or anime studio aesthetics
+
+Progression = emotionally satisfying visuals (belts, ranks, glowing cards)
+
+Tap/flip/swipe mechanics, subtle SFX
+
+Focused layout: one action per screen (no clutter or multitasking)
+
+Ideal for solo learners, but community optional
+
+
+
+---
+
+🧠 Learning Paths & Content Strategy
+
+Core content should be organized by:
+
+JLPT levels (N5 → N4)
+
+Style: polite, casual, anime, school, Kansai-ben, etc.
+
+
+Include theme decks (e.g., “Yakuza-style Japanese,” “Ghibli phrases,” “Kindergarten speech”)
+
+Support user-created decks with AI-powered card generation (“Turn this anime line into a review card”)
+
+
+
+---
+
+🔧 Bonus Features
+
+Custom reminders (voice from characters, sound effects, quotes)
+
+Reflection log (“Write one sentence in Japanese today”)
+
+“Where I heard this” tagging — link cards to shows, clips, or conversations
+
+“What this means culturally” popups for idioms and slang
+
+Optional AI assistant: Explain grammar, break down cards, chat in simple Japanese
+
