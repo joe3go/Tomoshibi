@@ -1,4 +1,4 @@
-// Backup of working storage implementation
+
 import { 
   User, InsertUser, 
   SentenceCard, InsertSentenceCard,
