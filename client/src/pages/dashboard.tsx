@@ -4,6 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/sidebar";
 import JLPTJourney from "@/components/jlpt-journey";
 import JourneyMap from "@/components/journey-map";
+import ProgressTracker from "@/components/progress-tracker";
 import AchievementModal from "@/components/achievement-modal";
 import ProgressCircle from "@/components/progress-circle";
 import { Button } from "@/components/ui/button";
@@ -172,6 +173,16 @@ export default function Dashboard() {
         <main className="p-4 lg:p-8">
           {/* JLPT Progress Journey */}
           <JLPTJourney currentLevel={user?.currentJLPTLevel || "N5"} progress={progress} />
+
+          {/* Comprehensive Progress Tracker */}
+          <div className="mt-8">
+            <ProgressTracker 
+              progress={progress}
+              hasApiKeys={!!(user?.wanikaniApiKey || user?.bunproApiKey)}
+              onSync={() => syncMutation.mutate()}
+              isLoading={syncMutation.isPending}
+            />
+          </div>
 
           {/* Interactive Learning Journey Map */}
           <div className="mt-8">
