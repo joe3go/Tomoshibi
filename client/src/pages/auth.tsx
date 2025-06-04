@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation, Link } from "wouter";
+import { queryClient } from "@/lib/queryClient";
 import { Eye, EyeOff, Cherry, Sparkles } from "lucide-react";
 import { SiGoogle } from "react-icons/si";
 
@@ -18,7 +19,7 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [loginForm, setLoginForm] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -34,7 +35,7 @@ export default function AuthPage() {
     setIsLoading(true);
     
     try {
-      const response = await apiRequest("POST", "/api/auth/login", loginForm);
+      const response = await apiRequest("POST", "/api/login", loginForm);
       const data = await response.json();
       
       if (response.ok) {
@@ -43,8 +44,8 @@ export default function AuthPage() {
           description: "Successfully logged in to your account.",
         });
         
-        // Store user data and redirect to dashboard
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // Invalidate user query to refetch data
+        queryClient.invalidateQueries({ queryKey: ["/api/user"] });
         setLocation("/");
       } else {
         toast({
@@ -220,8 +221,8 @@ export default function AuthPage() {
                         id="login-email"
                         type="text"
                         placeholder="Enter your username or email"
-                        value={loginForm.email}
-                        onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                        value={loginForm.username}
+                        onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
                         required
                       />
                     </div>
