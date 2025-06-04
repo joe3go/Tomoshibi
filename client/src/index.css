@@ -17,100 +17,162 @@ html, body {
   }
 }
 
-/* Force all containers */
+/* Force dark theme on all elements */
 *, *::before, *::after {
-  background-color: inherit !important;
-  color: inherit !important;
+  background-color: hsl(220, 20%, 11%) !important;
+  color: hsl(45, 25%, 90%) !important;
 }
 
-/* Mobile responsive fixes - dark theme only */
-@media (max-width: 768px) {
-  html, body {
-    overflow-x: hidden;
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-  
-  /* Target the white section under header specifically */
-  body > div,
+/* Card backgrounds */
+.card, [class*="card"], .zen-card {
+  background-color: hsl(220, 25%, 14%) !important;
+  color: hsl(45, 25%, 90%) !important;
+  border-color: hsl(220, 15%, 22%) !important;
+}
+
+/* Mobile-first dark theme enforcement */
+@media screen and (max-width: 768px) {
+  /* Force all elements dark - highest priority */
+  *,
+  *::before,
+  *::after,
+  html,
+  body,
   #root,
   [data-reactroot],
-  .min-h-screen,
-  .app-container {
+  .min-h-screen {
     background-color: hsl(220, 20%, 11%) !important;
     color: hsl(45, 25%, 90%) !important;
   }
-  
-  /* Force all mobile elements to dark theme with higher specificity */
-  * {
+
+  /* Widget containers - solve accuracy widget text issues */
+  .widget,
+  .widget-container,
+  .progress-widget,
+  .stats-widget,
+  .accuracy-widget,
+  .streak-widget,
+  .zen-card {
+    background-color: hsl(220, 25%, 14%) !important;
+    border: 1px solid hsl(220, 15%, 22%) !important;
+    border-radius: 12px !important;
+  }
+
+  /* Widget text content - ensure readability */
+  .widget *,
+  .widget-container *,
+  .progress-widget *,
+  .stats-widget *,
+  .accuracy-widget *,
+  .streak-widget *,
+  .zen-card * {
+    color: hsl(45, 25%, 90%) !important;
+    background-color: transparent !important;
+  }
+
+  /* Progress circles and visual elements */
+  .progress-circle,
+  .circular-progress,
+  .progress-ring {
+    background-color: transparent !important;
+  }
+
+  /* Card components */
+  .card,
+  [class*="card"] {
+    background-color: hsl(220, 25%, 14%) !important;
+    border-color: hsl(220, 15%, 22%) !important;
+    color: hsl(45, 25%, 90%) !important;
+  }
+
+  .card *,
+  [class*="card"] * {
+    color: hsl(45, 25%, 90%) !important;
+  }
+
+  /* Header and navigation fixes */
+  header,
+  .header,
+  .app-header {
     background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
+    border-bottom: 1px solid hsl(220, 15%, 22%) !important;
   }
-  
-  /* Card specific overrides */
-  .card, [class*="card"], .zen-card {
+
+  /* Button styling */
+  button {
     background-color: hsl(220, 25%, 14%) !important;
     color: hsl(45, 25%, 90%) !important;
-    border-color: hsl(220, 15%, 22%) !important;
+    border: 1px solid hsl(220, 15%, 22%) !important;
   }
-  
-  /* Button overrides with better contrast */
-  button, .btn {
-    background-color: hsl(220, 25%, 14%) !important;
-    color: hsl(45, 25%, 90%) !important;
-    border-color: hsl(220, 15%, 22%) !important;
-  }
-  
-  button:hover, .btn:hover {
-    background-color: hsl(220, 30%, 18%) !important;
-  }
-  
-  /* Primary buttons */
-  .bg-primary, button[class*="primary"] {
+
+  /* Primary action buttons */
+  .bg-primary,
+  button[class*="primary"],
+  .primary-button {
     background-color: hsl(38, 75%, 67%) !important;
     color: hsl(220, 20%, 11%) !important;
+    border: none !important;
   }
-  
-  /* Input overrides */
-  input, select, textarea {
-    background-color: hsl(220, 20%, 16%) !important;
-    color: hsl(45, 25%, 90%) !important;
-    border-color: hsl(220, 15%, 22%) !important;
-  }
-  
-  /* Text color improvements */
+
+  /* Text hierarchy */
   h1, h2, h3, h4, h5, h6 {
     color: hsl(45, 25%, 90%) !important;
+    font-weight: 600 !important;
   }
-  
-  p, span, div {
+
+  p, span, div, label {
     color: hsl(45, 25%, 90%) !important;
   }
-  
-  /* Muted text for better hierarchy */
-  .text-muted, .text-muted-foreground, small {
+
+  /* Muted text for secondary information */
+  .text-muted,
+  .text-muted-foreground,
+  .text-gray-500,
+  .text-gray-600,
+  .text-gray-700,
+  small {
     color: hsl(45, 15%, 70%) !important;
   }
-  
-  /* Secondary text */
-  .text-gray-700, .text-gray-600, .text-gray-500 {
-    color: hsl(45, 15%, 70%) !important;
-  }
-  
-  /* Override any remaining white elements */
-  .bg-white, .bg-gray-50, .bg-gray-100 {
+
+  /* Eliminate white backgrounds */
+  .bg-white,
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-gray-200 {
     background-color: hsl(220, 20%, 11%) !important;
   }
-  
-  .text-black, .text-gray-900, .text-gray-800 {
+
+  /* Japanese text styling */
+  .japanese-text,
+  .japanese-card {
+    background-color: hsl(220, 25%, 14%) !important;
     color: hsl(45, 25%, 90%) !important;
+    border: 1px solid hsl(220, 15%, 22%) !important;
   }
-  
-  /* Main content area padding and background */
-  main, .main-content {
+
+  /* Ensure main content area is dark */
+  main,
+  .main-content,
+  .dashboard-content {
     background-color: hsl(220, 20%, 11%) !important;
     color: hsl(45, 25%, 90%) !important;
-    padding-top: 0 !important;
+  }
+
+  /* Input elements */
+  input,
+  select,
+  textarea {
+    background-color: hsl(220, 20%, 16%) !important;
+    color: hsl(45, 25%, 90%) !important;
+    border: 1px solid hsl(220, 15%, 22%) !important;
+  }
+
+  /* Tab components */
+  .tabs,
+  .tab-content,
+  .tab-trigger {
+    background-color: hsl(220, 25%, 14%) !important;
+    color: hsl(45, 25%, 90%) !important;
   }
 }
 
