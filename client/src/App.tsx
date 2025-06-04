@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sidebar, MobileNav } from "@/components/navigation";
-import Dashboard from "@/pages/dashboard";
+import Dashboard from "@/pages/dashboard-compact";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
