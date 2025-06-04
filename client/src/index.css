@@ -177,7 +177,7 @@
 }
 
 :root {
-  /* Japanese-inspired calming color palette */
+  /* Shinjuku Nightlife Theme - Light mode (for contrast) */
   --background: 43 45% 93%; /* Warm washi paper beige */
   --foreground: 30 20% 25%; /* Dark charcoal sumi ink */
   --card: 45 50% 95%; /* Soft cream card */
@@ -185,9 +185,9 @@
   --popover: 45 50% 95%;
   --popover-foreground: 30 20% 25%;
   
-  /* Primary colors - muted sage green */
-  --primary: 140 30% 45%; /* Matcha green */
-  --primary-foreground: 45 60% 98%;
+  /* Primary colors - neon purple for contrast */
+  --primary: 280 100% 70%; /* Neon purple */
+  --primary-foreground: 0 0% 100%;
   
   /* Secondary colors - soft sakura */
   --secondary: 350 25% 92%; /* Pale sakura pink */
@@ -206,7 +206,7 @@
   --destructive-foreground: 45 60% 98%;
   --border: 45 30% 88%; /* Soft border */
   --input: 45 40% 94%;
-  --ring: 140 30% 45%;
+  --ring: 280 100% 70%;
   
   /* Chart colors - Japanese inspired */
   --chart-1: 140 40% 55%; /* Matcha */
@@ -236,34 +236,65 @@
   /* Achievement Colors */
   --achievement: 45 70% 65%; /* Warm golden */
   --achievement-gold: 45 80% 55%; /* Rich gold */
+  
+  /* Nightlife neon colors */
+  --neon-pink: 320 100% 75%; /* Hot pink neon */
+  --neon-cyan: 180 100% 75%; /* Cyan neon */
+  --neon-orange: 30 100% 65%; /* Orange neon */
+  --tokyo-night: 240 15% 8%; /* Deep night blue */
+  --street-glow: 270 60% 25%; /* Purple street glow */
 }
 
 .dark {
-  /* Dark mode with Japanese night aesthetics */
-  --background: 220 20% 8%; /* Deep night blue */
-  --foreground: 45 30% 90%; /* Warm light text */
-  --card: 220 15% 12%;
-  --card-foreground: 45 30% 90%;
-  --popover: 220 15% 12%;
-  --popover-foreground: 45 30% 90%;
+  /* Material Design 3 Dark Theme - Shinjuku Nightlife Inspired */
+  --background: 0 0% 7%; /* #121212 - Material Design recommended dark surface */
+  --foreground: 0 0% 100%; /* Pure white for high contrast (15.8:1) */
+  --card: 0 0% 11%; /* 1dp elevation - 5% white overlay */
+  --card-foreground: 0 0% 95%; /* High contrast text */
+  --popover: 0 0% 13%; /* 2dp elevation - 7% white overlay */
+  --popover-foreground: 0 0% 95%;
   
-  --primary: 140 40% 60%; /* Brighter matcha in dark */
-  --primary-foreground: 220 20% 8%;
+  /* Desaturated primary - Material Design compliance */
+  --primary: 280 60% 65%; /* Desaturated purple - passes 4.5:1 contrast */
+  --primary-foreground: 0 0% 0%; /* Black text on light primary */
   
-  --secondary: 220 15% 18%;
-  --secondary-foreground: 45 30% 90%;
+  --secondary: 0 0% 18%; /* 3dp elevation surface */
+  --secondary-foreground: 0 0% 87%; /* High contrast secondary text */
   
-  --muted: 220 15% 15%;
-  --muted-foreground: 45 20% 65%;
+  --muted: 0 0% 15%; /* Lower elevation surface */
+  --muted-foreground: 0 0% 60%; /* Medium contrast for secondary info */
   
-  --accent: 220 15% 18%;
-  --accent-foreground: 45 30% 90%;
+  --accent: 0 0% 20%; /* 4dp elevation surface */
+  --accent-foreground: 0 0% 95%;
   
-  --destructive: 0 65% 65%;
-  --destructive-foreground: 45 30% 90%;
-  --border: 220 15% 20%;
-  --input: 220 15% 15%;
-  --ring: 140 40% 60%;
+  --destructive: 0 60% 50%; /* Desaturated red for accessibility */
+  --destructive-foreground: 0 0% 95%;
+  --border: 0 0% 20%; /* Subtle borders on dark theme */
+  --input: 0 0% 18%; /* Input field background */
+  --ring: 280 60% 65%; /* Focus ring matches primary */
+  
+  /* Themed accent colors - desaturated for Material Design compliance */
+  --matcha: 140 40% 50%; /* Desaturated green - maintains accessibility */
+  --bamboo: 60 30% 75%; /* Light accent color */
+  --sakura: 320 50% 65%; /* Desaturated pink - avoids optical vibration */
+  --achievement: 45 70% 55%; /* Desaturated gold - readable on dark */
+  --achievement-gold: 50 60% 60%; /* Accessible yellow-gold */
+  --neon-pink: 320 50% 65%; /* Desaturated to prevent eye strain */
+  --neon-cyan: 180 50% 60%; /* Desaturated cyan - better contrast */
+  --neon-orange: 30 60% 60%; /* Desaturated orange - accessible */
+  --tokyo-night: 0 0% 7%; /* Base dark color */
+  --street-glow: 270 40% 30%; /* Subtle accent glow */
+  
+  /* Material Design elevation surfaces */
+  --surface-1dp: 0 0% 11%; /* 5% white overlay */
+  --surface-2dp: 0 0% 12%; /* 7% white overlay */
+  --surface-3dp: 0 0% 13%; /* 8% white overlay */
+  --surface-4dp: 0 0% 14%; /* 9% white overlay */
+  --surface-6dp: 0 0% 15%; /* 11% white overlay */
+  --surface-8dp: 0 0% 16%; /* 12% white overlay */
+  --surface-12dp: 0 0% 17%; /* 14% white overlay */
+  --surface-16dp: 0 0% 18%; /* 15% white overlay */
+  --surface-24dp: 0 0% 19%; /* 16% white overlay */
 }
 
 @layer base {
@@ -272,16 +303,16 @@
   }
 
   body {
-    @apply antialiased text-foreground;
+    @apply antialiased text-foreground dark;
     font-family: 'Inter', 'Noto Sans JP', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
     background: linear-gradient(135deg, 
-      hsl(43, 50%, 94%) 0%, 
-      hsl(45, 45%, 92%) 25%, 
-      hsl(44, 48%, 93%) 50%, 
-      hsl(43, 52%, 91%) 75%,
-      hsl(45, 50%, 94%) 100%);
+      hsl(240, 15%, 8%) 0%, 
+      hsl(240, 20%, 10%) 25%, 
+      hsl(270, 25%, 12%) 50%, 
+      hsl(240, 18%, 9%) 75%,
+      hsl(240, 15%, 8%) 100%);
     background-attachment: fixed;
     min-height: 100vh;
   }

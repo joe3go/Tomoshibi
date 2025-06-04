@@ -132,30 +132,38 @@ export default function Dashboard() {
         {/* Priority Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link href="/study-mode">
-            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-primary/5 to-matcha/5 border-primary/20">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-gradient-to-br from-primary to-matcha text-white">
+            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-primary/10 to-street-glow/10 border-primary/30 hover:border-primary/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-50"></div>
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="p-3 rounded-full bg-gradient-to-br from-primary to-neon-pink text-white shadow-lg shadow-primary/25">
                   <Play className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Start Review</h3>
+                  <h3 className="font-semibold text-lg text-foreground">Start Review</h3>
                   <p className="text-muted-foreground">{stats.reviewQueue} cards ready to review</p>
-                  <div className="text-sm text-primary font-medium mt-1">Continue your learning journey</div>
+                  <div className="text-sm text-primary font-medium mt-1 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                    Continue your learning journey
+                  </div>
                 </div>
               </div>
             </div>
           </Link>
 
           <Link href="/study">
-            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-green-50 to-bamboo/10 border-green-200">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white">
+            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-neon-cyan/10 to-matcha/10 border-neon-cyan/30 hover:border-neon-cyan/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-cyan/5 to-transparent opacity-50"></div>
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="p-3 rounded-full bg-gradient-to-br from-neon-cyan to-matcha text-white shadow-lg shadow-neon-cyan/25">
                   <BookOpen className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Learn New</h3>
+                  <h3 className="font-semibold text-lg text-foreground">Learn New</h3>
                   <p className="text-muted-foreground">Practice with new sentence cards</p>
-                  <div className="text-sm text-green-600 font-medium mt-1">Expand your knowledge</div>
+                  <div className="text-sm text-neon-cyan font-medium mt-1 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></span>
+                    Expand your knowledge
+                  </div>
                 </div>
               </div>
             </div>
@@ -165,12 +173,12 @@ export default function Dashboard() {
         {/* Analytics Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* XP Progress */}
-          <div className="zen-card p-4">
+          <div className="p-4 rounded-xl border" style={{ backgroundColor: 'hsl(var(--surface-2dp))', borderColor: 'hsl(var(--border))' }}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total XP</p>
                 <p className="text-2xl font-bold text-foreground">{user.totalXP.toLocaleString()}</p>
-                <p className="text-xs text-primary">Level {stats.currentLevel}</p>
+                <p className="text-xs text-achievement">Level {stats.currentLevel}</p>
               </div>
               <div className="relative w-12 h-12">
                 <svg className="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
@@ -197,24 +205,24 @@ export default function Dashboard() {
           </div>
 
           {/* Study Streak */}
-          <div className="zen-card p-4">
+          <div className="p-4 rounded-xl border" style={{ backgroundColor: 'hsl(var(--surface-2dp))', borderColor: 'hsl(var(--border))' }}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Study Streak</p>
                 <div className="flex items-baseline gap-1">
                   <p className="text-2xl font-bold text-foreground">{user.currentStreak}</p>
-                  <p className="text-sm text-orange-600">days</p>
+                  <p className="text-sm text-neon-orange">days</p>
                 </div>
                 <p className="text-xs text-muted-foreground">Best: {user.bestStreak}</p>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <Zap className="h-6 w-6 text-orange-500" />
+                <Zap className="h-6 w-6 text-neon-orange" />
                 <div className="grid grid-cols-7 gap-0.5">
                   {Array.from({ length: 7 }, (_, i) => (
                     <div
                       key={i}
                       className={`w-1.5 h-1.5 rounded-full ${
-                        i < user.currentStreak % 7 ? 'bg-orange-400' : 'bg-muted'
+                        i < user.currentStreak % 7 ? 'bg-neon-orange' : 'bg-muted'
                       }`}
                     />
                   ))}
@@ -224,29 +232,29 @@ export default function Dashboard() {
           </div>
 
           {/* Accuracy Rate */}
-          <div className="zen-card p-4">
+          <div className="p-4 rounded-xl border" style={{ backgroundColor: 'hsl(var(--surface-2dp))', borderColor: 'hsl(var(--border))' }}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Accuracy</p>
                 <p className="text-2xl font-bold text-foreground">{stats.accuracy}%</p>
-                <div className="zen-progress h-2 w-16 mt-1">
+                <div className="h-2 w-16 mt-1 rounded-full overflow-hidden" style={{ backgroundColor: 'hsl(var(--muted))' }}>
                   <div 
-                    className="zen-progress-fill h-full"
+                    className="h-full rounded-full bg-gradient-to-r from-neon-cyan to-matcha transition-all duration-300"
                     style={{ width: `${stats.accuracy}%` }}
                   />
                 </div>
               </div>
               <div className="relative">
-                <Target className="h-6 w-6 text-green-500" />
+                <Target className="h-6 w-6 text-neon-cyan" />
                 {stats.accuracy >= 90 && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-neon-cyan rounded-full animate-ping" />
                 )}
               </div>
             </div>
           </div>
 
           {/* Cards Mastered */}
-          <div className="zen-card p-4">
+          <div className="p-4 rounded-xl border" style={{ backgroundColor: 'hsl(var(--surface-2dp))', borderColor: 'hsl(var(--border))' }}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Mastered</p>
@@ -254,12 +262,12 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">of {stats.totalCards}</p>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <Trophy className="h-6 w-6 text-purple-500" />
+                <Trophy className="h-6 w-6 text-sakura" />
                 <div className="flex gap-0.5 h-3">
                   {Array.from({ length: 5 }, (_, i) => (
                     <div
                       key={i}
-                      className={`w-1 bg-purple-400 rounded-sm ${
+                      className={`w-1 bg-sakura rounded-sm transition-opacity ${
                         i < Math.floor((stats.masteredCards / stats.totalCards) * 5) ? 'opacity-100' : 'opacity-20'
                       }`}
                     />
