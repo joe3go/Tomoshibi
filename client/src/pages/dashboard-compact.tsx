@@ -132,10 +132,9 @@ export default function Dashboard() {
         {/* Priority Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link href="/study-mode">
-            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-primary/10 to-street-glow/10 border-primary/30 hover:border-primary/50 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-50"></div>
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="p-3 rounded-full bg-gradient-to-br from-primary to-neon-pink text-white shadow-lg shadow-primary/25">
+            <div className="p-6 rounded-xl border transition-all cursor-pointer hover:border-primary/50" style={{ backgroundColor: 'hsl(var(--surface-4dp))', borderColor: 'hsl(var(--primary) / 0.3)' }}>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full text-white" style={{ backgroundColor: 'hsl(var(--primary))' }}>
                   <Play className="h-6 w-6" />
                 </div>
                 <div>
@@ -151,10 +150,9 @@ export default function Dashboard() {
           </Link>
 
           <Link href="/study">
-            <div className="zen-card p-6 hover:shadow-lg transition-all cursor-pointer bg-gradient-to-br from-neon-cyan/10 to-matcha/10 border-neon-cyan/30 hover:border-neon-cyan/50 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-cyan/5 to-transparent opacity-50"></div>
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="p-3 rounded-full bg-gradient-to-br from-neon-cyan to-matcha text-white shadow-lg shadow-neon-cyan/25">
+            <div className="p-6 rounded-xl border transition-all cursor-pointer hover:border-neon-cyan/50" style={{ backgroundColor: 'hsl(var(--surface-4dp))', borderColor: 'hsl(var(--neon-cyan) / 0.3)' }}>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full text-white" style={{ backgroundColor: 'hsl(var(--neon-cyan))' }}>
                   <BookOpen className="h-6 w-6" />
                 </div>
                 <div>
@@ -239,8 +237,11 @@ export default function Dashboard() {
                 <p className="text-2xl font-bold text-foreground">{stats.accuracy}%</p>
                 <div className="h-2 w-16 mt-1 rounded-full overflow-hidden" style={{ backgroundColor: 'hsl(var(--muted))' }}>
                   <div 
-                    className="h-full rounded-full bg-gradient-to-r from-neon-cyan to-matcha transition-all duration-300"
-                    style={{ width: `${stats.accuracy}%` }}
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ 
+                      width: `${stats.accuracy}%`,
+                      backgroundColor: 'hsl(var(--neon-cyan))'
+                    }}
                   />
                 </div>
               </div>
