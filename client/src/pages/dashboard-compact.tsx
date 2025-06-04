@@ -86,7 +86,10 @@ export default function Dashboard() {
     );
   }
 
-  const { user, stats, recentSessions, achievements } = dashboardData;
+  const user = dashboardData.user;
+  const stats = dashboardData.stats;
+  const recentSessions = dashboardData.recentSessions || [];
+  const achievements = dashboardData.achievements || [];
 
   const beltEmojis: Record<string, string> = {
     white: "🤍",
