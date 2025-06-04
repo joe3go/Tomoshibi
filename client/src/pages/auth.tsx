@@ -198,11 +198,11 @@ export default function AuthPage() {
 
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">Username</Label>
+                      <Label htmlFor="login-email">Username or Email</Label>
                       <Input
                         id="login-email"
                         type="text"
-                        placeholder="Enter your username"
+                        placeholder="Enter your username or email"
                         value={loginForm.email}
                         onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                         required

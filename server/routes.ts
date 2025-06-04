@@ -229,8 +229,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = loginSchema.parse(req.body);
       
-      // Find user by username (treating email field as username for simplicity)
-      const user = await storage.getUserByUsername(email);
+      // Try to find user by username first, then by email
+      let user = await storage.getUserByUsername(email);
+      if (!user && email.includes('@')) {
+        user = await storage.getUserByEmail?.(email);
+      }
+      
       if (!user || !user.password) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
