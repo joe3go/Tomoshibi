@@ -87,37 +87,40 @@ function Router() {
 
   if (user) {
     return (
-      <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block">
-          <Sidebar user={{
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <div className="flex">
+          {/* Desktop Sidebar */}
+          <div className="hidden md:block">
+            <Sidebar user={{
+              displayName: user.displayName || "User",
+              totalXP: user.totalXP || 0,
+              currentBelt: user.currentBelt || "white",
+              currentStreak: user.currentStreak || 0
+            }} />
+          </div>
+          
+          {/* Mobile Navigation */}
+          <MobileNav user={{
             displayName: user.displayName || "User",
             totalXP: user.totalXP || 0,
             currentBelt: user.currentBelt || "white",
             currentStreak: user.currentStreak || 0
           }} />
-        </div>
-        
-        {/* Mobile Navigation */}
-        <MobileNav user={{
-          displayName: user.displayName || "User",
-          totalXP: user.totalXP || 0,
-          currentBelt: user.currentBelt || "white",
-          currentStreak: user.currentStreak || 0
-        }} />
-        
-        {/* Main Content */}
-        <div className="flex-1 md:ml-64 mt-16 md:mt-0 min-h-screen">
-          <Switch>
-            <Route path="/" component={Dashboard} />
-            <Route path="/study" component={StudyPage} />
-            <Route path="/study-mode" component={StudyModePage} />
-            <Route path="/social" component={Social} />
-            <Route path="/achievements" component={Achievements} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/auth" component={AuthPage} />
-            <Route component={NotFound} />
-          </Switch>
+          
+          {/* Main Content */}
+          <div className="flex-1 md:ml-64 mt-16 md:mt-0 min-h-screen">
+            <Switch>
+              <Route path="/" component={Dashboard} />
+              <Route path="/study" component={StudyPage} />
+              <Route path="/study-mode" component={StudyModePage} />
+              <Route path="/social" component={Social} />
+              <Route path="/achievements" component={Achievements} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/auth" component={AuthPage} />
+              <Route component={NotFound} />
+            </Switch>
+          </div>
         </div>
       </div>
     );
@@ -298,7 +301,6 @@ function App() {
         <LanguageContext.Provider value={contextValue}>
           <TooltipProvider>
             <div className="min-h-screen bg-background text-foreground">
-              <AppHeader />
               <Toaster />
               <Router />
               <InstallPrompt />
