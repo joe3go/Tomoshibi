@@ -65,13 +65,23 @@
   
   /* Ensure main content is not hidden behind sidebar */
   main {
-    padding-top: 3.5rem !important;
+    padding-top: 3rem !important;
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
   }
   
-  header {
-    padding-top: 3.5rem !important;
+  .dashboard-header {
+    padding-top: 3rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  /* Mobile header optimizations */
+  .app-header {
+    height: 3rem !important;
+  }
+  
+  .app-header .container {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
   }

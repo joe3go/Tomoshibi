@@ -123,7 +123,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen washi-texture">
       <Sidebar user={user} />
       
-      <div className="flex-1 overflow-auto lg:ml-0 w-full pt-14">
+      <div className="flex-1 overflow-auto lg:ml-0 w-full pt-12">
         {/* Modern Welcome Section */}
         <div className="px-4 lg:px-8 py-4 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
           <div className="flex items-center justify-between">

@@ -145,20 +145,20 @@ function SimpleLanguageToggle() {
 function AppHeader() {
   return (
     <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100">
-      <div className="flex h-14 items-center justify-between px-4 lg:ml-64">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+      <div className="flex h-12 items-center justify-between px-3 lg:px-4 lg:ml-64">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
             <span className="text-white text-xs font-bold">日</span>
           </div>
-          <h1 className="hidden sm:block text-lg font-bold text-gray-900 tracking-tight">
-            Learning Journey
+          <h1 className="hidden sm:block text-base font-semibold text-gray-900">
+            Journey
           </h1>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <SimpleLanguageToggle />
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 rounded-full">
-            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+          <div className="hidden md:flex items-center gap-1 px-2 py-0.5 bg-emerald-50 rounded-full">
+            <div className="w-1 h-1 bg-emerald-500 rounded-full"></div>
             <span className="text-xs font-medium text-emerald-700">Live</span>
           </div>
         </div>
