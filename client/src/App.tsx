@@ -265,13 +265,24 @@ function App() {
     return (saved as LanguageMode) || "en";
   });
 
-  // Force dark theme on HTML element
+  // Force dark theme on HTML element and register service worker
   useEffect(() => {
     document.documentElement.classList.add('dark');
     document.documentElement.style.backgroundColor = 'hsl(220, 20%, 11%)';
     document.documentElement.style.color = 'hsl(45, 25%, 90%)';
     document.body.style.backgroundColor = 'hsl(220, 20%, 11%)';
     document.body.style.color = 'hsl(45, 25%, 90%)';
+
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    }
   }, []);
 
   const setLanguageMode = (mode: LanguageMode) => {
