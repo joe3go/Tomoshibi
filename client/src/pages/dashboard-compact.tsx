@@ -106,23 +106,16 @@ export default function Dashboard() {
   const beltProgress = ((beltIndex + 1) / beltOrder.length) * 100;
 
   return (
-    <div className="p-4 relative max-h-screen overflow-y-auto" style={{ backgroundColor: 'hsl(220, 20%, 11%)', color: 'hsl(45, 25%, 90%)' }}>
+    <div className="p-4 relative max-h-screen overflow-y-auto bg-background text-foreground">
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Welcome Header */}
-        <div 
-          className="zen-card p-4"
-          style={{ 
-            backgroundColor: 'hsl(220, 25%, 14%)', 
-            borderColor: 'hsl(220, 15%, 22%)',
-            color: 'hsl(45, 25%, 90%)'
-          }}
-        >
+        <div className="bg-card text-card-foreground border border-border rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-lg mb-1" style={{ color: 'hsl(45, 25%, 90%)', fontWeight: '600' }}>
+              <div className="text-lg mb-1 font-semibold text-foreground">
                 おかえりなさい、{user.displayName}さん
               </div>
-              <div className="text-sm" style={{ color: 'hsl(45, 15%, 70%)' }}>
+              <div className="text-sm text-muted-foreground">
                 {beltEmojis[user.currentBelt]} {user.currentBelt.charAt(0).toUpperCase() + user.currentBelt.slice(1)} Belt • JLPT {user.currentJLPTLevel}
               </div>
             </div>
@@ -203,33 +196,25 @@ export default function Dashboard() {
           </div>
 
           {/* Study Streak */}
-          <div 
-            className="p-4 rounded-xl border" 
-            style={{ 
-              backgroundColor: 'hsl(220, 25%, 14%)', 
-              borderColor: 'hsl(220, 15%, 22%)',
-              color: 'hsl(45, 25%, 90%)'
-            }}
-          >
+          <div className="p-4 rounded-xl border bg-card text-card-foreground border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: 'hsl(45, 15%, 70%)' }}>Study Streak</p>
+                <p className="text-sm font-medium text-muted-foreground">Study Streak</p>
                 <div className="flex items-baseline gap-1">
-                  <p className="text-2xl font-bold" style={{ color: 'hsl(45, 25%, 90%)' }}>{user.currentStreak}</p>
-                  <p className="text-sm" style={{ color: 'hsl(38, 75%, 67%)' }}>days</p>
+                  <p className="text-2xl font-bold text-foreground">{user.currentStreak}</p>
+                  <p className="text-sm text-primary">days</p>
                 </div>
-                <p className="text-xs" style={{ color: 'hsl(45, 15%, 70%)' }}>Best: {user.bestStreak}</p>
+                <p className="text-xs text-muted-foreground">Best: {user.bestStreak}</p>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <Zap className="h-6 w-6" style={{ color: 'hsl(38, 75%, 67%)' }} />
+                <Zap className="h-6 w-6 text-primary" />
                 <div className="grid grid-cols-7 gap-0.5">
                   {Array.from({ length: 7 }, (_, i) => (
                     <div
                       key={i}
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ 
-                        backgroundColor: i < user.currentStreak % 7 ? 'hsl(38, 75%, 67%)' : 'hsl(220, 15%, 22%)'
-                      }}
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        i < user.currentStreak % 7 ? 'bg-primary' : 'bg-muted'
+                      }`}
                     />
                   ))}
                 </div>
@@ -238,32 +223,22 @@ export default function Dashboard() {
           </div>
 
           {/* Accuracy Rate */}
-          <div 
-            className="p-4 rounded-xl border" 
-            style={{ 
-              backgroundColor: 'hsl(220, 25%, 14%)', 
-              borderColor: 'hsl(220, 15%, 22%)',
-              color: 'hsl(45, 25%, 90%)'
-            }}
-          >
+          <div className="p-4 rounded-xl border bg-card text-card-foreground border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium" style={{ color: 'hsl(45, 15%, 70%)' }}>Accuracy</p>
-                <p className="text-2xl font-bold" style={{ color: 'hsl(45, 25%, 90%)' }}>{stats.accuracy}%</p>
-                <div className="h-2 w-16 mt-1 rounded-full overflow-hidden" style={{ backgroundColor: 'hsl(220, 15%, 22%)' }}>
+                <p className="text-sm font-medium text-muted-foreground">Accuracy</p>
+                <p className="text-2xl font-bold text-foreground">{stats.accuracy}%</p>
+                <div className="h-2 w-16 mt-1 rounded-full overflow-hidden bg-muted">
                   <div 
-                    className="h-full rounded-full transition-all duration-300"
-                    style={{ 
-                      width: `${stats.accuracy}%`,
-                      backgroundColor: 'hsl(180, 30%, 50%)'
-                    }}
+                    className="h-full rounded-full transition-all duration-300 bg-cyan-500"
+                    style={{ width: `${stats.accuracy}%` }}
                   />
                 </div>
               </div>
               <div className="relative">
-                <Target className="h-6 w-6" style={{ color: 'hsl(180, 30%, 50%)' }} />
+                <Target className="h-6 w-6 text-cyan-500" />
                 {stats.accuracy >= 90 && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: 'hsl(180, 30%, 50%)' }} />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-cyan-500 rounded-full animate-ping" />
                 )}
               </div>
             </div>
