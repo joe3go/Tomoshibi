@@ -241,7 +241,8 @@ function AppHeader() {
   return (
     <header className="sticky top-0 z-30 w-full backdrop-blur-lg bg-background/90 border-b border-border">
       <div className="flex h-12 items-center justify-between px-3 lg:px-4 lg:ml-64">
-        <div className="flex items-center gap-2 ml-12 lg:ml-0">
+        <div className="flex items-center gap-3 ml-12 lg:ml-0">
+          <ThemeToggle />
           <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
             <span className="text-white text-xs font-bold">日</span>
           </div>
@@ -251,7 +252,6 @@ function AppHeader() {
         </div>
         
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <SimpleLanguageToggle />
           <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20">
             <div className="w-1 h-1 rounded-full bg-primary"></div>

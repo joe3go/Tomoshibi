@@ -3,26 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force dark theme globally - mobile first */
-html, body {
-  background-color: hsl(220, 20%, 11%) !important;
-  color: hsl(45, 25%, 90%) !important;
-}
-
-/* Target mobile viewport specifically */
-@media screen and (max-width: 1024px) {
-  html, body, #root, [data-reactroot] {
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-}
-
-/* Clean mobile styles */
-@media (max-width: 768px) {
-  body {
-    overflow-x: hidden;
-  }
-}
+/* Base layer styles */
 
 :root {
   /* Light Theme - Japanese Traditional */
@@ -116,65 +97,13 @@ html, body {
     @apply border-border;
   }
 
-  html {
-    background-color: hsl(220, 20%, 11%) !important;
-  }
-
-  body {
+  html, body {
     @apply antialiased;
     font-family: 'Inter', 'Noto Sans JP', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
-    min-height: 100vh;
-  }
-
-  /* Force dark theme */
-  html.dark,
-  .dark,
-  [data-theme="dark"] {
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Override any light theme styles */
-  .bg-background {
-    background-color: hsl(220, 20%, 11%) !important;
-  }
-  
-  .text-foreground {
-    color: hsl(45, 25%, 90%) !important;
-  }
-  
-  .text-muted-foreground {
-    color: hsl(45, 10%, 62%) !important;
-  }
-
-  /* Force all text elements to use proper colors */
-  h1, h2, h3, h4, h5, h6, p, span, div {
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Override muted text specifically */
-  .text-muted-foreground,
-  [class*="text-muted"] {
-    color: hsl(45, 10%, 62%) !important;
-  }
-
-  /* Ensure card backgrounds are correct */
-  .zen-card,
-  [class*="card"] {
-    background-color: hsl(220, 25%, 14%) !important;
-    color: hsl(45, 25%, 90%) !important;
-  }
-
-  /* Navigation and header fixes */
-  .app-header,
-  .mobile-nav,
-  .sidebar {
-    background-color: hsl(220, 20%, 11%) !important;
-    color: hsl(45, 25%, 90%) !important;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 

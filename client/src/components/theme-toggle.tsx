@@ -7,15 +7,20 @@ export default function ThemeToggle() {
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="sm"
       onClick={toggleTheme}
-      className="h-8 w-8 p-0"
+      className="h-9 w-9 p-0 border-2"
+      style={{
+        backgroundColor: theme === 'dark' ? 'hsl(220, 25%, 14%)' : 'hsl(45, 50%, 95%)',
+        borderColor: theme === 'dark' ? 'hsl(38, 75%, 67%)' : 'hsl(280, 100%, 70%)',
+        color: theme === 'dark' ? 'hsl(38, 75%, 67%)' : 'hsl(280, 100%, 70%)'
+      }}
     >
       {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
+        <Sun className="h-5 w-5" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-5 w-5" />
       )}
       <span className="sr-only">Toggle theme</span>
     </Button>
