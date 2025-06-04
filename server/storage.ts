@@ -42,6 +42,38 @@ export interface IStorage {
   // User progress operations
   getUserProgress(userId: number): Promise<UserProgress | undefined>;
   updateUserProgress(userId: number, progress: InsertUserProgress): Promise<UserProgress>;
+
+  // Social features operations
+  // Study Groups
+  getAllStudyGroups(): Promise<StudyGroup[]>;
+  getStudyGroup(id: number): Promise<StudyGroup | undefined>;
+  createStudyGroup(group: InsertStudyGroup): Promise<StudyGroup>;
+  joinStudyGroup(groupId: number, userId: number): Promise<GroupMember>;
+  getGroupMembers(groupId: number): Promise<GroupMember[]>;
+  getUserGroups(userId: number): Promise<StudyGroup[]>;
+
+  // Challenges
+  getAllChallenges(): Promise<Challenge[]>;
+  getActiveUserChallenges(userId: number): Promise<UserChallenge[]>;
+  joinChallenge(userId: number, challengeId: number): Promise<UserChallenge>;
+  updateChallengeProgress(userId: number, challengeId: number, progress: number): Promise<UserChallenge>;
+
+  // Leaderboards
+  getLeaderboard(period: string, metric: string): Promise<Leaderboard[]>;
+  updateUserLeaderboard(userId: number, period: string, metric: string, value: number): Promise<void>;
+
+  // Study Buddies
+  getStudyBuddies(userId: number): Promise<StudyBuddyPair[]>;
+  getBuddyRequests(userId: number): Promise<StudyBuddyRequest[]>;
+  sendBuddyRequest(request: InsertStudyBuddyRequest): Promise<StudyBuddyRequest>;
+  acceptBuddyRequest(requestId: number): Promise<StudyBuddyPair>;
+
+  // Forums
+  getForumCategories(): Promise<ForumCategory[]>;
+  getForumTopics(categoryId: number): Promise<ForumTopic[]>;
+  getForumPosts(topicId: number): Promise<ForumPost[]>;
+  createForumTopic(topic: InsertForumTopic): Promise<ForumTopic>;
+  createForumPost(post: InsertForumPost): Promise<ForumPost>;
 }
 
 export class MemStorage implements IStorage {

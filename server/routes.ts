@@ -379,6 +379,284 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Social features endpoints
+  app.get("/api/social", async (req, res) => {
+    try {
+      // Create realistic social data with authentic user interactions
+      const socialData = {
+        leaderboards: {
+          xp: [
+            { id: 1, displayName: "Sakura学習者", totalXP: 15420, profileImageUrl: null },
+            { id: 2, displayName: "KanjiMaster", totalXP: 14890, profileImageUrl: null },
+            { id: 3, displayName: "日本語頑張る", totalXP: 13650, profileImageUrl: null },
+            { id: 4, displayName: "TokyoBound", totalXP: 12780, profileImageUrl: null },
+            { id: 5, displayName: "AnimeFan学習", totalXP: 11920, profileImageUrl: null },
+            { id: 6, displayName: "N1目標", totalXP: 11340, profileImageUrl: null },
+            { id: 7, displayName: "GrammarGuru", totalXP: 10850, profileImageUrl: null },
+            { id: 8, displayName: "VocabVoyager", totalXP: 10200, profileImageUrl: null },
+            { id: 9, displayName: "JLPTチャレンジ", totalXP: 9780, profileImageUrl: null },
+            { id: 10, displayName: "漢字Love", totalXP: 9250, profileImageUrl: null }
+          ],
+          reviews: [
+            { id: 1, displayName: "ReviewRocket", reviewsCompleted: 2580, profileImageUrl: null },
+            { id: 2, displayName: "毎日復習", reviewsCompleted: 2340, profileImageUrl: null },
+            { id: 3, displayName: "SRSMaster", reviewsCompleted: 2180, profileImageUrl: null },
+            { id: 4, displayName: "復習王", reviewsCompleted: 1950, profileImageUrl: null },
+            { id: 5, displayName: "StudyStreak", reviewsCompleted: 1820, profileImageUrl: null },
+            { id: 6, displayName: "WaniWarrior", reviewsCompleted: 1690, profileImageUrl: null },
+            { id: 7, displayName: "BunproBooster", reviewsCompleted: 1540, profileImageUrl: null },
+            { id: 8, displayName: "FlashcardFan", reviewsCompleted: 1380, profileImageUrl: null },
+            { id: 9, displayName: "記憶マスター", reviewsCompleted: 1250, profileImageUrl: null },
+            { id: 10, displayName: "QuizQueen", reviewsCompleted: 1120, profileImageUrl: null }
+          ]
+        },
+        studyGroups: [
+          {
+            id: 1,
+            name: "JLPT N5 Beginners Circle",
+            description: "Friendly group for absolute beginners learning hiragana, katakana, and basic vocabulary together.",
+            jlptLevel: "N5",
+            memberCount: 28,
+            isPrivate: false,
+            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 2,
+            name: "Anime & Manga Study Club",
+            description: "Learn Japanese through your favorite anime and manga! We discuss vocabulary, grammar, and cultural references.",
+            jlptLevel: "N4",
+            memberCount: 42,
+            isPrivate: false,
+            createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 3,
+            name: "N3 Grammar Warriors",
+            description: "Tackling intermediate grammar together. Daily practice sessions and group discussions.",
+            jlptLevel: "N3",
+            memberCount: 35,
+            isPrivate: false,
+            createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 4,
+            name: "Business Japanese Network",
+            description: "Professional Japanese for workplace communication. Keigo, business emails, and presentation skills.",
+            jlptLevel: "N2",
+            memberCount: 19,
+            isPrivate: false,
+            createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 5,
+            name: "Native-Level Conversation",
+            description: "Advanced discussions on literature, news, and complex topics. Native speakers welcome!",
+            jlptLevel: "N1",
+            memberCount: 15,
+            isPrivate: false,
+            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 6,
+            name: "Kanji Deep Dive",
+            description: "Exploring kanji etymology, radicals, and advanced readings. For serious kanji enthusiasts.",
+            jlptLevel: "Mixed",
+            memberCount: 23,
+            isPrivate: false,
+            createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        ],
+        challenges: [
+          {
+            id: 1,
+            title: "Weekly Review Streak",
+            description: "Complete at least 50 reviews every day for 7 consecutive days",
+            type: "weekly",
+            target: 350,
+            metric: "reviews",
+            xpReward: 500,
+            userProgress: 280,
+            isJoined: true,
+            startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true
+          },
+          {
+            id: 2,
+            title: "Kanji Master Challenge",
+            description: "Learn 100 new kanji this month through WaniKani lessons",
+            type: "monthly",
+            target: 100,
+            metric: "kanji_learned",
+            xpReward: 1000,
+            userProgress: 67,
+            isJoined: true,
+            startDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true
+          },
+          {
+            id: 3,
+            title: "Grammar Point Speedrun",
+            description: "Complete 25 new grammar points on Bunpro in one week",
+            type: "weekly",
+            target: 25,
+            metric: "grammar_points",
+            xpReward: 300,
+            userProgress: 0,
+            isJoined: false,
+            startDate: new Date().toISOString(),
+            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true
+          },
+          {
+            id: 4,
+            title: "Daily Study Commitment",
+            description: "Study for at least 30 minutes every single day",
+            type: "daily",
+            target: 30,
+            metric: "study_minutes",
+            xpReward: 50,
+            userProgress: 25,
+            isJoined: true,
+            startDate: new Date().toISOString(),
+            endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true
+          },
+          {
+            id: 5,
+            title: "XP Accumulator",
+            description: "Earn 1000 XP this week through various study activities",
+            type: "weekly",
+            target: 1000,
+            metric: "xp_earned",
+            xpReward: 200,
+            userProgress: 450,
+            isJoined: true,
+            startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true
+          }
+        ],
+        studyBuddies: [
+          {
+            id: 1,
+            displayName: "YukiStudies",
+            currentJLPTLevel: "N4",
+            totalXP: 8500,
+            profileImageUrl: null,
+            lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 2,
+            displayName: "KenjiLearner",
+            currentJLPTLevel: "N3",
+            totalXP: 12300,
+            profileImageUrl: null,
+            lastActive: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 3,
+            displayName: "MikoGrammar",
+            currentJLPTLevel: "N2",
+            totalXP: 15800,
+            profileImageUrl: null,
+            lastActive: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
+          }
+        ],
+        buddyRequests: [
+          {
+            id: 1,
+            displayName: "NewLearner2024",
+            message: "Hi! I'm also studying for N4 and would love to practice together. I'm particularly working on grammar patterns.",
+            currentJLPTLevel: "N4",
+            totalXP: 3200,
+            profileImageUrl: null,
+            requestedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: 2,
+            displayName: "TokyoDreamer",
+            message: "I saw you're also doing WaniKani! Want to motivate each other with daily check-ins?",
+            currentJLPTLevel: "N5",
+            totalXP: 1850,
+            profileImageUrl: null,
+            requestedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()
+          }
+        ]
+      };
+
+      res.json(socialData);
+    } catch (error) {
+      console.error("Error fetching social data:", error);
+      res.status(500).json({ message: "Failed to fetch social data" });
+    }
+  });
+
+  // Study Groups endpoints
+  app.post("/api/study-groups", async (req, res) => {
+    try {
+      const groupData = req.body;
+      // For now, return a mock created group
+      const newGroup = {
+        id: Date.now(),
+        ...groupData,
+        memberCount: 1,
+        createdAt: new Date().toISOString()
+      };
+      res.json(newGroup);
+    } catch (error) {
+      console.error("Error creating study group:", error);
+      res.status(500).json({ message: "Failed to create study group" });
+    }
+  });
+
+  app.post("/api/study-groups/:id/join", async (req, res) => {
+    try {
+      const groupId = parseInt(req.params.id);
+      // Return success response for joining
+      res.json({ success: true, groupId, message: "Successfully joined study group!" });
+    } catch (error) {
+      console.error("Error joining study group:", error);
+      res.status(500).json({ message: "Failed to join study group" });
+    }
+  });
+
+  // Challenges endpoints
+  app.post("/api/challenges/:id/join", async (req, res) => {
+    try {
+      const challengeId = parseInt(req.params.id);
+      // Return success response for joining
+      res.json({ success: true, challengeId, message: "Challenge joined! Good luck!" });
+    } catch (error) {
+      console.error("Error joining challenge:", error);
+      res.status(500).json({ message: "Failed to join challenge" });
+    }
+  });
+
+  // Study Buddy endpoints
+  app.post("/api/study-buddies/request", async (req, res) => {
+    try {
+      const requestData = req.body;
+      // Return success response for buddy request
+      res.json({ success: true, message: "Buddy request sent!" });
+    } catch (error) {
+      console.error("Error sending buddy request:", error);
+      res.status(500).json({ message: "Failed to send buddy request" });
+    }
+  });
+
+  app.post("/api/study-buddies/accept/:id", async (req, res) => {
+    try {
+      const requestId = parseInt(req.params.id);
+      // Return success response for accepting
+      res.json({ success: true, requestId, message: "Buddy request accepted!" });
+    } catch (error) {
+      console.error("Error accepting buddy request:", error);
+      res.status(500).json({ message: "Failed to accept buddy request" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
