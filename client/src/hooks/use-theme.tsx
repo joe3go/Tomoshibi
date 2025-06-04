@@ -18,33 +18,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    const body = document.body;
     
-    // Clear all existing theme classes
+    // Clear existing theme classes
     root.classList.remove('light', 'dark');
-    body.classList.remove('light', 'dark');
     
     // Add current theme class
     root.classList.add(theme);
-    body.classList.add(theme);
-    
-    // Force immediate style application on mobile
-    const forceStyleUpdate = () => {
-      // Get all elements and force style recalculation
-      const allElements = document.querySelectorAll('*');
-      allElements.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.style.display = 'none';
-          el.offsetHeight; // Trigger reflow
-          el.style.display = '';
-        }
-      });
-    };
-    
-    // Apply mobile-specific fixes
-    if (window.innerWidth <= 768) {
-      setTimeout(forceStyleUpdate, 50);
-    }
     
     // Save to localStorage
     localStorage.setItem('theme', theme);

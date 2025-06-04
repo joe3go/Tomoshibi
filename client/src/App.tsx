@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sidebar, MobileNav } from "@/components/navigation";
 import InstallPrompt from "@/components/install-prompt";
 import ThemeToggle from "@/components/theme-toggle";
+import FloatingThemeToggle from "@/components/floating-theme-toggle";
 import { ThemeProvider } from "@/hooks/use-theme";
 import Dashboard from "@/pages/dashboard-compact";
 import Social from "@/pages/social";
@@ -242,23 +243,23 @@ function SimpleLanguageToggle() {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-30 w-full backdrop-blur-lg bg-background/90 border-b border-border">
-      <div className="flex h-12 items-center justify-between px-3 lg:px-4 lg:ml-64">
-        <div className="flex items-center gap-3 ml-12 lg:ml-0">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background border-b border-border shadow-sm">
+      <div className="flex h-full items-center justify-between px-4">
+        <div className="flex items-center gap-4">
           <ThemeToggle />
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">日</span>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+            <span className="text-white text-sm font-bold">日</span>
           </div>
-          <h1 className="hidden sm:block text-base font-semibold text-foreground">
+          <h1 className="text-lg font-semibold text-foreground">
             Journey
           </h1>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <SimpleLanguageToggle />
-          <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20">
-            <div className="w-1 h-1 rounded-full bg-primary"></div>
-            <span className="text-xs font-medium text-primary">Live</span>
+          <div className="hidden md:flex items-center gap-1 px-3 py-1 rounded-full bg-primary/20">
+            <div className="w-2 h-2 rounded-full bg-primary"></div>
+            <span className="text-sm font-medium text-primary">Live</span>
           </div>
         </div>
       </div>
@@ -301,6 +302,7 @@ function App() {
         <LanguageContext.Provider value={contextValue}>
           <TooltipProvider>
             <div className="min-h-screen bg-background text-foreground">
+              <FloatingThemeToggle />
               <Toaster />
               <Router />
               <InstallPrompt />
