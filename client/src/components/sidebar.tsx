@@ -17,8 +17,8 @@ export default function Sidebar({ user }: SidebarProps) {
 
   const navItems = [
     { path: "/", label: content.dashboard, icon: "fas fa-chart-line" },
+    { path: "/social", label: content.social, icon: "fas fa-users" },
     { path: "/achievements", label: content.achievements, icon: "fas fa-trophy" },
-    { path: "/streaks", label: "Streaks", icon: "fas fa-fire" },
     { path: "/settings", label: content.settings, icon: "fas fa-cog" },
   ];
 

@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
+import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
@@ -28,6 +29,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/social" component={Social} />
       <Route path="/achievements" component={Achievements} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
@@ -39,6 +41,7 @@ function Router() {
 export const LanguageContent = {
   en: {
     dashboard: "Dashboard",
+    social: "Social Hub",
     achievements: "Achievements", 
     settings: "Settings",
     progress: "Progress Tracking",
@@ -62,6 +65,7 @@ export const LanguageContent = {
   },
   jp: {
     dashboard: "ダッシュボード",
+    social: "ソーシャルハブ",
     achievements: "実績",
     settings: "設定",
     progress: "進歩追跡",
@@ -85,6 +89,7 @@ export const LanguageContent = {
   },
   "jp-furigana": {
     dashboard: "ダッシュボード",
+    social: "ソーシャルハブ",
     achievements: "実績（じっせき）",
     settings: "設定（せってい）",
     progress: "進歩（しんぽ）追跡（ついせき）",
