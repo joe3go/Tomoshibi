@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Eye, EyeOff, Cherry, Sparkles } from "lucide-react";
 import { SiGoogle } from "react-icons/si";
 
@@ -119,8 +119,28 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sakura via-shiro to-kawa flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+    <div className="min-h-screen bg-gradient-to-br from-sakura via-shiro to-kawa">
+      {/* Navigation Header */}
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-momiji to-ume rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">日</span>
+            </div>
+            <h1 className="text-xl font-bold text-sumi">Japanese Learning Hub</h1>
+          </Link>
+          <nav className="flex items-center space-x-4">
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                Home
+              </Button>
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <div className="min-h-[calc(100vh-73px)] flex items-center justify-center p-4">
+        <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
         {/* Hero Section */}
         <div className="hidden lg:block space-y-6 text-center lg:text-left">
           <div className="space-y-4">
@@ -334,6 +354,7 @@ export default function AuthPage() {
             </Tabs>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
