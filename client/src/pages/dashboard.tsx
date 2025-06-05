@@ -11,22 +11,22 @@ import { Link } from "wouter";
 export default function Dashboard() {
   const { data: user } = useQuery<any>({
     queryKey: ["/api/user"],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const { data: stats } = useQuery<any>({
     queryKey: ["/api/dashboard/stats"],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const { data: recentSessions } = useQuery<any[]>({
     queryKey: ["/api/dashboard/recent-sessions"],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const { data: achievements } = useQuery<any[]>({
     queryKey: ["/api/dashboard/achievements"],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   if (!user || !stats) {

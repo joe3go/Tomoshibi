@@ -1,131 +1,91 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CONSOLIDATED TOMOSHIBI COLOR SYSTEM - SINGLE SOURCE OF TRUTH */
-:root {
-  /* Tomoshibi Orange Brand Colors */
-  --tomoshibi-primary: #E55B3C;
-  --tomoshibi-primary-hover: #CC4A2C;
-  --tomoshibi-primary-light: #F26D4F;
-  
-  /* Light Theme */
-  --background: 0 0% 100%;
-  --foreground: 0 0% 5%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 5%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 5%;
-  --primary: 15 85% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 15 25% 95%;
-  --secondary-foreground: 0 0% 5%;
-  --muted: 0 0% 96%;
-  --muted-foreground: 0 0% 45%;
-  --accent: 15 15% 94%;
-  --accent-foreground: 0 0% 5%;
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 90%;
-  --input: 0 0% 96%;
-  --ring: 15 85% 55%;
-  --radius: 0.75rem;
-}
+@layer base {
+  :root {
+    /* Tomoshibi Color System - Lantern Orange/Red Primary */
+    --background: 210 11% 98%; /* #F5F7FA */
+    --foreground: 215 25% 27%; /* #2C3E50 */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 215 25% 27%; /* #2C3E50 */
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 215 25% 27%; /* #2C3E50 */
+    
+    /* Primary: Lantern Orange/Red - #E55B3C */
+    --primary: 12 79% 56%; /* #E55B3C */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Secondary: Warm Neutral */
+    --secondary: 30 25% 90%; /* #F0EBE3 */
+    --secondary-foreground: 215 25% 27%; /* #2C3E50 */
+    
+    /* Muted: Light Gray */
+    --muted: 210 17% 95%; /* #F1F5F9 */
+    --muted-foreground: 215 16% 47%; /* #64748B */
+    
+    /* Accent: Soft Orange */
+    --accent: 25 75% 94%; /* #FEF7ED */
+    --accent-foreground: 215 25% 27%; /* #2C3E50 */
+    
+    /* Destructive: Red */
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Border and Input */
+    --border: 210 14% 89%; /* #E2E8F0 */
+    --input: 210 14% 89%; /* #E2E8F0 */
+    --ring: 12 79% 56%; /* #E55B3C - matches primary */
+    
+    /* Radius */
+    --radius: 0.5rem;
+    
+    /* Custom Japanese Theme Colors */
+    --matcha: 140 30% 65%; /* #7FB069 - soft green for accents */
+    --sakura: 340 60% 85%; /* #F4C2C2 - soft pink for highlights */
+    --sumi: 215 25% 20%; /* #1A252F - dark ink color */
+    --washi: 45 25% 97%; /* #FEFCF8 - paper white */
+  }
 
-.dark {
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 6%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 6%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 15 85% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 10% 12%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 10% 15%;
-  --muted-foreground: 240 5% 65%;
-  --accent: 240 10% 15%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 10% 20%;
-  --input: 240 10% 15%;
-  --ring: 15 85% 55%;
-}
-
-/* FORCE OVERRIDE ALL COLORS TO TOMOSHIBI ORANGE */
-.bg-primary,
-.text-primary,
-.border-primary,
-button[data-state="active"],
-[aria-selected="true"],
-.active,
-.selected {
-  background-color: var(--tomoshibi-primary) !important;
-  color: var(--tomoshibi-primary) !important;
-  border-color: var(--tomoshibi-primary) !important;
-}
-
-.bg-primary {
-  color: white !important;
-}
-
-.text-primary {
-  background-color: transparent !important;
-}
-
-.hover\:bg-primary:hover,
-button:hover,
-[role="button"]:hover {
-  background-color: var(--tomoshibi-primary-hover) !important;
-}
-
-.hover\:text-primary:hover {
-  color: var(--tomoshibi-primary) !important;
-}
-
-/* Override focus and ring colors */
-*:focus,
-*:focus-visible,
-button:focus,
-[role="button"]:focus {
-  outline-color: var(--tomoshibi-primary) !important;
-  box-shadow: 0 0 0 2px var(--tomoshibi-primary) !important;
-}
-
-/* FIXED HEADER LAYOUT */
-.app-header {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 50 !important;
-  height: 64px !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
-  border-bottom: 1px solid hsl(var(--border)) !important;
-}
-
-.dark .app-header {
-  background: rgba(10, 10, 10, 0.95) !important;
-}
-
-/* MAIN CONTENT SPACING */
-.main-content {
-  padding-top: 80px !important;
-  min-height: 100vh;
-}
-
-.main-content.with-sidebar {
-  padding-top: 80px !important;
-}
-
-@media (min-width: 768px) {
-  .main-content.with-sidebar {
-    margin-left: 256px !important;
-    padding-top: 20px !important;
+  .dark {
+    /* Dark Mode - Shinjuku Bar Theme */
+    --background: 215 28% 8%; /* #0F1419 */
+    --foreground: 210 14% 89%; /* #E2E8F0 */
+    --card: 215 25% 12%; /* #1A252F */
+    --card-foreground: 210 14% 89%; /* #E2E8F0 */
+    --popover: 215 25% 12%; /* #1A252F */
+    --popover-foreground: 210 14% 89%; /* #E2E8F0 */
+    
+    /* Primary: Brighter Orange for dark mode */
+    --primary: 15 86% 58%; /* #F97316 */
+    --primary-foreground: 215 28% 8%; /* #0F1419 */
+    
+    /* Secondary: Dark warm */
+    --secondary: 215 25% 16%; /* #212B36 */
+    --secondary-foreground: 210 14% 89%; /* #E2E8F0 */
+    
+    /* Muted: Dark gray */
+    --muted: 215 25% 16%; /* #212B36 */
+    --muted-foreground: 215 16% 65%; /* #94A3B8 */
+    
+    /* Accent: Dark orange */
+    --accent: 15 100% 10%; /* #1A0F0A */
+    --accent-foreground: 210 14% 89%; /* #E2E8F0 */
+    
+    /* Destructive: Bright red for dark mode */
+    --destructive: 0 62% 56%; /* #DC2626 */
+    --destructive-foreground: 210 14% 89%; /* #E2E8F0 */
+    
+    /* Border and Input */
+    --border: 215 25% 20%; /* #293745 */
+    --input: 215 25% 20%; /* #293745 */
+    --ring: 15 86% 58%; /* #F97316 - matches primary */
+    
+    /* Custom dark theme colors */
+    --matcha: 140 25% 45%; /* #5A8A4B */
+    --sakura: 340 40% 55%; /* #C87A7A */
+    --sumi: 215 25% 8%; /* #0F1419 */
+    --washi: 215 25% 12%; /* #1A252F */
   }
 }
 
@@ -135,32 +95,133 @@ button:focus,
   }
   
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
-    font-feature-settings: "kern" 1, "liga" 1;
-    line-height: 1.6;
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
   }
 }
 
-/* Japanese typography */
-.japanese-text {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+/* App Layout Styles */
+.app-header {
+  @apply fixed top-0 left-0 right-0 z-50 h-16 bg-background/80 backdrop-blur-sm border-b border-border;
 }
 
-.furigana {
-  font-size: 0.6em;
-  line-height: 1;
-  color: hsl(var(--muted-foreground));
+.main-content {
+  @apply pt-16 min-h-screen;
 }
 
-/* Animation utilities */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.main-content.with-sidebar {
+  @apply md:pl-64;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+/* Remove any purple colors */
+.text-purple-600,
+.text-purple-500,
+.text-purple-700,
+.bg-purple-100,
+.bg-purple-200,
+.bg-purple-500,
+.bg-purple-600,
+.border-purple-200,
+.border-purple-300 {
+  @apply text-primary bg-primary/10 border-primary/20 !important;
+}
+
+/* Ensure primary color consistency */
+.bg-primary {
+  background-color: hsl(var(--primary)) !important;
+}
+
+.text-primary {
+  color: hsl(var(--primary)) !important;
+}
+
+.border-primary {
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* Button component overrides */
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 !important;
+}
+
+/* Progress component */
+[data-state="complete"] {
+  @apply bg-primary !important;
+}
+
+/* Tabs active state */
+[data-state="active"] {
+  @apply bg-primary text-primary-foreground !important;
+}
+
+/* Badge component */
+.badge-default {
+  @apply bg-primary/10 text-primary border-primary/20 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Japanese text support */
+.jp-text {
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  line-height: 1.7;
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:scale-[1.02];
+}
+
+/* Focus states */
+:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Loading animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Study card animations */
+.study-card-enter {
+  @apply opacity-0 transform scale-95 translate-y-4;
+  transition: all 0.2s ease-out;
+}
+
+.study-card-enter-active {
+  @apply opacity-100 transform scale-100 translate-y-0;
+}
+
+.study-card-exit {
+  @apply opacity-100 transform scale-100 translate-y-0;
+  transition: all 0.2s ease-in;
+}
+
+.study-card-exit-active {
+  @apply opacity-0 transform scale-95 -translate-y-4;
 }

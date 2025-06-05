@@ -84,6 +84,52 @@ const LanguageContext = createContext<LanguageContextType>({
 
 export const useLanguageMode = () => useContext(LanguageContext);
 
+export function useLanguageContent(mode: LanguageMode) {
+  const content = {
+    en: {
+      dashboard: "Dashboard",
+      achievements: "Achievements",
+      settings: "Settings",
+      progress: "Progress",
+      study: "Study",
+      social: "Social",
+      welcome: "Welcome back",
+      totalXP: "Total XP",
+      currentStreak: "Current Streak",
+      jlptLevel: "JLPT Level",
+      recentActivity: "Recent Activity"
+    },
+    jp: {
+      dashboard: "ダッシュボード",
+      achievements: "実績",
+      settings: "設定",
+      progress: "進歩",
+      study: "勉強",
+      social: "ソーシャル",
+      welcome: "おかえりなさい",
+      totalXP: "総経験値",
+      currentStreak: "現在の連続記録",
+      jlptLevel: "JLPTレベル",
+      recentActivity: "最近の活動"
+    },
+    "jp-furigana": {
+      dashboard: "ダッシュボード",
+      achievements: "実績（じっせき）",
+      settings: "設定（せってい）",
+      progress: "進歩（しんぽ）",
+      study: "勉強（べんきょう）",
+      social: "ソーシャル",
+      welcome: "おかえりなさい",
+      totalXP: "総経験値（そうけいけんち）",
+      currentStreak: "現在（げんざい）の連続記録（れんぞくきろく）",
+      jlptLevel: "JLPTレベル",
+      recentActivity: "最近（さいきん）の活動（かつどう）"
+    }
+  };
+  
+  return content[mode] || content.en;
+}
+
 function LanguageToggle() {
   const { languageMode, setLanguageMode } = useLanguageMode();
   
