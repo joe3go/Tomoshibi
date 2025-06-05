@@ -184,9 +184,11 @@ function AppHeader({ user }: { user?: any }) {
           {user ? (
             <UserMenu user={user} />
           ) : (
-            <a href="/auth" className="px-2 py-1.5 sm:px-4 sm:py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs sm:text-base touch-feedback">
-              Sign In
-            </a>
+            <Link href="/auth">
+              <a className="px-2 py-1.5 sm:px-4 sm:py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-[#5A6875] transition-colors text-xs sm:text-base touch-feedback">
+                Sign In
+              </a>
+            </Link>
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguageMode, useLanguageContent } from "@/App";
 import { 
   Play, 
   Brain, 
@@ -15,6 +16,41 @@ import {
 } from "lucide-react";
 
 export default function Landing() {
+  const { languageMode } = useLanguageMode();
+  const content = useLanguageContent(languageMode);
+
+  const heroContent = {
+    en: {
+      title: "Tomoshibi",
+      subtitle: "Light Your Path to Japanese Mastery",
+      description: "Master Japanese through authentic JLPT N5 content with our advanced spaced repetition system. Build lasting knowledge with sentence-based learning that works.",
+      startLearning: "Start Learning",
+      signIn: "Sign In",
+      tryDemo: "Try Demo",
+      noCardRequired: "No credit card required • Start learning immediately"
+    },
+    jp: {
+      title: "灯火",
+      subtitle: "日本語習得への道を照らす",
+      description: "本格的なJLPT N5コンテンツと高度な間隔反復システムで日本語をマスターしましょう。効果的な文章ベースの学習で持続的な知識を構築します。",
+      startLearning: "学習開始",
+      signIn: "サインイン",
+      tryDemo: "デモを試す",
+      noCardRequired: "クレジットカード不要 • すぐに学習開始"
+    },
+    "jp-furigana": {
+      title: "灯火（とうか）",
+      subtitle: "日本語習得（にほんごしゅうとく）への道（みち）を照（て）らす",
+      description: "本格的（ほんかくてき）なJLPT N5コンテンツと高度（こうど）な間隔反復（かんかくはんぷく）システムで日本語（にほんご）をマスターしましょう。効果的（こうかてき）な文章（ぶんしょう）ベースの学習（がくしゅう）で持続的（じぞくてき）な知識（ちしき）を構築（こうちく）します。",
+      startLearning: "学習開始（がくしゅうかいし）",
+      signIn: "サインイン",
+      tryDemo: "デモを試（ため）す",
+      noCardRequired: "クレジットカード不要（ふよう） • すぐに学習開始（がくしゅうかいし）"
+    }
+  };
+
+  const currentContent = heroContent[languageMode] || heroContent.en;
+
   return (
     <div className="min-h-screen warm-gradient">
       {/* Hero Section */}
@@ -27,18 +63,16 @@ export default function Landing() {
                   <div className="lantern-icon text-primary scale-125 sm:scale-150"></div>
                 </div>
                 <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground tracking-tight">
-                  Tomoshibi
+                  {currentContent.title}
                 </h1>
               </div>
               
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-6 sm:mb-8 leading-tight px-2">
-                2,000 kanji. 6,000 vocabulary words. <br className="hidden sm:block" />
-                <span className="text-primary font-normal">In just over a year.</span>
+                {currentContent.subtitle}
               </h2>
               
               <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto font-light px-2">
-                Master Japanese through <span className="font-medium text-foreground">authentic JLPT N5 content</span> with 
-                our advanced spaced repetition system. Build lasting knowledge with sentence-based learning that works.
+                {currentContent.description}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-6 px-4 sm:px-0">
@@ -49,7 +83,7 @@ export default function Landing() {
                     aria-label="Start learning Japanese with Tomoshibi"
                   >
                     <Play className="w-5 h-5 mr-2" />
-                    Start Learning
+                    {currentContent.startLearning}
                   </Button>
                 </Link>
                 <Link href="/auth" className="w-full sm:w-auto">
@@ -58,7 +92,7 @@ export default function Landing() {
                     className="btn-secondary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
                     aria-label="Sign in to your account"
                   >
-                    Sign In
+                    {currentContent.signIn}
                   </Button>
                 </Link>
                 <Link href="/auth" className="w-full sm:w-auto">
@@ -67,13 +101,13 @@ export default function Landing() {
                     className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
                     aria-label="Try demo version"
                   >
-                    Try Demo
+                    {currentContent.tryDemo}
                   </Button>
                 </Link>
               </div>
               
               <p className="text-sm text-muted-foreground px-2">
-                No credit card required • Start learning immediately
+                {currentContent.noCardRequired}
               </p>
             </div>
           </div>
