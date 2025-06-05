@@ -206,9 +206,32 @@ export default function AuthPage() {
                   
                   <Button
                     onClick={async () => {
-                      setLoginForm({ username: "demo", password: "demo" });
-                      const event = { preventDefault: () => {} } as React.FormEvent;
-                      await handleLogin(event);
+                      // Directly call the login API with demo credentials
+                      try {
+                        const response = await apiRequest("POST", "/api/login", {
+                          username: "demo",
+                          password: "demo"
+                        });
+                        
+                        if (response.ok) {
+                          const data = await response.json();
+                          queryClient.setQueryData(["/api/user"], data);
+                          setLocation("/");
+                        } else {
+                          const errorData = await response.json();
+                          toast({
+                            title: "Demo login failed",
+                            description: errorData.error || "Invalid credentials",
+                            variant: "destructive",
+                          });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Demo login failed",
+                          description: "Connection error",
+                          variant: "destructive",
+                        });
+                      }
                     }}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     variant="default"

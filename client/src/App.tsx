@@ -345,10 +345,10 @@ function Navigation({ user }: { user: any }) {
 // Mobile Components
 function MobileHeader({ user }: { user: any }) {
   return (
-    <header className="bg-background border-b border-border px-3 py-2 flex items-center justify-between">
-      <Menu className="h-5 w-5 text-foreground" />
-      <h1 className="text-base font-semibold text-foreground">Dashboard</h1>
-      <Bell className="h-5 w-5 text-foreground" />
+    <header className="bg-background border-b border-border px-2 py-1 flex items-center justify-between min-h-[44px]">
+      <Menu className="h-4 w-4 text-foreground" />
+      <h1 className="text-sm font-medium text-foreground">Tomoshibi</h1>
+      <Bell className="h-4 w-4 text-foreground" />
     </header>
   );
 }
@@ -357,7 +357,7 @@ function MobileHeader({ user }: { user: any }) {
 
 function MobileBottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border">
+    <nav className="bg-background border-t border-border min-h-[48px]">
       <div className="grid grid-cols-5 py-1">
         <Link href="/" className="flex flex-col items-center p-1 text-primary">
           <BarChart3 className="h-4 w-4" />
@@ -409,9 +409,9 @@ function AppRouter() {
       {/* Regular authenticated routes */}
       {user ? (
         <Route>
-          <div className="min-h-screen bg-background text-foreground">
+          <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden">
             <MobileHeader user={user} />
-            <main className="pb-12 px-3">
+            <main className="flex-1 overflow-y-auto px-3 py-2">
               <Switch>
                 <Route path="/" component={Dashboard} />
                 <Route path="/study" component={StudyPage} />
