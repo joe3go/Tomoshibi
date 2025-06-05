@@ -231,7 +231,7 @@ function AppHeader() {
             <span className="text-white text-sm font-bold">日</span>
           </div>
           <h1 className="text-lg font-semibold text-foreground">
-            Journey
+            Tomoshibi
           </h1>
         </div>
         

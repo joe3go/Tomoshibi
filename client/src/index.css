@@ -154,3 +154,90 @@
     color: hsl(var(--foreground)) !important;
   }
 }
+
+/* Enhanced color variables for better contrast */
+:root {
+  --achievement: 280 100% 70%;
+  --achievement-gold: 45 100% 60%;
+  --matcha: 120 30% 40%;
+  --neon-cyan: 180 100% 60%;
+  --surface-2dp: 45 40% 96%;
+  --surface-4dp: 45 40% 98%;
+}
+
+.dark {
+  --achievement: 280 80% 75%;
+  --achievement-gold: 45 90% 70%;
+  --matcha: 120 40% 60%;
+  --neon-cyan: 180 80% 70%;
+  --surface-2dp: 220 15% 14%;
+  --surface-4dp: 220 15% 16%;
+}
+
+/* Visual progress components with better contrast */
+.zen-progress {
+  @apply bg-muted/50 rounded-full overflow-hidden backdrop-blur-sm;
+  border: 1px solid hsl(var(--border));
+}
+
+.zen-progress-fill {
+  @apply bg-gradient-to-r from-primary to-achievement transition-all duration-500 ease-out;
+  box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
+}
+
+.zen-pulse {
+  animation: zen-pulse 2s ease-in-out infinite;
+}
+
+@keyframes zen-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Text contrast improvements */
+.text-achievement {
+  color: hsl(var(--achievement));
+  font-weight: 500;
+}
+
+.text-achievement-gold {
+  color: hsl(var(--achievement-gold));
+  font-weight: 500;
+}
+
+.text-matcha {
+  color: hsl(var(--matcha));
+  font-weight: 500;
+}
+
+.text-neon-cyan {
+  color: hsl(var(--neon-cyan));
+  font-weight: 500;
+}
+
+/* Progress text with enhanced readability */
+.progress-text {
+  color: hsl(var(--foreground));
+  text-shadow: 0 1px 2px hsl(var(--background) / 0.8);
+  font-weight: 600;
+}
+
+/* Japanese heading improvements */
+.japanese-heading {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  text-shadow: 0 1px 2px hsl(var(--background) / 0.5);
+}
+
+/* Navigation item improvements */
+.zen-nav-item {
+  @apply relative transition-all duration-200;
+  color: hsl(var(--foreground));
+}
+
+.zen-nav-item[data-state="active"] {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--achievement) / 0.1));
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary) / 0.3);
+}
