@@ -71,7 +71,9 @@ export function MobileWrapper({ children }: MobileWrapperProps) {
         .mobile-app {
           width: 100%;
           height: 100vh;
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
         
         .mobile-platform {

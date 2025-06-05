@@ -38,19 +38,19 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* Welcome Section */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8 min-h-screen overflow-y-auto">
+      {/* Welcome Section - Mobile Optimized */}
+      <div className="space-y-1 sm:space-y-2">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">
           Welcome back, {user.displayName || user.username}!
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Ready to continue your Japanese learning journey?
         </p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {/* Quick Stats - Mobile Grid */}
+      <div className="grid gap-3 sm:gap-6 grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total XP</CardTitle>
