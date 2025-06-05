@@ -166,9 +166,9 @@ export class MemStorage implements IStorage {
     // Create demo user with Google ID support
     const demoUser: User = {
       id: 1,
-      username: "demo_user",
+      username: "demo",
       email: "demo@example.com",
-      password: null,
+      password: "902c1437ddf62dc4c7126c18f85899d3f16eef7d2dd5db5a381b73bd310853ba3090cde2a3c34d3a7938ad4de39c276bde6793529e5264f031fe5c7cedfbde7d.65e2f5f9bc23a13903c03210f9999f7b", // hashed "demo"
       displayName: "Akira Tanaka",
       profileImageUrl: null,
       googleId: null,
