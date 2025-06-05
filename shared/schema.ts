@@ -84,6 +84,7 @@ export const studySessions = pgTable("study_sessions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   sessionType: varchar("session_type", { length: 20 }).notNull(), // review, new_cards, mixed
+  status: varchar("status", { length: 20 }).notNull().default("active"), // active, paused, completed, cancelled
   
   // Session metrics
   cardsReviewed: integer("cards_reviewed").notNull().default(0),

@@ -1,182 +1,102 @@
 [
   {
-    "id": 1,
     "kanji": "人",
-    "onyomi": ["ジン", "ニン"],
-    "kunyomi": ["ひと"],
-    "meaning": ["person", "human"],
-    "jlpt_level": "N5",
+    "onyomi": "ジン、ニン",
+    "kunyomi": "ひと",
+    "english_meaning": "person, people",
     "stroke_count": 2,
-    "examples": ["人間", "日本人", "一人"],
-    "vocab_words": ["人間", "人口", "大人"],
-    "tags": ["basic", "person"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "example_vocab": ["人間", "日本人", "一人"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice I"
   },
   {
-    "id": 2,
     "kanji": "日",
-    "onyomi": ["ニチ", "ジツ"],
-    "kunyomi": ["ひ", "か"],
-    "meaning": ["day", "sun"],
-    "jlpt_level": "N5",
+    "onyomi": "ニチ、ジツ",
+    "kunyomi": "ひ、か",
+    "english_meaning": "day, sun",
     "stroke_count": 4,
-    "examples": ["今日", "明日", "日本"],
-    "vocab_words": ["今日", "毎日", "日曜日"],
-    "tags": ["time", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "example_vocab": ["今日", "日本", "毎日"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice II"
   },
   {
-    "id": 3,
     "kanji": "本",
-    "onyomi": ["ホン"],
-    "kunyomi": ["もと"],
-    "meaning": ["book", "origin"],
-    "jlpt_level": "N5",
+    "onyomi": "ホン",
+    "kunyomi": "もと",
+    "english_meaning": "book, origin",
     "stroke_count": 5,
-    "examples": ["本", "日本", "基本"],
-    "vocab_words": ["本当", "見本", "基本"],
-    "tags": ["education", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "example_vocab": ["本", "日本", "山本"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice III"
   },
   {
-    "id": 4,
     "kanji": "学",
-    "onyomi": ["ガク"],
-    "kunyomi": ["まな"],
-    "meaning": ["study", "learn"],
-    "jlpt_level": "N5",
+    "onyomi": "ガク",
+    "kunyomi": "まな.ぶ",
+    "english_meaning": "study, learning",
     "stroke_count": 8,
-    "examples": ["学校", "学生", "大学"],
-    "vocab_words": ["学校", "学習", "科学"],
-    "tags": ["education"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "example_vocab": ["学校", "学生", "大学"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice IV"
   },
   {
-    "id": 5,
     "kanji": "生",
-    "onyomi": ["セイ", "ショウ"],
-    "kunyomi": ["い", "う", "なま"],
-    "meaning": ["life", "birth", "live"],
-    "jlpt_level": "N5",
+    "onyomi": "セイ、ショウ",
+    "kunyomi": "い.きる、う.まれる",
+    "english_meaning": "life, birth",
     "stroke_count": 5,
-    "examples": ["学生", "先生", "生活"],
-    "vocab_words": ["人生", "生物", "誕生"],
-    "tags": ["life", "education"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "example_vocab": ["学生", "先生", "人生"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru I"
   },
   {
-    "id": 6,
-    "kanji": "大",
-    "onyomi": ["ダイ", "タイ"],
-    "kunyomi": ["おお"],
-    "meaning": ["big", "large"],
-    "jlpt_level": "N5",
-    "stroke_count": 3,
-    "examples": ["大学", "大きい", "大切"],
-    "vocab_words": ["大人", "大変", "大丈夫"],
-    "tags": ["size", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "kanji": "年",
+    "onyomi": "ネン",
+    "kunyomi": "とし",
+    "english_meaning": "year",
+    "stroke_count": 6,
+    "example_vocab": ["今年", "来年", "去年"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru II"
   },
   {
-    "id": 7,
-    "kanji": "小",
-    "onyomi": ["ショウ"],
-    "kunyomi": ["ちい", "こ"],
-    "meaning": ["small", "little"],
-    "jlpt_level": "N5",
-    "stroke_count": 3,
-    "examples": ["小学校", "小さい", "小説"],
-    "vocab_words": ["小学生", "小鳥", "小包"],
-    "tags": ["size", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
-  },
-  {
-    "id": 8,
-    "kanji": "水",
-    "onyomi": ["スイ"],
-    "kunyomi": ["みず"],
-    "meaning": ["water"],
-    "jlpt_level": "N5",
+    "kanji": "月",
+    "onyomi": "ゲツ、ガツ",
+    "kunyomi": "つき",
+    "english_meaning": "month, moon",
     "stroke_count": 4,
-    "examples": ["水", "水曜日", "水泳"],
-    "vocab_words": ["海水", "水道", "水族館"],
-    "tags": ["nature", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "example_vocab": ["今月", "来月", "一月"],
+    "stroke_order_diagram": null,
+    "srs_level": "Master"
   },
   {
-    "id": 9,
-    "kanji": "車",
-    "onyomi": ["シャ"],
-    "kunyomi": ["くるま"],
-    "meaning": ["car", "vehicle"],
-    "jlpt_level": "N5",
-    "stroke_count": 7,
-    "examples": ["車", "電車", "自転車"],
-    "vocab_words": ["自動車", "汽車", "車庫"],
-    "tags": ["transport", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "kanji": "時",
+    "onyomi": "ジ",
+    "kunyomi": "とき",
+    "english_meaning": "time, hour",
+    "stroke_count": 10,
+    "example_vocab": ["時間", "一時", "時計"],
+    "stroke_order_diagram": null,
+    "srs_level": "Enlightened"
   },
   {
-    "id": 10,
-    "kanji": "食",
-    "onyomi": ["ショク"],
-    "kunyomi": ["た"],
-    "meaning": ["eat", "food"],
-    "jlpt_level": "N5",
-    "stroke_count": 9,
-    "examples": ["食べる", "食事", "食堂"],
-    "vocab_words": ["食物", "食品", "食欲"],
-    "tags": ["food", "basic"],
-    "srs": {
-      "interval": 0,
-      "ease": 2.5,
-      "due": null,
-      "reviews": []
-    }
+    "kanji": "間",
+    "onyomi": "カン、ケン",
+    "kunyomi": "あいだ、ま",
+    "english_meaning": "interval, space",
+    "stroke_count": 12,
+    "example_vocab": ["時間", "人間", "空間"],
+    "stroke_order_diagram": null,
+    "srs_level": "Burned"
+  },
+  {
+    "kanji": "国",
+    "onyomi": "コク",
+    "kunyomi": "くに",
+    "english_meaning": "country",
+    "stroke_count": 8,
+    "example_vocab": ["国", "中国", "外国"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice I"
   }
 ]
