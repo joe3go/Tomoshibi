@@ -30,7 +30,7 @@ function CharacterWithFurigana({
   return (
     <ruby
       onClick={() => setShowReading(!showReading)}
-      className="japanese-text text-3xl hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer inline-block"
+      className="japanese-text text-3xl hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer"
       style={{ 
         margin: "0 0.125rem",
         position: "relative",
@@ -47,24 +47,20 @@ function CharacterWithFurigana({
       }}
     >
       {char}
-      <rt 
-        className="japanese-text"
-        style={{
-          fontSize: "0.5em",
-          fontFamily: "'Noto Sans JP', 'Noto Sans', sans-serif",
-          letterSpacing: "-0.05em",
-          position: "absolute",
-          top: "-1.2em",
-          left: "50%",
-          transform: "translateX(-50%)",
-          whiteSpace: "nowrap",
-          visibility: showReading ? "visible" : "hidden",
-          opacity: showReading ? 1 : 0,
-          transition: "opacity 0.2s ease-in-out"
-        }}
-      >
-        {reading}
-      </rt>
+      {showReading && (
+        <rt 
+          className="japanese-text"
+          style={{
+            fontSize: "0.5em",
+            fontFamily: "'Noto Sans JP', 'Noto Sans', sans-serif",
+            letterSpacing: "-0.05em",
+            color: "#2563eb",
+            fontWeight: "500"
+          }}
+        >
+          {reading}
+        </rt>
+      )}
     </ruby>
   );
 }

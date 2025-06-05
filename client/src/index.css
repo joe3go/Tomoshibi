@@ -349,20 +349,22 @@ input, select, textarea {
 .text-5xl { font-size: 3rem; line-height: 1.3; }
 .text-6xl { font-size: 4rem; line-height: 1.2; }
 
-/* Compact White Furigana for Maximum Contrast */
+/* Stable Furigana Positioning - No Layout Shift */
 rt {
-  color: white !important; /* Pure white for maximum contrast */
+  color: #2563eb !important; /* Blue color for visibility */
   font-size: 0.5em !important; /* 50% of main text size */
   font-family: 'Noto Sans JP', 'Noto Sans', sans-serif !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important; /* Strong shadow for visibility */
-  position: relative;
-  top: -1.2em; /* Small negative offset for closer positioning */
-  line-height: 0.8; /* Tight line spacing */
-  font-weight: 500; /* Medium weight for clarity */
-  letter-spacing: -0.05em !important; /* Tighter character spacing */
+  position: absolute !important;
+  top: -1.2em !important; /* Position above kanji */
+  left: 50% !important;
+  transform: translateX(-50%) !important; /* Center above kanji */
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.05em !important;
   margin: 0 !important;
   padding: 0 !important;
-  vertical-align: top; /* Align to top of kanji */
+  z-index: 10 !important;
 }
 
 .dark rt {
