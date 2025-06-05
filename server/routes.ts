@@ -4,6 +4,12 @@ import { storage } from "./storage";
 import { setupGoogleAuth } from "./googleAuth";
 import session from "express-session";
 import passport from "passport";
+
+declare module 'express-session' {
+  interface SessionData {
+    userId?: number;
+  }
+}
 import { 
   insertSrsItemSchema, 
   insertStudySessionSchema, 
