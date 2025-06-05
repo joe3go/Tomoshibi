@@ -14,6 +14,7 @@ import {
   Trophy
 } from 'lucide-react';
 import { LearningCard } from '@/components/learning-card';
+import { LearningCardCreator } from '@/components/learning-card-creator';
 import { LearningCard as LearningCardType } from '@shared/learning-schema';
 import { sampleLearningCards } from '@shared/learning-schema';
 import { 
@@ -28,6 +29,7 @@ export default function LearningPractice() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [completedCards, setCompletedCards] = useState<Set<string>>(new Set());
   const [showStats, setShowStats] = useState(false);
+  const [showCreator, setShowCreator] = useState(false);
   const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function LearningPractice() {
   };
 
   const handleCardComplete = (cardId: string) => {
-    setCompletedCards(prev => new Set([...prev, cardId]));
+    setCompletedCards(prev => new Set([...Array.from(prev), cardId]));
     updateStats();
     
     // Auto-advance to next card
@@ -73,6 +75,12 @@ export default function LearningPractice() {
     updateStats();
   };
 
+  const handleCardCreated = (newCard: LearningCardType) => {
+    const updatedCards = loadLearningCards();
+    setCards(updatedCards);
+    updateStats();
+  };
+
   const currentCard = cards[currentCardIndex];
   const progressPercentage = cards.length > 0 ? (completedCards.size / cards.length) * 100 : 0;
 
@@ -88,10 +96,16 @@ export default function LearningPractice() {
                 Begin your Japanese learning journey with interactive practice cards
               </p>
             </div>
-            <Button onClick={loadDemoCards} className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Load Demo Cards
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={loadDemoCards} variant="outline" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                Load Demo Cards
+              </Button>
+              <Button onClick={() => setShowCreator(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Create Your Own Card
+              </Button>
+            </div>
           </div>
         </Card>
       </div>

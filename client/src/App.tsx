@@ -31,6 +31,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import Dashboard from "@/pages/dashboard";
 import Study from "@/pages/study";
 import Vocabulary from "@/pages/vocabulary";
+import LearningPractice from "@/pages/learning-practice";
 import JLPTProgress from "@/pages/jlpt-progress";
 import StudyPage from "@/pages/study";
 import StudyDedicatedPage from "@/pages/study-dedicated";
@@ -209,8 +210,9 @@ function Sidebar({ user }: { user: any }) {
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/vocabulary", label: "Vocabulary", icon: BookOpen },
-    { href: "/study", label: "Study", icon: Target },
-    { href: "/jlpt-progress", label: "JLPT Progress", icon: BarChart3 },
+    { href: "/learning-practice", label: "Practice Cards", icon: Target },
+    { href: "/study", label: "Study", icon: BarChart3 },
+    { href: "/jlpt-progress", label: "JLPT Progress", icon: Trophy },
     { href: "/achievements", label: "Achievements", icon: Trophy },
     { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
@@ -321,6 +323,7 @@ function AppRouter() {
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/vocabulary" component={Vocabulary} />
+          <Route path="/learning-practice" component={LearningPractice} />
           <Route path="/study" component={Study} />
           <Route path="/jlpt-progress" component={JLPTProgress} />
           <Route path="/study-dedicated" component={StudyDedicatedPage} />
