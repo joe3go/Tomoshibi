@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguageMode, useLanguageContent } from "@/App";
-import studySceneImage from "@assets/generation-0cfd4b22-9542-4fd7-8684-2599ac9b4195_1749094727900.png";
+import studySceneImage from "@assets/generation-22bca52f-6e0a-4394-913c-ccbba5d287cf_1749094854694.png";
 import { 
   Play, 
   Brain, 
@@ -54,40 +54,40 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen warm-gradient">
-      {/* Hero Section with Integrated Study Scene */}
-      <div className="relative overflow-hidden">
-        {/* Background Image with Seamless Blending */}
+      {/* Hero Section with Full Study Scene Display */}
+      <div className="relative overflow-hidden min-h-[80vh] flex items-center">
+        {/* Full Background Image */}
         <div className="absolute inset-0 w-full h-full">
           <div 
-            className="w-full h-full bg-cover bg-center bg-no-repeat opacity-20"
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
             style={{
               backgroundImage: `url(${studySceneImage})`,
-              backgroundPosition: 'center 60%',
-              filter: 'sepia(20%) saturate(0.8) brightness(1.1)'
+              backgroundPosition: 'center center',
+              backgroundSize: 'cover'
             }}
           />
-          {/* Gradient overlay for seamless blending */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/80" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/30 via-transparent to-background/30" />
+          {/* Subtle overlay to ensure text readability while preserving the scene */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-transparent to-background/40" />
         </div>
         
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 py-12 sm:py-20">
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center max-w-5xl mx-auto">
             <div className="mb-8 sm:mb-12">
               <div className="flex flex-col sm:inline-flex sm:flex-row items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/90 backdrop-blur-sm flex items-center justify-center card-shadow border border-border/20">
                   <div className="lantern-icon text-primary scale-125 sm:scale-150"></div>
                 </div>
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground tracking-tight drop-shadow-sm">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground tracking-tight drop-shadow-lg">
                   {currentContent.title}
                 </h1>
               </div>
               
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-6 sm:mb-8 leading-tight px-2 drop-shadow-sm">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-6 sm:mb-8 leading-tight px-2 drop-shadow-md">
                 {currentContent.subtitle}
               </h2>
               
-              <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto font-light px-2 drop-shadow-sm bg-background/20 backdrop-blur-sm rounded-2xl py-4 px-6">
+              <p className="text-lg sm:text-xl text-foreground mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto font-medium px-2 drop-shadow-md bg-white/80 backdrop-blur-md rounded-2xl py-6 px-8 border border-white/20">
                 {currentContent.description}
               </p>
               
@@ -122,7 +122,7 @@ export default function Landing() {
                 </Link>
               </div>
               
-              <p className="text-sm text-muted-foreground px-2 bg-background/30 backdrop-blur-sm rounded-lg py-2 px-4 inline-block">
+              <p className="text-sm text-foreground/80 px-2 bg-white/60 backdrop-blur-md rounded-lg py-3 px-6 inline-block border border-white/30 drop-shadow-sm">
                 {currentContent.noCardRequired}
               </p>
             </div>
