@@ -19,6 +19,7 @@ import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
 import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
 
 // Language types and context
 export type LanguageMode = "en" | "jp" | "jp-furigana";
@@ -42,10 +43,13 @@ function Router() {
   const {
     data: userData,
     isLoading: isUserLoading,
-    error: userError
+    error: userError,
+    refetch: refetchUser
   } = useQuery({
     queryKey: ["/api/user"],
-    retry: false
+    retry: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: false
   });
 
   useEffect(() => {
@@ -54,6 +58,15 @@ function Router() {
       setIsLoading(false);
     }
   }, [userData, isUserLoading]);
+
+  // Refetch user data when window gains focus (after login in another tab)
+  useEffect(() => {
+    const handleFocus = () => {
+      refetchUser();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [refetchUser]);
 
   if (isLoading) {
     return (
@@ -221,7 +234,7 @@ function SimpleLanguageToggle() {
   );
 }
 
-function AppHeader() {
+function AppHeader({ user }: { user?: any }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background border-b border-border shadow-sm">
       <div className="flex h-full items-center justify-between px-4">
@@ -237,13 +250,69 @@ function AppHeader() {
         
         <div className="flex items-center gap-3">
           <SimpleLanguageToggle />
-          <div className="hidden md:flex items-center gap-1 px-3 py-1 rounded-full bg-primary/20">
-            <div className="w-2 h-2 rounded-full bg-primary"></div>
-            <span className="text-sm font-medium text-primary">Live</span>
-          </div>
+          {user ? (
+            <AuthenticatedUserMenu user={user} />
+          ) : (
+            <div className="flex items-center gap-2 text-sm">
+              <a href="/auth" className="hover:text-primary transition-colors">Sign In</a>
+              <span className="text-muted-foreground">|</span>
+              <a href="/auth" className="hover:text-primary transition-colors">Get Started</a>
+            </div>
+          )}
         </div>
       </div>
     </header>
+  );
+}
+
+function AuthenticatedUserMenu({ user }: { user: any }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { 
+        method: "POST",
+        credentials: "include" 
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"
+      >
+        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+          <span className="text-sm font-medium text-primary">
+            {user.displayName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
+          </span>
+        </div>
+        <div className="hidden md:block text-left">
+          <div className="text-sm font-medium">{user.displayName || user.username}</div>
+          <div className="text-xs text-muted-foreground">{user.currentBelt} belt • {user.totalXP} XP</div>
+        </div>
+      </button>
+      
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-48 bg-background border border-border rounded-lg shadow-lg z-50">
+          <div className="p-2">
+            <a href="/settings" className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors">
+              Settings
+            </a>
+            <button 
+              onClick={handleLogout}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors text-destructive"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
