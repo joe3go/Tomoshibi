@@ -257,55 +257,61 @@ ruby, rt, rp {
   border-bottom: 2px solid #dc2626;
 }
 
-/* Typography System - Noto Sans for both English and Japanese */
+/* Typography System - Noto Sans for cohesive design */
 html {
-  font-size: 18px; /* Base size 18px for better readability */
+  font-size: 22px; /* Premium 22px base size for maximum readability */
 }
 
 * {
   font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.6; /* Improved line spacing */
+  line-height: 1.8; /* Generous line spacing for open layout */
 }
 
-/* Japanese Text Typography */
+/* Japanese Text Typography - Using Noto Sans for consistency */
 .japanese-text,
 .furigana-text,
 ruby,
 rt {
-  font-family: 'Noto Sans JP', 'Noto Sans', 'Hiragino Sans', 'Yu Gothic', sans-serif !important;
-  line-height: 1.7; /* Slightly more spacing for Japanese text */
+  font-family: 'Noto Sans', 'Noto Sans JP', sans-serif !important;
+  line-height: 1.8; /* Consistent spacing */
 }
 
-/* Headings with Quicksand - More prominent sizing */
+/* Premium Bold Headings - Large and impactful */
 h1 { 
-  font-size: 3rem; 
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
+  font-size: 4rem; /* 64px */
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  font-weight: 700;
 }
 h2 { 
-  font-size: 2.5rem; 
-  line-height: 1.3;
-  margin-bottom: 1.25rem;
+  font-size: 3rem; /* 48px */
+  line-height: 1.2;
+  margin-bottom: 1.75rem;
+  font-weight: 700;
 }
 h3 { 
-  font-size: 2rem; 
-  line-height: 1.3;
-  margin-bottom: 1rem;
+  font-size: 2.5rem; /* 40px */
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 h4 { 
-  font-size: 1.75rem; 
-  line-height: 1.4;
-  margin-bottom: 0.875rem;
+  font-size: 2rem; /* 32px */
+  line-height: 1.3;
+  margin-bottom: 1.25rem;
+  font-weight: 600;
 }
 h5 { 
-  font-size: 1.5rem; 
+  font-size: 1.75rem; /* 28px */
   line-height: 1.4;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 h6 { 
-  font-size: 1.25rem; 
-  line-height: 1.5;
-  margin-bottom: 0.75rem;
+  font-size: 1.5rem; /* 24px */
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -314,32 +320,34 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.025em;
 }
 
-/* Button and UI Elements - Better spacing and sizing */
+/* Button and UI Elements - Large premium sizing */
 button, .btn {
   font-family: 'Noto Sans', sans-serif;
   font-weight: 500;
-  font-size: 1.125rem; /* 18px equivalent */
-  padding: 0.75rem 1.5rem; /* More generous padding */
+  font-size: 1.5rem; /* 24px for premium feel */
+  padding: 1rem 2rem; /* Ample padding for easy interaction */
   line-height: 1.4;
 }
 
 input, select, textarea {
   font-family: 'Noto Sans', sans-serif;
   font-weight: 400;
-  font-size: 1rem;
-  padding: 0.75rem 1rem;
-  line-height: 1.5;
+  font-size: 1.125rem; /* 18px */
+  padding: 1rem 1.25rem; /* Generous padding */
+  line-height: 1.6;
 }
 
-/* Responsive text sizes using rem */
-.text-xs { font-size: 0.75rem; line-height: 1.5; }
-.text-sm { font-size: 0.875rem; line-height: 1.5; }
-.text-base { font-size: 1rem; line-height: 1.6; }
-.text-lg { font-size: 1.125rem; line-height: 1.6; }
-.text-xl { font-size: 1.25rem; line-height: 1.6; }
-.text-2xl { font-size: 1.5rem; line-height: 1.5; }
-.text-3xl { font-size: 1.875rem; line-height: 1.4; }
-.text-4xl { font-size: 2.25rem; line-height: 1.3; }
+/* Premium text sizes with generous scaling */
+.text-xs { font-size: 0.8rem; line-height: 1.8; }
+.text-sm { font-size: 0.9rem; line-height: 1.8; }
+.text-base { font-size: 1rem; line-height: 1.8; }
+.text-lg { font-size: 1.2rem; line-height: 1.8; }
+.text-xl { font-size: 1.4rem; line-height: 1.7; }
+.text-2xl { font-size: 1.6rem; line-height: 1.6; }
+.text-3xl { font-size: 2rem; line-height: 1.5; }
+.text-4xl { font-size: 2.5rem; line-height: 1.4; }
+.text-5xl { font-size: 3rem; line-height: 1.3; }
+.text-6xl { font-size: 4rem; line-height: 1.2; }
 
 /* Enhanced Furigana Styling for better visibility */
 .dark rt {
