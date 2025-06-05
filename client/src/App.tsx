@@ -1,22 +1,41 @@
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { Route, Switch, Link } from "wouter";
+import { Route, Switch, Link, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-import { Loader2, Menu, X, Sun, Moon, Bell, BarChart3, BookOpen, Search } from "lucide-react";
+import { 
+  Loader2, 
+  Menu, 
+  X, 
+  Sun, 
+  Moon, 
+  Bell, 
+  BarChart3, 
+  BookOpen, 
+  Search,
+  Home,
+  Trophy,
+  Settings as SettingsIcon,
+  User,
+  Target,
+  Award
+} from "lucide-react";
 import { VersionDisplay } from "@/components/version-display";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { getQueryFn, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, createContext, useContext } from "react";
 
-
 // Pages
 import Dashboard from "@/pages/dashboard";
+import Study from "@/pages/study";
+import JLPTProgress from "@/pages/jlpt-progress";
 import StudyPage from "@/pages/study";
 import StudyDedicatedPage from "@/pages/study-dedicated";
 import StudyFullscreenPage from "@/pages/study-fullscreen";
 import StudyModePage from "@/pages/study-mode";
 import JLPTContentPage from "@/pages/jlpt-content";
-import JLPTProgressPage from "@/pages/jlpt-progress";
 import ContentBrowserPage from "@/pages/content-browser";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
@@ -98,289 +117,83 @@ export function useLanguageContent(mode: LanguageMode) {
       dashboard: "Dashboard",
       achievements: "Achievements",
       settings: "Settings",
-      progress: "Progress",
       study: "Study",
-      social: "Social",
-      welcome: "Welcome back",
-      totalXP: "Total XP",
-      currentStreak: "Current Streak",
-      jlptLevel: "JLPT Level",
-      recentActivity: "Recent Activity"
+      progress: "Progress"
     },
     jp: {
       dashboard: "ダッシュボード",
       achievements: "実績",
       settings: "設定",
-      progress: "進歩",
-      study: "勉強",
-      social: "ソーシャル",
-      welcome: "おかえりなさい",
-      totalXP: "総経験値",
-      currentStreak: "現在の連続記録",
-      jlptLevel: "JLPTレベル",
-      recentActivity: "最近の活動"
+      study: "学習",
+      progress: "進歩"
     },
     "jp-furigana": {
       dashboard: "ダッシュボード",
-      achievements: "実績（じっせき）",
-      settings: "設定（せってい）",
-      progress: "進歩（しんぽ）",
-      study: "勉強（べんきょう）",
-      social: "ソーシャル",
-      welcome: "おかえりなさい",
-      totalXP: "総経験値（そうけいけんち）",
-      currentStreak: "現在（げんざい）の連続記録（れんぞくきろく）",
-      jlptLevel: "JLPTレベル",
-      recentActivity: "最近（さいきん）の活動（かつどう）"
+      achievements: "実績",
+      settings: "設定",
+      study: "学習",
+      progress: "進歩"
     }
   };
   
-  return content[mode] || content.en;
+  return content[mode];
 }
 
-function LanguageToggle() {
-  const { languageMode, setLanguageMode } = useLanguageMode();
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+function MobileNavigation({ user }: { user: any }) {
+  const [location] = useLocation();
   
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 640);
-    };
-    
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-  
-  const modes = [
-    { value: "en", label: "EN", fullLabel: "English" },
-    { value: "jp", label: "JP", fullLabel: "日本語" },
-    { value: "jp-furigana", label: "FU", fullLabel: "ふりがな" }
-  ] as const;
-  
-  return (
-    <select 
-      value={languageMode} 
-      onChange={(e) => setLanguageMode(e.target.value as LanguageMode)}
-      className="px-1.5 py-1 rounded border bg-background text-foreground text-xs md:text-sm min-w-0 touch-feedback"
-      style={{ fontSize: '16px' }}
-    >
-      {modes.map((mode) => (
-        <option key={mode.value} value={mode.value}>
-          {isSmallScreen ? mode.label : mode.fullLabel}
-        </option>
-      ))}
-    </select>
-  );
-}
+  const navItems = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/study", label: "Study", icon: BookOpen },
+    { href: "/jlpt-progress", label: "Progress", icon: BarChart3 },
+    { href: "/achievements", label: "Rewards", icon: Trophy },
+    { href: "/settings", label: "Settings", icon: SettingsIcon },
+  ];
 
-function AppHeader({ user }: { user?: any }) {
   return (
-    <header className="app-header safe-area-top safe-area-inset">
-      <div className="flex h-full items-center justify-between px-3 md:px-4">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
-          <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20">
-            <div className="lantern-icon text-primary scale-[0.4] md:scale-50"></div>
-          </div>
-          <h1 className="text-sm md:text-base font-semibold text-foreground tracking-tight whitespace-nowrap">
-            Tomoshibi
-          </h1>
-        </Link>
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border h-16 flex items-center justify-around z-50">
+      {navItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = location === item.href;
         
-        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-          <LanguageToggle />
-          <ThemeToggle />
-          {user ? (
-            <UserMenu user={user} />
-          ) : (
-            <Link href="/auth">
-              <a className="px-2 py-1 md:px-3 md:py-1.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-[#5A6875] transition-colors text-xs md:text-sm touch-feedback">
-                Sign In
-              </a>
-            </Link>
-          )}
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function UserMenu({ user }: { user: any }) {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/logout", { method: "POST" });
-      window.location.reload();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
-  return (
-    <div className="relative">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1.5 md:p-2 rounded-lg hover:bg-accent transition-colors min-h-[var(--touch-target-min)] touch-feedback"
-      >
-        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-          <span className="text-xs md:text-sm font-medium text-primary">
-            {user.displayName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
-          </span>
-        </div>
-        <div className="hidden lg:block text-left min-w-0">
-          <div className="text-responsive-sm font-medium truncate">{user.displayName || user.username}</div>
-          <div className="text-responsive-xs text-muted-foreground truncate">{user.currentBelt} belt • {user.totalXP} XP</div>
-        </div>
-      </button>
-      
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-44 md:w-48 bg-background border border-border rounded-lg shadow-lg z-50">
-          <div className="p-2">
-            <a href="/settings" className="block px-3 py-2 text-responsive-sm hover:bg-accent rounded-md transition-colors min-h-[var(--touch-target-min)] flex items-center">
-              Settings
-            </a>
-            <button 
-              onClick={handleLogout}
-              className="w-full text-left px-3 py-2 text-responsive-sm hover:bg-accent rounded-md transition-colors text-destructive min-h-[var(--touch-target-min)] flex items-center"
-            >
-              Sign Out
+        return (
+          <Link key={item.href} href={item.href}>
+            <button className={`flex flex-col items-center space-y-1 p-2 ${
+              isActive ? 'text-primary' : 'text-muted-foreground'
+            }`}>
+              <Icon className="h-5 w-5" />
+              <span className="text-xs">{item.label}</span>
             </button>
-          </div>
-        </div>
-      )}
+          </Link>
+        );
+      })}
     </div>
   );
 }
 
-function Navigation({ user }: { user: any }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  const navItems = [
-    { href: "/", label: "Dashboard", icon: "◦" },
-    { href: "/study", label: "Study", icon: "書" },
-    { href: "/study-mode", label: "Study Mode", icon: "習" },
-    { href: "/content-browser", label: "Content Library", icon: "📚" },
-    { href: "/jlpt-progress", label: "JLPT Progress", icon: "📊" },
-    { href: "/jlpt-content", label: "JLPT Content", icon: "級" },
-    { href: "/social", label: "Social", icon: "友" },
-    { href: "/achievements", label: "Achievements", icon: "賞" },
-    { href: "/settings", label: "Settings", icon: "設" },
-  ];
-
-  return (
-    <>
-      <button
-        onClick={() => setMobileMenuOpen(true)}
-        className="md:hidden fixed top-20 left-4 z-40 p-2 bg-background border border-border rounded-lg shadow-lg"
-      >
-        <Menu className="h-5 w-5" />
-      </button>
-
-      <div className="hidden md:block fixed left-0 top-16 bottom-0 w-64 bg-background border-r border-border">
-        <div className="p-4">
-          <div className="mb-6">
-            <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-sm font-medium text-primary">
-                  {user.displayName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
-                </span>
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{user.displayName || user.username}</div>
-                <div className="text-xs text-muted-foreground">{user.currentBelt} belt • {user.totalXP} XP</div>
-              </div>
-            </div>
-          </div>
-          <nav className="space-y-2">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span className="text-sm font-medium">{item.label}</span>
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      {mobileMenuOpen && (
-        <>
-          <div 
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border z-50 md:hidden">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Navigation</h2>
-                <button onClick={() => setMobileMenuOpen(false)}>
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <nav className="space-y-2">
-                {navItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </a>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </>
-      )}
-    </>
-  );
-}
-
-// Mobile Components
 function MobileHeader({ user }: { user: any }) {
   return (
-    <header className="bg-background border-b border-border px-2 py-1 flex items-center justify-between min-h-[44px]">
-      <Menu className="h-4 w-4 text-foreground" />
-      <h1 className="text-sm font-medium text-foreground">Tomoshibi</h1>
-      <Bell className="h-4 w-4 text-foreground" />
-    </header>
-  );
-}
-
-
-
-function MobileBottomNav() {
-  return (
-    <nav className="bg-background border-t border-border min-h-[48px]">
-      <div className="grid grid-cols-5 py-1">
-        <Link href="/" className="flex flex-col items-center p-1 text-primary">
-          <BarChart3 className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Dashboard</span>
-        </Link>
-        <Link href="/study" className="flex flex-col items-center p-1 text-muted-foreground">
-          <BookOpen className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Study</span>
-        </Link>
-        <Link href="/jlpt-progress" className="flex flex-col items-center p-1 text-muted-foreground">
-          <div className="h-4 w-4 bg-muted-foreground rounded"></div>
-          <span className="text-xs mt-0.5">Progress</span>
-        </Link>
-        <Link href="/achievements" className="flex flex-col items-center p-1 text-muted-foreground">
-          <BookOpen className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Achievements</span>
-        </Link>
-        <Link href="/settings" className="flex flex-col items-center p-1 text-muted-foreground">
-          <Search className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Settings</span>
-        </Link>
+    <div className="fixed top-0 left-0 right-0 bg-background border-b border-border h-11 flex items-center justify-between px-4 z-50">
+      <div className="flex items-center space-x-3">
+        <div className="text-lg font-bold text-primary">Tomoshibi</div>
       </div>
-    </nav>
+      
+      <div className="flex items-center space-x-2">
+        {user && (
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 text-sm">
+              <Target className="h-3 w-3 text-primary" />
+              <span className="font-medium">{user.currentStreak}</span>
+            </div>
+            <div className="flex items-center space-x-1 text-sm">
+              <Award className="h-3 w-3 text-primary" />
+              <span className="font-medium">{user.totalXP}</span>
+            </div>
+          </div>
+        )}
+        <ThemeToggle />
+      </div>
+    </div>
   );
 }
 
@@ -392,49 +205,46 @@ function AppRouter() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
+  if (!user) {
+    return (
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        <Route path="/" component={Landing} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   return (
-    <Switch>
-      {/* Fullscreen study route without any wrappers */}
-      <Route path="/study-fullscreen" component={StudyFullscreenPage} />
+    <MobileWrapper>
+      <MobileHeader user={user} />
       
-      {/* Regular authenticated routes */}
-      {user ? (
-        <Route>
-          <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden">
-            <MobileHeader user={user} />
-            <main className="flex-1 overflow-y-auto px-3 py-2">
-              <Switch>
-                <Route path="/" component={Dashboard} />
-                <Route path="/study" component={StudyPage} />
-                <Route path="/study-dedicated" component={StudyDedicatedPage} />
-                <Route path="/study-mode" component={StudyModePage} />
-                <Route path="/content-browser" component={ContentBrowserPage} />
-                <Route path="/jlpt-progress" component={JLPTProgressPage} />
-                <Route path="/jlpt-content" component={JLPTContentPage} />
-                <Route path="/social" component={Social} />
-                <Route path="/achievements" component={Achievements} />
-                <Route path="/settings" component={Settings} />
-                <Route component={NotFound} />
-              </Switch>
-            </main>
-            <MobileBottomNav />
-          </div>
-        </Route>
-      ) : (
-        <Route>
-          <AuthPage />
-        </Route>
-      )}
-    </Switch>
+      <div className="pt-11 pb-16 h-screen overflow-hidden">
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/study" component={Study} />
+          <Route path="/jlpt-progress" component={JLPTProgress} />
+          <Route path="/study-dedicated" component={StudyDedicatedPage} />
+          <Route path="/study-fullscreen" component={StudyFullscreenPage} />
+          <Route path="/study-mode" component={StudyModePage} />
+          <Route path="/jlpt-content" component={JLPTContentPage} />
+          <Route path="/content-browser" component={ContentBrowserPage} />
+          <Route path="/social" component={Social} />
+          <Route path="/achievements" component={Achievements} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/auth" component={AuthPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </div>
+      
+      <MobileNavigation user={user} />
+    </MobileWrapper>
   );
 }
 
