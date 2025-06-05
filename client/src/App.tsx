@@ -182,7 +182,7 @@ function AppHeader({ user }: { user?: any }) {
           <div className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20 flex-shrink-0">
             <div className="lantern-icon text-primary scale-50 md:scale-[0.6] lg:scale-75"></div>
           </div>
-          <h1 className="text-responsive-lg md:text-responsive-xl lg:text-responsive-2xl font-semibold text-foreground tracking-tight truncate">
+          <h1 className="text-sm md:text-base lg:text-lg font-semibold text-foreground tracking-tight truncate">
             Tomoshibi
           </h1>
         </Link>

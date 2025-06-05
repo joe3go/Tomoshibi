@@ -32,8 +32,8 @@
   --touch-target-min: 44px;
   --touch-target-comfortable: 48px;
   
-  /* App Header Height */
-  --header-height: clamp(3.5rem, 3rem + 2vw, 4rem);
+  /* App Header Height - Compact */
+  --header-height: clamp(3rem, 2.5rem + 1vw, 3.5rem);
 }
 
 /* Responsive Header Styles */
@@ -73,45 +73,47 @@
 }
 
 /* Responsive Breakpoints */
-/* Small screens: max-width: 768px */
-@media (max-width: 768px) {
-  .container { 
-    padding-left: 1rem; 
-    padding-right: 1rem; 
-  }
-  
+/* Small screens: max-width: 640px */
+@media (max-width: 640px) {
   .app-header {
-    height: 3.5rem;
+    height: 3rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
   
-  /* Stack navigation vertically */
+  .container { 
+    padding-left: 0.75rem; 
+    padding-right: 0.75rem; 
+  }
+  
+  /* Compact mobile navigation */
   .mobile-stack {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
 }
 
-/* Medium screens/tablets: 769px to 1024px */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* Medium screens/tablets: 641px to 1024px */
+@media (min-width: 641px) and (max-width: 1024px) {
   .app-header {
-    height: 3.75rem;
+    height: 3.25rem;
   }
   
   .container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
 /* Large screens/desktops: 1025px+ */
 @media (min-width: 1025px) {
   .app-header {
-    height: 4rem;
+    height: 3.5rem;
   }
   
   .container {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 
