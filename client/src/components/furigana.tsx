@@ -83,9 +83,7 @@ export function Furigana({
             }}
           />
           {segment.furigana && showReading && (
-            <rt className="text-xs text-gray-500 font-normal block text-center leading-none mb-1">
-              {segment.furigana}
-            </rt>
+            <rt className="text-xs text-gray-500 font-normal">{segment.furigana}</rt>
           )}
         </ruby>
       ))}
@@ -99,6 +97,22 @@ export function Furigana({
             border-radius: 0.25rem;
             font-weight: 600;
             border-bottom: 2px solid #dc2626;
+          }
+          
+          ruby {
+            ruby-align: center;
+            line-height: 2.5;
+          }
+          
+          rt {
+            ruby-position: over;
+            font-size: 0.6em;
+            line-height: 1;
+            color: #6b7280;
+            font-weight: 400;
+            text-align: center;
+            display: block;
+            margin-bottom: 0.2em;
           }
         `
       }} />

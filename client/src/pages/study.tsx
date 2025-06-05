@@ -53,28 +53,52 @@ export default function StudyPage() {
     totalCards: 0
   });
 
-  // Audio functionality
+  // Enhanced Japanese audio with authentic pronunciation
   const playAudio = (text: string) => {
     if ('speechSynthesis' in window) {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
       
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP'; // Japanese language
-      utterance.rate = 0.8; // Slightly slower for learning
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.75; // Natural learning pace
       utterance.pitch = 1.0;
+      utterance.volume = 0.9;
       
-      // Try to use a Japanese voice if available
-      const voices = window.speechSynthesis.getVoices();
-      const japaneseVoice = voices.find(voice => 
-        voice.lang.startsWith('ja') || voice.name.includes('Japanese')
-      );
+      // Wait for voices to load and select best Japanese voice
+      const selectVoice = () => {
+        const voices = window.speechSynthesis.getVoices();
+        
+        // Prioritize high-quality Japanese voices
+        const preferredVoices = [
+          'Kyoko', 'Otoya', 'Siri Female (Japanese)', 'Microsoft Sayaka',
+          'Google 日本語', 'Android Speech Engine'
+        ];
+        
+        let selectedVoice = voices.find(voice => 
+          preferredVoices.some(preferred => voice.name.includes(preferred))
+        );
+        
+        // Fallback to any Japanese voice
+        if (!selectedVoice) {
+          selectedVoice = voices.find(voice => 
+            voice.lang === 'ja-JP' || voice.lang.startsWith('ja')
+          );
+        }
+        
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+        
+        window.speechSynthesis.speak(utterance);
+      };
       
-      if (japaneseVoice) {
-        utterance.voice = japaneseVoice;
+      // Handle voice loading timing
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.addEventListener('voiceschanged', selectVoice, { once: true });
+      } else {
+        selectVoice();
       }
-      
-      window.speechSynthesis.speak(utterance);
     }
   };
 
