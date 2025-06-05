@@ -117,7 +117,7 @@ export default function StudyModePage() {
                     {studyOptions.reviews.total}
                   </div>
                   <p className="text-sm text-blue-700 mb-4">items pending</p>
-                  <Link href="/study?mode=all-reviews">
+                  <Link href="/study-dedicated?mode=all-reviews">
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">
                       Start Reviews
                     </Button>
@@ -189,7 +189,7 @@ export default function StudyModePage() {
                     {studyOptions.reviews.vocabulary}
                   </div>
                   <p className="text-sm text-orange-700 mb-4">words pending</p>
-                  <Link href="/study?mode=vocabulary-reviews">
+                  <Link href="/study-dedicated?mode=vocabulary-reviews">
                     <Button 
                       className="w-full bg-orange-600 hover:bg-orange-700"
                       disabled={studyOptions.reviews.vocabulary === 0}
@@ -385,7 +385,7 @@ export default function StudyModePage() {
                     </div>
                   </div>
                   
-                  <Link href="/study?mode=learn-kanji">
+                  <Link href="/study-dedicated?mode=learn-kanji">
                     <Button 
                       className="w-full bg-purple-600 hover:bg-purple-700"
                       disabled={studyOptions.newItems.kanji === 0}
@@ -433,7 +433,7 @@ export default function StudyModePage() {
                     </div>
                   </div>
                   
-                  <Link href="/study?mode=learn-grammar">
+                  <Link href="/study-dedicated?mode=learn-grammar">
                     <Button 
                       className="w-full bg-green-600 hover:bg-green-700"
                       disabled={studyOptions.newItems.grammar === 0}
@@ -481,7 +481,7 @@ export default function StudyModePage() {
                     </div>
                   </div>
                   
-                  <Link href="/study?mode=learn-vocabulary">
+                  <Link href="/study-dedicated?mode=learn-vocabulary">
                     <Button 
                       className="w-full bg-orange-600 hover:bg-orange-700"
                       disabled={studyOptions.newItems.vocabulary === 0}

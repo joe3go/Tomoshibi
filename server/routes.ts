@@ -290,8 +290,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const reviewCounts = {
         kanji: sentenceCards.filter(card => card?.grammarPoints?.includes('kanji')).length,
-        grammar: sentenceCards.filter(card => card?.grammarPoints && card.grammarPoints.length > 0).length,
-        vocabulary: sentenceCards.filter(card => card?.vocabulary && card.vocabulary.length > 0).length,
+        grammar: sentenceCards.filter(card => card?.grammarPoints && Array.isArray(card.grammarPoints) && card.grammarPoints.length > 0).length,
+        vocabulary: sentenceCards.filter(card => card?.vocabulary && Array.isArray(card.vocabulary) && card.vocabulary.length > 0).length,
         total: allItems.length
       };
 
