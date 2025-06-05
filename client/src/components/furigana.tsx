@@ -9,114 +9,177 @@ interface FuriganaProps {
 }
 
 /**
- * FuriganaToggle Component - Clean implementation like Bunpro
- * Displays furigana correctly above each kanji character with toggle functionality
+ * Individual Character Toggle - Each kanji can be clicked separately
  */
-function FuriganaToggle({ word, furigana }: { word: string; furigana: string[] }) {
-  const [showFurigana, setShowFurigana] = useState(true);
+function CharacterWithFurigana({ 
+  char, 
+  reading, 
+  index 
+}: { 
+  char: string; 
+  reading: string; 
+  index: number;
+}) {
+  const [showReading, setShowReading] = useState(true);
+  const isKanji = /[\u4e00-\u9faf]/.test(char);
 
-  // Sanity check: ensure word and furigana are valid
-  if (!word || !furigana || furigana.length > word.length) {
-    return <span className="text-2xl font-medium">{word}</span>;
+  if (!isKanji || !reading) {
+    return <span style={{ fontSize: "24px" }}>{char}</span>;
   }
 
   return (
     <ruby
-      onClick={() => setShowFurigana(!showFurigana)}
+      onClick={() => setShowReading(!showReading)}
       style={{ 
-        cursor: "pointer", 
-        userSelect: "none",
+        cursor: "pointer",
         fontSize: "24px",
-        lineHeight: "2.5"
+        display: "inline-block",
+        margin: "0 1px"
       }}
-      className="inline-block hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-1 transition-colors"
-      aria-label={showFurigana ? "Hide furigana" : "Show furigana"}
+      className="hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors"
+      aria-label={showReading ? `Hide reading for ${char}` : `Show reading for ${char}`}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          setShowFurigana(!showFurigana);
+          setShowReading(!showReading);
         }
       }}
     >
-      {Array.from(word).map((char, i) => (
-        <React.Fragment key={i}>
-          {char}
-          {showFurigana && furigana[i] ? (
-            <rt style={{ 
-              fontSize: "12px", 
-              color: "#666", 
-              fontWeight: 400,
-              lineHeight: "1"
-            }}>
-              {furigana[i]}
-            </rt>
-          ) : null}
-        </React.Fragment>
-      ))}
+      {char}
+      {showReading && (
+        <rt style={{ 
+          fontSize: "12px", 
+          color: "#666", 
+          fontWeight: 400,
+          lineHeight: "1",
+          display: "block"
+        }}>
+          {reading}
+        </rt>
+      )}
     </ruby>
   );
 }
 
 /**
+ * FuriganaToggle Component - Clean implementation like Bunpro
+ * Displays furigana correctly above each kanji character with toggle functionality
+ */
+function FuriganaToggle({ word, furigana }: { word: string; furigana: string[] }) {
+  // Sanity check: ensure word and furigana are valid
+  if (!word || !furigana) {
+    return <span className="text-2xl font-medium">{word}</span>;
+  }
+
+  return (
+    <div style={{ lineHeight: "2.5", display: "inline-block" }}>
+      {Array.from(word).map((char, i) => (
+        <CharacterWithFurigana
+          key={i}
+          char={char}
+          reading={furigana[i] || ""}
+          index={i}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
  * Generate furigana array from word and reading
- * This is a simplified implementation - for full automation use kuroshiro.js
+ * This creates proper character-by-character furigana mappings
  */
 function generateFuriganaArray(word: string, reading: string): string[] {
-  // Basic mapping for common N5 vocabulary
-  const furiganaMap: { [key: string]: string[] } = {
-    "私": ["わたし"],
+  // Comprehensive mapping for N5 kanji with proper individual readings
+  const kanjiReadings: { [key: string]: string } = {
+    "私": "わたし",
+    "学": "がく",
+    "生": "せい", 
+    "今": "きょ",
+    "日": "にち",
+    "本": "ほん",
+    "水": "みず",
+    "家": "いえ",
+    "校": "こう",
+    "友": "とも",
+    "達": "だち",
+    "映": "えい",
+    "画": "が",
+    "音": "おん",
+    "楽": "がく",
+    "朝": "あさ",
+    "電": "でん",
+    "車": "しゃ",
+    "会": "かい",
+    "社": "しゃ",
+    "毎": "まい",
+    "新": "しん",
+    "聞": "ぶん",
+    "母": "はは",
+    "買": "か",
+    "物": "もの",
+    "図": "と",
+    "書": "しょ",
+    "館": "かん",
+    "勉": "べん",
+    "強": "きょう",
+    "公": "こう",
+    "園": "えん",
+    "犬": "いぬ",
+    "散": "さん",
+    "歩": "ぽ"
+  };
+
+  // Special compound word mappings for proper pronunciation
+  const compoundMappings: { [key: string]: string[] } = {
     "学生": ["がく", "せい"],
     "今日": ["きょ", "う"],
-    "本": ["ほん"],
-    "水": ["みず"],
-    "家": ["いえ"],
     "学校": ["がっ", "こう"],
     "友達": ["とも", "だち"],
     "映画": ["えい", "が"],
     "音楽": ["おん", "がく"],
-    "朝": ["あさ"],
-    "電車": ["でん", "sha"],
+    "電車": ["でん", "しゃ"],
     "会社": ["かい", "しゃ"],
     "毎日": ["まい", "にち"],
     "新聞": ["しん", "ぶん"],
-    "母": ["はは"],
     "買い物": ["か", "い", "もの"],
     "図書館": ["と", "しょ", "かん"],
     "勉強": ["べん", "きょう"],
     "公園": ["こう", "えん"],
-    "犬": ["いぬ"],
     "散歩": ["さん", "ぽ"]
   };
 
-  // Check if we have a predefined furigana mapping
-  if (furiganaMap[word]) {
-    const kanjiReadings = furiganaMap[word];
+  // Check for compound word first
+  if (compoundMappings[word]) {
+    const readings = compoundMappings[word];
     const result: string[] = [];
     let readingIndex = 0;
     
     for (let i = 0; i < word.length; i++) {
       const char = word[i];
-      // Check if character is kanji
       if (/[\u4e00-\u9faf]/.test(char)) {
-        result.push(kanjiReadings[readingIndex] || "");
+        result.push(readings[readingIndex] || "");
         readingIndex++;
       } else {
-        // Hiragana/katakana gets empty furigana
-        result.push("");
+        result.push(""); // No furigana for kana
       }
     }
     return result;
   }
 
-  // Fallback: simple character-by-character mapping
-  return Array.from(word).map(char => {
+  // Character-by-character mapping
+  const result: string[] = [];
+  for (let i = 0; i < word.length; i++) {
+    const char = word[i];
     if (/[\u4e00-\u9faf]/.test(char)) {
-      // For kanji without mapping, try to extract from reading
-      return reading || "";
+      result.push(kanjiReadings[char] || "");
+    } else {
+      result.push(""); // No furigana for kana
     }
-    return ""; // No furigana for kana
-  });
+  }
+  
+  return result;
 }
 
 export function Furigana({ 
