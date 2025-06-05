@@ -719,6 +719,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Version information endpoint
+  app.get("/api/version", async (req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const versionPath = path.join(process.cwd(), 'VERSION');
+      const changelogPath = path.join(process.cwd(), 'CHANGELOG.md');
+      
+      let version = '1.0.1';
+      let buildDate = new Date().toISOString().split('T')[0];
+      let lastUpdate = '';
+      
+      try {
+        version = fs.readFileSync(versionPath, 'utf8').trim();
+      } catch (error) {
+        console.warn('VERSION file not found, using default');
+      }
+      
+      try {
+        const changelog = fs.readFileSync(changelogPath, 'utf8');
+        const match = changelog.match(/## \[([^\]]+)\] - (\d{4}-\d{2}-\d{2})/);
+        if (match) {
+          lastUpdate = match[2];
+        }
+      } catch (error) {
+        console.warn('CHANGELOG.md not found');
+      }
+      
+      res.json({
+        version,
+        buildDate,
+        lastUpdate: lastUpdate || buildDate,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error fetching version info:", error);
+      res.status(500).json({ error: "Failed to fetch version info" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -8,17 +8,32 @@ interface VersionInfo {
 
 export function VersionDisplay() {
   const [versionInfo, setVersionInfo] = useState<VersionInfo>({
-    version: '1.0.0',
+    version: '1.0.1',
     buildDate: new Date().toISOString().split('T')[0],
     lastUpdate: new Date().toLocaleTimeString()
   });
 
   useEffect(() => {
-    // Update timestamp on component mount
-    setVersionInfo(prev => ({
-      ...prev,
-      lastUpdate: new Date().toLocaleTimeString()
-    }));
+    // Update timestamp and fetch version info
+    const updateInfo = async () => {
+      try {
+        const response = await fetch('/api/version');
+        const data = await response.json();
+        setVersionInfo({
+          version: data.version || '1.0.1',
+          buildDate: data.buildDate || new Date().toISOString().split('T')[0],
+          lastUpdate: new Date().toLocaleTimeString()
+        });
+      } catch (error) {
+        // Fallback to default version
+        setVersionInfo(prev => ({
+          ...prev,
+          lastUpdate: new Date().toLocaleTimeString()
+        }));
+      }
+    };
+    
+    updateInfo();
   }, []);
 
   return (
