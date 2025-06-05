@@ -427,15 +427,13 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageContext.Provider value={contextValue}>
-          <TooltipProvider>
-            <MobileWrapper>
-              <div className="min-h-screen bg-background text-foreground">
-                <Toaster />
-                <AppRouter />
-                <VersionDisplay />
-              </div>
-            </MobileWrapper>
-          </TooltipProvider>
+          <MobileWrapper>
+            <div className="min-h-screen bg-background text-foreground">
+              <Toaster />
+              <AppRouter />
+              <VersionDisplay />
+            </div>
+          </MobileWrapper>
         </LanguageContext.Provider>
       </ThemeProvider>
     </QueryClientProvider>

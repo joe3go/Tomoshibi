@@ -4,6 +4,171 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile-First Responsive Design Variables */
+:root {
+  --viewport-width: 100vw;
+  --keyboard-height: 0px;
+  --is-mobile: 1;
+  --is-tablet: 0;
+  --is-desktop: 0;
+  
+  /* Fluid Typography Scale */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.5rem);
+  
+  /* Japanese Typography */
+  --jp-text-sm: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --jp-text-base: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+  --jp-text-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --jp-text-xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
+  
+  /* Spacing Scale */
+  --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.375rem);
+  --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  --space-xl: clamp(2rem, 1.6rem + 2vw, 3rem);
+  
+  /* Touch Target Sizes */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 481px) {
+  :root {
+    --is-mobile: 0;
+    --is-tablet: 1;
+  }
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --is-tablet: 0;
+    --is-desktop: 1;
+  }
+}
+
+/* Mobile-First Base Styles */
+@layer base {
+  /* Performance optimizations */
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    overflow-x: hidden;
+  }
+  
+  /* Japanese text optimization */
+  .japanese-text {
+    font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    font-feature-settings: 'kern' 1;
+    line-height: 1.8;
+  }
+  
+  /* Fluid images and media */
+  img, video, picture {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Touch-friendly interactive elements */
+  button, [role="button"], input, select, textarea {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    touch-action: manipulation;
+  }
+}
+
+/* Mobile Navigation Optimizations */
+@layer components {
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--background);
+    border-top: 1px solid var(--border);
+    padding: var(--space-sm);
+    z-index: 50;
+    
+    /* Safe area for mobile devices */
+    padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+  }
+  
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs);
+    min-height: var(--touch-target-comfortable);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  /* Content prioritization for mobile */
+  .content-priority-high {
+    order: -1;
+  }
+  
+  .content-priority-low {
+    display: none;
+  }
+  
+  @media (min-width: 481px) {
+    .content-priority-low {
+      display: block;
+    }
+  }
+  
+  /* Flexible grid system */
+  .fluid-grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  }
+  
+  .study-card-container {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--space-md);
+    margin: 0 auto;
+  }
+  
+  @media (min-width: 481px) {
+    .study-card-container {
+      max-width: 600px;
+      padding: var(--space-lg);
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .study-card-container {
+      max-width: 800px;
+      padding: var(--space-xl);
+    }
+  }
+}
+
 @layer base {
   :root {
     --background: 44 59% 93%; /* #FFF2DC - Warm lantern glow */
