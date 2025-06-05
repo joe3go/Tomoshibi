@@ -216,18 +216,42 @@
 
 /* Ruby/Furigana support for proper Japanese text display */
 ruby {
-  ruby-align: center;
-  line-height: 2.5;
-  margin: 0 0.1em;
+  ruby-align: center !important;
+  line-height: 2.5 !important;
+  margin: 0 0.1em !important;
+  display: inline-block !important;
+  vertical-align: baseline !important;
 }
 
 rt {
-  ruby-position: over;
-  font-size: 0.5em;
-  line-height: 1;
-  color: #6b7280;
-  font-weight: 400;
-  text-align: center;
+  ruby-position: over !important;
+  font-size: 0.5em !important;
+  line-height: 1.2 !important;
+  color: #6b7280 !important;
+  font-weight: 400 !important;
+  text-align: center !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force ruby support across browsers */
+ruby, rt, rp {
+  unicode-bidi: isolate;
+}
+
+/* Fallback for browsers without native ruby support */
+ruby {
+  position: relative;
+}
+
+rt {
+  position: absolute !important;
+  top: -1.2em !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  white-space: nowrap !important;
+  font-size: 0.5em !important;
 }
 
 /* Vocabulary highlighting */
