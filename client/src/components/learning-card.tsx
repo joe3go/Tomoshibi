@@ -165,25 +165,31 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={className}
+      className={`card-container ${className}`}
     >
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
+      <Card className="p-4 md:p-6 bg-card/50 backdrop-blur-sm border-border/50">
         {/* Header */}
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-bold text-foreground">{card.vocab}</h2>
+              <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                <h2 className="vocab-title text-xl md:text-2xl font-bold text-foreground">{card.vocab}</h2>
                 {card.reading && (
-                  <span className="text-lg text-muted-foreground">({card.reading})</span>
+                  <span className="text-base md:text-lg text-muted-foreground">({card.reading})</span>
                 )}
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => playAudio(card.vocab)}
-                  className="h-8 w-8 p-0"
+                  onClick={() => playAudio(card.vocab, `vocab-${card.id}`)}
+                  className={`h-8 w-8 p-0 mobile-button audio-button ${
+                    playingAudioId === `vocab-${card.id}` ? 'playing' : ''
+                  }`}
                 >
-                  <Volume2 className="h-4 w-4" />
+                  {playingAudioId === `vocab-${card.id}` ? (
+                    <Pause className="h-4 w-4" />
+                  ) : (
+                    <Volume2 className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <div className="flex items-center gap-2">
@@ -215,17 +221,17 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
                   transition={{ delay: index * 0.1 }}
                   className="group"
                 >
-                  <Card className="p-4 bg-background/30 hover:bg-background/50 transition-colors">
-                    <div className="flex items-start justify-between gap-3">
+                  <Card className="p-3 md:p-4 bg-background/30 hover:bg-background/50 transition-colors">
+                    <div className="flex items-start justify-between gap-2 md:gap-3">
                       <div className="flex-1 space-y-2">
-                        <p className="text-base text-foreground leading-relaxed">
-                          {highlightVocab(sentence.japanese)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
+                        <div className="text-sm md:text-base text-foreground leading-relaxed">
+                          {renderHighlightedSentence(sentence.japanese)}
+                        </div>
+                        <p className="text-xs md:text-sm text-muted-foreground">
                           {sentence.english}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                         <Badge 
                           variant={sentence.difficulty === 'easy' ? 'default' : 
                                  sentence.difficulty === 'medium' ? 'secondary' : 'destructive'}
@@ -236,10 +242,16 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => playAudio(sentence.japanese)}
-                          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => playAudio(sentence.japanese, `sentence-${index}`)}
+                          className={`h-8 w-8 p-0 mobile-button audio-button transition-opacity ${
+                            isMobileDevice() ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          } ${playingAudioId === `sentence-${index}` ? 'playing' : ''}`}
                         >
-                          <Play className="h-3 w-3" />
+                          {playingAudioId === `sentence-${index}` ? (
+                            <Pause className="h-3 w-3" />
+                          ) : (
+                            <Play className="h-3 w-3" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -288,6 +300,29 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
               )}
             </AnimatePresence>
 
+            {/* Feedback Display */}
+            <AnimatePresence>
+              {feedback && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className={`p-3 rounded-lg border ${
+                    feedback.type === 'success' ? 'feedback-success' : 'feedback-error'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {feedback.type === 'success' ? (
+                      <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    )}
+                    <p className="text-sm font-medium">{feedback.message}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Text Input */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
@@ -295,9 +330,12 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
               </label>
               <Textarea
                 value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
+                onChange={(e) => {
+                  setTextInput(e.target.value);
+                  if (feedback) setFeedback(null); // Clear feedback on new input
+                }}
                 placeholder="日本語で文を書いてください..."
-                className="min-h-[80px] resize-none"
+                className="min-h-[80px] resize-none input-field"
               />
             </div>
 
@@ -342,59 +380,18 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
             <Button
               onClick={handleSaveOutput}
               disabled={!textInput.trim() && !transcript.trim()}
-              className="w-full"
+              className="w-full mobile-button"
             >
               <Save className="h-4 w-4 mr-2" />
               Save Practice
             </Button>
           </div>
 
-          {/* Previous Outputs */}
-          {previousOutputs.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-foreground">
-                  Your Previous Practice ({previousOutputs.length})
-                </h4>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPreviousOutputs(!showPreviousOutputs)}
-                >
-                  {showPreviousOutputs ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-
-              <AnimatePresence>
-                {showPreviousOutputs && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-2"
-                  >
-                    {previousOutputs.slice(0, 3).map((output, index) => (
-                      <Card key={index} className="p-3 bg-background/20">
-                        <div className="space-y-2">
-                          {output.textOutput && (
-                            <p className="text-sm text-foreground">{output.textOutput}</p>
-                          )}
-                          {output.spokenOutput && (
-                            <p className="text-xs text-muted-foreground">
-                              Spoken: {output.spokenOutput}
-                            </p>
-                          )}
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(output.timestamp).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </Card>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+          {/* Saved Responses Component */}
+          <SavedResponses 
+            vocabWord={card.vocab}
+            onResponseUpdate={() => setRefreshResponses(prev => prev + 1)}
+          />
         </div>
       </Card>
     </motion.div>
