@@ -19,6 +19,7 @@ import {
   Play,
   CheckCircle
 } from "lucide-react";
+import logoImage from "@assets/generation-6a02e368-0179-44e8-b30c-e27dd8718770_1749086561653.png";
 
 export default function Landing() {
   return (
@@ -28,13 +29,12 @@ export default function Landing() {
         <div className="container mx-auto px-4 py-20">
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-8">
-              <div className="inline-flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shadow-lg">
-                  <span className="text-white text-2xl font-bold">日</span>
-                </div>
-                <h1 className="text-6xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
-                  Tomoshibi
-                </h1>
+              <div className="flex justify-center mb-6">
+                <img 
+                  src={logoImage} 
+                  alt="Tomoshibi - Japanese Learning with Lantern" 
+                  className="max-w-md h-auto"
+                />
               </div>
               
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
