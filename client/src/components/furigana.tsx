@@ -193,14 +193,22 @@ export function Furigana({
   highlightVocab = false 
 }: FuriganaProps) {
   
-  if (showReading && japanese) {
+  // Always reserve space for furigana to prevent layout shifts
+  const containerStyle = {
+    lineHeight: '2.5',
+    minHeight: '4em', // Reserve space for furigana
+    padding: '0.5em 0',
+    display: 'inline-block'
+  };
+
+  if (japanese) {
     // Check if text has kanji that needs furigana
     const hasKanji = /[\u4e00-\u9faf]/.test(japanese);
     
     if (!hasKanji) {
-      // No kanji, display as plain text
+      // No kanji, display as plain text but keep same container height
       return (
-        <div className="text-center text-2xl font-medium">
+        <div className="text-center text-2xl font-medium japanese-text" style={containerStyle}>
           <span>{japanese}</span>
         </div>
       );
@@ -210,20 +218,44 @@ export function Furigana({
     const furiganaArray = generateFuriganaArray(japanese, reading || "");
     
     return (
-      <div className="text-center japanese-text" style={{ lineHeight: '3', padding: '10px 0' }}>
-        <FuriganaToggle word={japanese} furigana={furiganaArray} />
-        {reading && (
-          <div className="text-sm text-muted-foreground mt-2 japanese-text">
-            Reading: {reading}
-          </div>
-        )}
+      <div className="text-center japanese-text" style={containerStyle}>
+        {Array.from(japanese).map((char, i) => {
+          const isKanji = /[\u4e00-\u9faf]/.test(char);
+          
+          if (!isKanji) {
+            return <span key={i} className="text-3xl">{char}</span>;
+          }
+          
+          return (
+            <ruby key={i} style={{ position: 'relative', display: 'inline-block', margin: '0 0.125rem' }}>
+              <span className="text-3xl">{char}</span>
+              {showReading && furiganaArray[i] && (
+                <rt style={{
+                  position: 'absolute',
+                  top: '-1.5em',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '0.5em',
+                  color: '#ef4444',
+                  fontWeight: '500',
+                  whiteSpace: 'nowrap',
+                  pointerEvents: 'none',
+                  opacity: showReading ? 1 : 0,
+                  transition: 'opacity 0.2s ease'
+                }}>
+                  {furiganaArray[i]}
+                </rt>
+              )}
+            </ruby>
+          );
+        })}
       </div>
     );
   }
   
-  // Normal display without furigana
+  // Fallback
   return (
-    <div className="text-center text-2xl font-medium">
+    <div className="text-center text-2xl font-medium japanese-text" style={containerStyle}>
       <span>{japanese}</span>
     </div>
   );

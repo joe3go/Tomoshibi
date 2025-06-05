@@ -356,42 +356,49 @@ function AppRouter() {
     );
   }
 
-  if (user) {
-    return (
-      <div className="min-h-screen bg-background">
-        <AppHeader user={user} />
-        <Navigation user={user} />
-        <div className="main-content with-sidebar">
-          <Switch>
-            <Route path="/" component={Dashboard} />
-            <Route path="/study" component={StudyPage} />
-            <Route path="/study-dedicated" component={StudyDedicatedPage} />
-            <Route path="/study-fullscreen" component={StudyFullscreenPage} />
-            <Route path="/study-mode" component={StudyModePage} />
-            <Route path="/content-browser" component={ContentBrowserPage} />
-            <Route path="/jlpt-progress" component={JLPTProgressPage} />
-            <Route path="/jlpt-content" component={JLPTContentPage} />
-            <Route path="/social" component={Social} />
-            <Route path="/achievements" component={Achievements} />
-            <Route path="/settings" component={Settings} />
-            <Route component={NotFound} />
-          </Switch>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
-      <div className="main-content">
-        <Switch>
-          <Route path="/auth" component={AuthPage} />
-          <Route path="/" component={Landing} />
-          <Route component={NotFound} />
-        </Switch>
-      </div>
-    </div>
+    <Switch>
+      {/* Fullscreen study route without any wrappers */}
+      <Route path="/study-fullscreen" component={StudyFullscreenPage} />
+      
+      {/* Regular authenticated routes */}
+      {user ? (
+        <Route>
+          <div className="min-h-screen bg-background">
+            <AppHeader user={user} />
+            <Navigation user={user} />
+            <div className="main-content with-sidebar">
+              <Switch>
+                <Route path="/" component={Dashboard} />
+                <Route path="/study" component={StudyPage} />
+                <Route path="/study-dedicated" component={StudyDedicatedPage} />
+                <Route path="/study-mode" component={StudyModePage} />
+                <Route path="/content-browser" component={ContentBrowserPage} />
+                <Route path="/jlpt-progress" component={JLPTProgressPage} />
+                <Route path="/jlpt-content" component={JLPTContentPage} />
+                <Route path="/social" component={Social} />
+                <Route path="/achievements" component={Achievements} />
+                <Route path="/settings" component={Settings} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
+          </div>
+        </Route>
+      ) : (
+        <Route>
+          <div className="min-h-screen bg-background">
+            <AppHeader />
+            <div className="main-content">
+              <Switch>
+                <Route path="/auth" component={AuthPage} />
+                <Route path="/" component={Landing} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
+          </div>
+        </Route>
+      )}
+    </Switch>
   );
 }
 

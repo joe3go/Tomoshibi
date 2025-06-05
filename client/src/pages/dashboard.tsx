@@ -136,7 +136,7 @@ export default function Dashboard() {
                       <Progress value={Math.min((recentSessions[0]?.timeSpentMinutes || 0) / user.dailyGoalMinutes * 100, 100)} className="h-3" />
                     </>
                   )}
-                  <Link href="/study">
+                  <Link href="/study-fullscreen">
                     <Button variant="outline" className="w-full">
                       <BookOpen className="mr-2 h-4 w-4" />
                       Continue Studying
