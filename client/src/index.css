@@ -4,48 +4,52 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --background: 44 59% 93%; /* #FFF2DC - Warm lantern glow */
+    --foreground: 0 0% 13%; /* #222222 - Dark charcoal */
+    --card: 0 0% 100%; /* Pure white cards */
+    --card-foreground: 0 0% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 12 79% 56%; /* #E55B3C - Lantern Orange */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 12 79% 56%; /* Matches primary */
-    --radius: 0.5rem;
+    --popover-foreground: 0 0% 13%;
+    --primary: 351 100% 45%; /* #E60026 - Japanese red */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 20%; /* #333333 - Dark charcoal */
+    --secondary-foreground: 0 0% 100%;
+    --tertiary: 22 90% 60%; /* #F68C3F - Burnt orange */
+    --tertiary-foreground: 0 0% 13%;
+    --muted: 44 40% 88%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 44 40% 88%;
+    --accent-foreground: 0 0% 13%;
+    --destructive: 351 100% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 44 30% 85%;
+    --input: 0 0% 100%;
+    --ring: 351 100% 45%;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 15 86% 58%; /* Brighter orange for dark mode */
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 15 86% 58%;
+    --background: 0 0% 13%;
+    --foreground: 44 59% 93%;
+    --card: 0 0% 18%;
+    --card-foreground: 44 59% 93%;
+    --popover: 0 0% 18%;
+    --popover-foreground: 44 59% 93%;
+    --primary: 351 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 25%;
+    --secondary-foreground: 0 0% 100%;
+    --tertiary: 22 85% 55%;
+    --tertiary-foreground: 0 0% 13%;
+    --muted: 0 0% 25%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 25%;
+    --accent-foreground: 44 59% 93%;
+    --destructive: 351 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
+    --ring: 351 100% 50%;
   }
 }
 
@@ -60,7 +64,7 @@
 
 /* Layout */
 .app-header {
-  @apply fixed top-0 left-0 right-0 z-50 h-16 bg-background/80 backdrop-blur-sm border-b border-border;
+  @apply fixed top-0 left-0 right-0 z-50 h-16 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm;
 }
 
 .main-content {
@@ -69,4 +73,59 @@
 
 .main-content.with-sidebar {
   @apply md:pl-64;
+}
+
+/* Custom Button Styles */
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-[#C5001F] active:bg-[#B5001C] transition-colors duration-200 shadow-md;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-[#1F1F1F] active:bg-[#0F0F0F] transition-colors duration-200 shadow-md;
+}
+
+.btn-tertiary {
+  @apply bg-tertiary text-tertiary-foreground hover:bg-[#D97A34] active:bg-[#C76B2A] transition-colors duration-200 shadow-md;
+}
+
+/* Japanese Lantern Icon */
+.lantern-icon {
+  display: inline-block;
+  width: 24px;
+  height: 32px;
+  position: relative;
+}
+
+.lantern-icon::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 3px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.lantern-icon::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 24px;
+  background: currentColor;
+  border-radius: 50% 50% 20% 20%;
+  opacity: 0.9;
+}
+
+/* Subtle Japanese aesthetic touches */
+.card-shadow {
+  @apply shadow-lg shadow-black/5;
+}
+
+.warm-gradient {
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(44, 45%, 90%) 100%);
 }

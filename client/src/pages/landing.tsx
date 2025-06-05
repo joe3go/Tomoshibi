@@ -23,46 +23,51 @@ import {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen warm-gradient">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto px-6 py-20">
           <div className="text-center max-w-5xl mx-auto">
             <div className="mb-12">
-              <div className="inline-flex items-center gap-4 mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shadow-lg">
-                  <span className="text-white text-2xl font-bold">日</span>
+              <div className="inline-flex items-center gap-6 mb-8">
+                <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center card-shadow border border-border/10">
+                  <div className="lantern-icon text-primary scale-150"></div>
                 </div>
-                <h1 className="text-6xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                <h1 className="text-7xl font-light text-foreground tracking-tight">
                   Tomoshibi
                 </h1>
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-8 leading-tight">
                 2,000 kanji. 6,000 vocabulary words. <br />
-                <span className="text-primary">In just over a year.</span>
+                <span className="text-primary font-normal">In just over a year.</span>
               </h2>
               
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-                Master Japanese through <span className="font-semibold text-primary">authentic JLPT N5 content</span> with 
+              <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-3xl mx-auto font-light">
+                Master Japanese through <span className="font-medium text-foreground">authentic JLPT N5 content</span> with 
                 our advanced spaced repetition system. Build lasting knowledge with sentence-based learning that works.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
                 <Link href="/auth">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg">
+                  <Button size="lg" className="btn-primary px-10 py-4 text-lg rounded-xl font-medium">
                     <Play className="w-5 h-5 mr-2" />
-                    Start Learning for Free
+                    Start Learning
                   </Button>
                 </Link>
                 <Link href="/auth">
-                  <Button variant="outline" size="lg" className="px-8 py-4 text-lg border-primary text-primary hover:bg-primary/10">
+                  <Button size="lg" className="btn-secondary px-10 py-4 text-lg rounded-xl font-medium">
                     Sign In
+                  </Button>
+                </Link>
+                <Link href="/auth">
+                  <Button size="lg" className="btn-tertiary px-8 py-4 text-lg rounded-xl font-medium">
+                    Try Demo
                   </Button>
                 </Link>
               </div>
               
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+              <p className="text-sm text-muted-foreground">
                 No credit card required • Start learning immediately
               </p>
             </div>
@@ -71,10 +76,10 @@ export default function Landing() {
       </div>
 
       {/* Testimonials Section */}
-      <div className="py-20 bg-white/70 dark:bg-gray-800/70">
-        <div className="container mx-auto px-4">
+      <div className="py-24">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl font-semibold text-foreground mb-4 max-w-4xl mx-auto leading-tight">
               From Japanese residents to self learners, our members learn to read Japanese quickly
             </h2>
           </div>
