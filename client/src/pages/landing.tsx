@@ -59,11 +59,11 @@ export default function Landing() {
         {/* Background Image with seamless edge blending */}
         <div className="absolute inset-0 w-full h-full">
           <div 
-            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-25"
+            className="w-full h-full bg-cover bg-center bg-no-repeat opacity-25"
             style={{
               backgroundImage: `url(${studySceneImage})`,
               backgroundPosition: 'center 70%',
-              backgroundSize: 'contain',
+              backgroundSize: 'cover',
               maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
               maskComposite: 'intersect',
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
