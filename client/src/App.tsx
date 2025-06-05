@@ -30,6 +30,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 // Pages
 import Dashboard from "@/pages/dashboard";
 import Study from "@/pages/study";
+import Vocabulary from "@/pages/vocabulary";
 import JLPTProgress from "@/pages/jlpt-progress";
 import StudyPage from "@/pages/study";
 import StudyDedicatedPage from "@/pages/study-dedicated";
@@ -318,6 +319,7 @@ function AppRouter() {
       <div className="pt-11 pb-12 md:pl-80 h-screen overflow-hidden">
         <Switch>
           <Route path="/" component={Dashboard} />
+          <Route path="/vocabulary" component={Vocabulary} />
           <Route path="/study" component={Study} />
           <Route path="/jlpt-progress" component={JLPTProgress} />
           <Route path="/study-dedicated" component={StudyDedicatedPage} />

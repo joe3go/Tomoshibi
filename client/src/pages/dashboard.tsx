@@ -1,13 +1,26 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Target, Trophy, Award, Zap } from "lucide-react";
+import { VocabStats } from "@/components/vocab-stats";
+import { ReviewMode } from "@/components/review-mode";
+import { FloatingAddButton, AddWordModal } from "@/components/add-word-modal";
+import { VocabWord } from "@/types/vocab";
+import { VocabStorage } from "@/lib/vocab-storage";
+import { BookOpen, Target, Trophy, Award, Zap, Play, Plus, BarChart3, Shuffle } from "lucide-react";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
+  const [words, setWords] = useState<VocabWord[]>([]);
+  const [showReviewMode, setShowReviewMode] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showVocabStats, setShowVocabStats] = useState(false);
+  const { toast } = useToast();
+
   const { data: user } = useQuery<any>({
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
@@ -27,6 +40,47 @@ export default function Dashboard() {
     queryKey: ["/api/dashboard/achievements"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
+
+  useEffect(() => {
+    loadVocabWords();
+  }, []);
+
+  const loadVocabWords = () => {
+    const loadedWords = VocabStorage.getVocabWords();
+    setWords(loadedWords);
+  };
+
+  const handleWordAdded = (newWord: VocabWord) => {
+    setWords(prev => [...prev, newWord]);
+  };
+
+  const handleLoadDemo = () => {
+    const demoWords = VocabStorage.loadDemoWords();
+    setWords(prev => [...prev, ...demoWords]);
+    toast({
+      title: "Demo words loaded",
+      description: `Added ${demoWords.length} sample words to explore the features.`,
+    });
+  };
+
+  const startReview = () => {
+    const wordsToReview = VocabStorage.getWordsDueForReview();
+    if (wordsToReview.length === 0) {
+      toast({
+        title: "No words to review",
+        description: "All your words are up to date! Great job!",
+      });
+      return;
+    }
+    setShowReviewMode(true);
+  };
+
+  const currentStats = VocabStorage.calculateCurrentStats();
+  const wordsToReview = VocabStorage.getWordsDueForReview();
+
+  if (showReviewMode) {
+    return <ReviewMode onExit={() => setShowReviewMode(false)} />;
+  }
 
   if (!user) {
     return (
@@ -48,52 +102,131 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-2 grid-cols-2">
-        <Card className="p-3">
+      {/* Vocabulary Quick Stats */}
+      <div className="grid gap-2 grid-cols-2 lg:grid-cols-4">
+        <Card className="p-3 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-muted-foreground">Total XP</p>
-              <p className="text-lg font-bold text-primary">{user.totalXP}</p>
+              <p className="text-xs text-muted-foreground">Total Words</p>
+              <p className="text-lg font-bold text-primary">{currentStats.totalWords}</p>
             </div>
-            <Zap className="h-4 w-4 text-muted-foreground" />
+            <BookOpen className="h-4 w-4 text-blue-400" />
           </div>
         </Card>
 
-        <Card className="p-3">
+        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground">Due Now</p>
+              <p className="text-lg font-bold text-orange-400">{wordsToReview.length}</p>
+            </div>
+            <Target className="h-4 w-4 text-orange-400" />
+          </div>
+        </Card>
+
+        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground">Success Rate</p>
+              <p className="text-lg font-bold text-green-400">{currentStats.successRate}%</p>
+            </div>
+            <Trophy className="h-4 w-4 text-green-400" />
+          </div>
+        </Card>
+
+        <Card className="p-3 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Streak</p>
-              <p className="text-lg font-bold text-primary">{user.currentStreak}</p>
+              <p className="text-lg font-bold text-yellow-400">{currentStats.streakDays} days</p>
             </div>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <Zap className="h-4 w-4 text-yellow-400" />
           </div>
         </Card>
       </div>
 
-      {/* Study Actions */}
-      <div className="grid gap-2 grid-cols-2">
-        <Link href="/study">
-          <Button className="w-full h-16 flex flex-col items-center justify-center space-y-1 bg-primary">
-            <BookOpen className="h-5 w-5" />
-            <span className="text-sm">Study</span>
-          </Button>
-        </Link>
-        
-        <Link href="/jlpt-progress">
-          <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-            <Award className="h-5 w-5" />
-            <span className="text-sm">JLPT Progress</span>
-          </Button>
-        </Link>
-      </div>
+      {/* Main Actions */}
+      {words.length === 0 ? (
+        <Card className="p-6 text-center bg-card/50 backdrop-blur-sm">
+          <div className="space-y-4">
+            <div className="text-4xl">📚</div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Start Building Your Vocabulary</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create your Japanese vocabulary collection with our spaced repetition system.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={handleLoadDemo} variant="outline" className="flex items-center gap-2">
+                <Shuffle className="h-4 w-4" />
+                Try Demo (5 words)
+              </Button>
+              <Button onClick={() => setShowAddModal(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Your First Word
+              </Button>
+            </div>
+          </div>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {/* Review Actions */}
+          {wordsToReview.length > 0 && (
+            <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-foreground">Ready for Review</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {wordsToReview.length} words are waiting for review
+                  </p>
+                </div>
+                <Button onClick={startReview} className="flex items-center gap-2">
+                  <Play className="h-4 w-4" />
+                  Start Review
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* Study Actions Grid */}
+          <div className="grid gap-2 grid-cols-2 lg:grid-cols-3">
+            <Link href="/vocabulary">
+              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
+                <BookOpen className="h-5 w-5" />
+                <span className="text-sm">Vocabulary</span>
+              </Button>
+            </Link>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => setShowVocabStats(!showVocabStats)}
+              className="w-full h-16 flex flex-col items-center justify-center space-y-1"
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-sm">Stats</span>
+            </Button>
+
+            <Link href="/jlpt-progress">
+              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
+                <Award className="h-5 w-5" />
+                <span className="text-sm">JLPT Progress</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Vocabulary Stats Panel */}
+      {showVocabStats && words.length > 0 && (
+        <VocabStats words={words} />
+      )}
 
       {/* JLPT Progress Section */}
-      <Card className="p-3">
+      <Card className="p-3 bg-card/50 backdrop-blur-sm">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">JLPT Progress</h3>
-            <Badge variant="secondary" className="text-xs">{user.currentJLPTLevel}</Badge>
+            <Badge variant="secondary" className="text-xs">{user.currentJLPTLevel || 'N5'}</Badge>
           </div>
           
           <div className="space-y-2">
@@ -113,7 +246,7 @@ export default function Dashboard() {
 
       {/* Recent Activity */}
       {recentSessions && recentSessions.length > 0 && (
-        <Card className="p-3">
+        <Card className="p-3 bg-card/50 backdrop-blur-sm">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold">Recent Activity</h3>
             <div className="space-y-2">
@@ -134,7 +267,7 @@ export default function Dashboard() {
 
       {/* Achievements */}
       {achievements && achievements.length > 0 && (
-        <Card className="p-3">
+        <Card className="p-3 bg-card/50 backdrop-blur-sm">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold">Recent Achievements</h3>
             <div className="flex space-x-2 overflow-x-auto">
@@ -147,6 +280,16 @@ export default function Dashboard() {
           </div>
         </Card>
       )}
+
+      {/* Floating Add Button */}
+      {words.length > 0 && <FloatingAddButton onClick={() => setShowAddModal(true)} />}
+
+      {/* Add Word Modal */}
+      <AddWordModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onWordAdded={handleWordAdded}
+      />
     </div>
   );
 }
