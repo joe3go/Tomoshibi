@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { ChevronLeft, Volume2, Eye, EyeOff, RotateCcw, CheckCircle, XCircle, Star } from "lucide-react";
 import { Link } from "wouter";
+import { Furigana } from "@/components/furigana";
 
 interface ReviewCard {
   srsItem: {
@@ -331,16 +332,15 @@ export default function StudyPage() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {/* Japanese Sentence */}
-            <div className="text-center">
-              <div className="text-4xl font-medium mb-2 text-gray-900 leading-relaxed">
-                {currentCard.sentenceCard.japanese}
-              </div>
-              {showReading && (
-                <div className="text-lg text-gray-600">
-                  {currentCard.sentenceCard.reading}
-                </div>
-              )}
+            {/* Japanese Sentence with Furigana */}
+            <div className="py-6">
+              <Furigana
+                japanese={currentCard.sentenceCard.japanese}
+                reading={currentCard.sentenceCard.reading}
+                vocabulary={currentCard.sentenceCard.vocabulary}
+                showReading={showReading}
+                highlightVocab={true}
+              />
             </div>
 
             {/* Show Answer Button */}
