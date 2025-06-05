@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguageMode, useLanguageContent } from "@/App";
+import studySceneImage from "@assets/generation-0cfd4b22-9542-4fd7-8684-2599ac9b4195_1749094727900.png";
 import { 
   Play, 
   Brain, 
@@ -53,25 +54,40 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen warm-gradient">
-      {/* Hero Section */}
+      {/* Hero Section with Integrated Study Scene */}
       <div className="relative overflow-hidden">
-        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
+        {/* Background Image with Seamless Blending */}
+        <div className="absolute inset-0 w-full h-full">
+          <div 
+            className="w-full h-full bg-cover bg-center bg-no-repeat opacity-20"
+            style={{
+              backgroundImage: `url(${studySceneImage})`,
+              backgroundPosition: 'center 60%',
+              filter: 'sepia(20%) saturate(0.8) brightness(1.1)'
+            }}
+          />
+          {/* Gradient overlay for seamless blending */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/30 via-transparent to-background/30" />
+        </div>
+        
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 py-12 sm:py-20">
           <div className="text-center max-w-5xl mx-auto">
             <div className="mb-8 sm:mb-12">
               <div className="flex flex-col sm:inline-flex sm:flex-row items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white flex items-center justify-center card-shadow border border-border/10">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/90 backdrop-blur-sm flex items-center justify-center card-shadow border border-border/20">
                   <div className="lantern-icon text-primary scale-125 sm:scale-150"></div>
                 </div>
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground tracking-tight">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground tracking-tight drop-shadow-sm">
                   {currentContent.title}
                 </h1>
               </div>
               
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-6 sm:mb-8 leading-tight px-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-6 sm:mb-8 leading-tight px-2 drop-shadow-sm">
                 {currentContent.subtitle}
               </h2>
               
-              <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto font-light px-2">
+              <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto font-light px-2 drop-shadow-sm bg-background/20 backdrop-blur-sm rounded-2xl py-4 px-6">
                 {currentContent.description}
               </p>
               
@@ -79,7 +95,7 @@ export default function Landing() {
                 <Link href="/auth" className="w-full sm:w-auto">
                   <Button 
                     size="lg" 
-                    className="btn-primary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                    className="btn-primary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback shadow-xl backdrop-blur-sm"
                     aria-label="Start learning Japanese with Tomoshibi"
                   >
                     <Play className="w-5 h-5 mr-2" />
@@ -89,7 +105,7 @@ export default function Landing() {
                 <Link href="/auth" className="w-full sm:w-auto">
                   <Button 
                     size="lg" 
-                    className="btn-secondary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                    className="btn-secondary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback shadow-xl backdrop-blur-sm"
                     aria-label="Sign in to your account"
                   >
                     {currentContent.signIn}
@@ -98,7 +114,7 @@ export default function Landing() {
                 <Link href="/auth" className="w-full sm:w-auto">
                   <Button 
                     size="lg" 
-                    className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                    className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback shadow-xl backdrop-blur-sm"
                     aria-label="Try demo version"
                   >
                     {currentContent.tryDemo}
@@ -106,7 +122,7 @@ export default function Landing() {
                 </Link>
               </div>
               
-              <p className="text-sm text-muted-foreground px-2">
+              <p className="text-sm text-muted-foreground px-2 bg-background/30 backdrop-blur-sm rounded-lg py-2 px-4 inline-block">
                 {currentContent.noCardRequired}
               </p>
             </div>
