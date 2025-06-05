@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguageMode, useLanguageContent } from "@/App";
 import studySceneImage from "@assets/generation-0a824337-7cc6-4f0a-8c9b-c8daca3fc9b7_1749095442322.png";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Play, 
   Brain, 
@@ -19,6 +22,25 @@ import {
 export default function Landing() {
   const { languageMode } = useLanguageMode();
   const content = useLanguageContent(languageMode);
+  const { toast } = useToast();
+
+  const demoLoginMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/demo-login");
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      window.location.href = "/";
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Demo login failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const heroContent = {
     en: {
@@ -114,15 +136,15 @@ export default function Landing() {
                     {currentContent.signIn}
                   </Button>
                 </Link>
-                <Link href="/auth" className="w-full sm:w-auto">
-                  <Button 
-                    size="lg" 
-                    className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback shadow-xl backdrop-blur-sm"
-                    aria-label="Try demo version"
-                  >
-                    {currentContent.tryDemo}
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback shadow-xl backdrop-blur-sm"
+                  aria-label="Try demo version"
+                  onClick={() => demoLoginMutation.mutate()}
+                  disabled={demoLoginMutation.isPending}
+                >
+                  {demoLoginMutation.isPending ? "Loading..." : currentContent.tryDemo}
+                </Button>
               </div>
               
               <p className="text-sm text-muted-foreground px-2">

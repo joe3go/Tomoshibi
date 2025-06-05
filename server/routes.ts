@@ -173,6 +173,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Temporary demo login for testing
+  app.post("/api/demo-login", async (req, res) => {
+    try {
+      // Get the demo user (ID 1 from storage)
+      const demoUser = await storage.getUser(1);
+      if (demoUser) {
+        req.session.userId = demoUser.id;
+        const { password: _, ...userWithoutPassword } = demoUser;
+        res.json(userWithoutPassword);
+      } else {
+        res.status(404).json({ error: "Demo user not found" });
+      }
+    } catch (error) {
+      console.error("Demo login error:", error);
+      res.status(500).json({ error: "Demo login failed" });
+    }
+  });
+
   // Get current user (with authentication support)
   app.get("/api/user", async (req, res) => {
     try {
