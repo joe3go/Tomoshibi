@@ -24,13 +24,13 @@ function CharacterWithFurigana({
   const isKanji = /[\u4e00-\u9faf]/.test(char);
 
   if (!isKanji || !reading) {
-    return <span className="japanese-text text-2xl">{char}</span>;
+    return <span className="japanese-text text-3xl">{char}</span>;
   }
 
   return (
     <ruby
       onClick={() => setShowReading(!showReading)}
-      className="japanese-text text-2xl hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer inline-block"
+      className="japanese-text text-3xl hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer inline-block"
       style={{ 
         margin: "0 0.125rem"
       }}
@@ -45,7 +45,7 @@ function CharacterWithFurigana({
     >
       {char}
       {showReading && (
-        <rt className="japanese-text text-base">
+        <rt className="japanese-text text-lg">
           {reading}
         </rt>
       )}
