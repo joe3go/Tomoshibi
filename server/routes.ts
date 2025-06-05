@@ -791,6 +791,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Furigana generation API route using kuroshiro.js
+  app.post('/api/furigana/generate', async (req, res) => {
+    try {
+      const { text } = req.body;
+      
+      if (!text || typeof text !== 'string') {
+        return res.status(400).json({ error: 'Text is required' });
+      }
+
+      const { processSentenceForFurigana } = await import('./furiganaService');
+      const result = await processSentenceForFurigana(text);
+      
+      res.json({
+        original: text,
+        clean: result.cleanJapanese,
+        furigana: result.furigana,
+        hasKanji: result.hasKanji
+      });
+    } catch (error) {
+      console.error('Error generating furigana:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate furigana',
+        original: req.body.text,
+        clean: req.body.text,
+        furigana: req.body.text,
+        hasKanji: false
+      });
+    }
+  });
+
   // JLPT Progress API Route
   app.get('/api/jlpt/progress', async (req, res) => {
     try {

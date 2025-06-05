@@ -9,6 +9,7 @@ import {
   LearningPath, UserPathProgress
 } from "@shared/schema";
 import { n5Vocabulary, n5Kanji, n5Grammar } from "./jlpt-n5-data";
+import { processSentenceForFurigana } from "./furiganaService";
 
 export interface IStorage {
   // User operations
@@ -118,7 +119,50 @@ export class MemStorage implements IStorage {
     return points.length > 0 ? points : ['basic grammar'];
   }
 
-  private seedData() {
+  private generateCleanSentenceCards() {
+    // Authentic N5 sentences with clean Japanese text (no bracketed furigana)
+    const authenticSentences = [
+      { japanese: "私は学生です。", english: "I am a student.", vocab: ["私", "学生"] },
+      { japanese: "今日は晴れです。", english: "Today is sunny.", vocab: ["今日", "晴れ"] },
+      { japanese: "本を読みます。", english: "I read books.", vocab: ["本", "読む"] },
+      { japanese: "水を飲みます。", english: "I drink water.", vocab: ["水", "飲む"] },
+      { japanese: "家に帰ります。", english: "I go home.", vocab: ["家", "帰る"] },
+      { japanese: "学校に行きます。", english: "I go to school.", vocab: ["学校", "行く"] },
+      { japanese: "友達と話します。", english: "I talk with friends.", vocab: ["友達", "話す"] },
+      { japanese: "映画を見ます。", english: "I watch movies.", vocab: ["映画", "見る"] },
+      { japanese: "音楽を聞きます。", english: "I listen to music.", vocab: ["音楽", "聞く"] },
+      { japanese: "朝ご飯を食べます。", english: "I eat breakfast.", vocab: ["朝", "ご飯", "食べる"] },
+      { japanese: "電車で会社に行きます。", english: "I go to the company by train.", vocab: ["電車", "会社", "行く"] },
+      { japanese: "毎日新聞を読みます。", english: "I read the newspaper every day.", vocab: ["毎日", "新聞", "読む"] },
+      { japanese: "母と買い物に行きます。", english: "I go shopping with my mother.", vocab: ["母", "買い物", "行く"] },
+      { japanese: "図書館で勉強します。", english: "I study at the library.", vocab: ["図書館", "勉強"] },
+      { japanese: "公園で犬と散歩します。", english: "I walk the dog in the park.", vocab: ["公園", "犬", "散歩"] }
+    ];
+
+    authenticSentences.forEach((sentence, index) => {
+      const card: SentenceCard = {
+        id: index + 1,
+        japanese: sentence.japanese,
+        reading: null, // Will be generated with kuroshiro.js
+        english: sentence.english,
+        audioUrl: null,
+        jlptLevel: "N5",
+        difficulty: Math.min(Math.max(1, Math.floor(sentence.japanese.length / 4)), 5),
+        register: sentence.japanese.includes("です") || sentence.japanese.includes("ます") ? "polite" : "casual",
+        theme: this.determineTheme(sentence.english.toLowerCase()),
+        source: "authentic_n5",
+        grammarPoints: this.extractGrammarPoints(sentence.japanese),
+        vocabulary: sentence.vocab,
+        culturalNotes: `Authentic N5 sentence: ${sentence.japanese}`,
+        createdAt: new Date()
+      };
+      this.sentenceCards.set(card.id, card);
+    });
+
+    console.log(`Generated ${authenticSentences.length} clean sentence cards without bracketed furigana`);
+  }
+
+  private async seedData() {
     // Create demo user with Google ID support
     const demoUser: User = {
       id: 1,
@@ -173,26 +217,8 @@ export class MemStorage implements IStorage {
     };
     this.users.set(2, testUser);
 
-    // Generate authentic JLPT N5 sentence cards from vocabulary data
-    n5Vocabulary.slice(0, 20).forEach((vocab, index) => {
-      const card: SentenceCard = {
-        id: index + 1,
-        japanese: vocab.example_sentence_jp,
-        reading: vocab.example_sentence_jp,
-        english: vocab.example_sentence_en,
-        audioUrl: vocab.audio_url || null,
-        jlptLevel: "N5",
-        difficulty: Math.min(Math.max(1, Math.floor(vocab.kana_reading.length / 2)), 5),
-        register: vocab.kanji === vocab.kana_reading ? "casual" : "polite",
-        theme: this.determineTheme(vocab.english_meaning),
-        source: "jlptsensei_n5",
-        grammarPoints: this.extractGrammarPoints(vocab.example_sentence_jp),
-        vocabulary: [vocab.kanji, vocab.kana_reading],
-        culturalNotes: `Core N5 vocabulary: ${vocab.kanji} (${vocab.kana_reading}) - ${vocab.english_meaning}`,
-        createdAt: new Date()
-      };
-      this.sentenceCards.set(card.id, card);
-    });
+    // Generate authentic JLPT N5 sentence cards with clean Japanese text
+    this.generateCleanSentenceCards();
 
     // SRS items will be created when user starts studying
 
