@@ -11,6 +11,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 // Pages
 import Dashboard from "@/pages/dashboard";
 import StudyPage from "@/pages/study";
+import StudyDedicatedPage from "@/pages/study-dedicated";
 import StudyModePage from "@/pages/study-mode";
 import JLPTContentPage from "@/pages/jlpt-content";
 import JLPTProgressPage from "@/pages/jlpt-progress";
@@ -361,6 +362,7 @@ function AppRouter() {
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/study" component={StudyPage} />
+            <Route path="/study-dedicated" component={StudyDedicatedPage} />
             <Route path="/study-mode" component={StudyModePage} />
             <Route path="/jlpt-progress" component={JLPTProgressPage} />
             <Route path="/jlpt-content" component={JLPTContentPage} />

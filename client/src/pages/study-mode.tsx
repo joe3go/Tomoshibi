@@ -139,7 +139,7 @@ export default function StudyModePage() {
                     {studyOptions.reviews.kanji}
                   </div>
                   <p className="text-sm text-purple-700 mb-4">kanji pending</p>
-                  <Link href="/study?mode=kanji-reviews">
+                  <Link href="/study-dedicated?mode=kanji-reviews">
                     <Button 
                       className="w-full bg-purple-600 hover:bg-purple-700"
                       disabled={studyOptions.reviews.kanji === 0}
@@ -164,7 +164,7 @@ export default function StudyModePage() {
                     {studyOptions.reviews.grammar}
                   </div>
                   <p className="text-sm text-green-700 mb-4">patterns pending</p>
-                  <Link href="/study?mode=grammar-reviews">
+                  <Link href="/study-dedicated?mode=grammar-reviews">
                     <Button 
                       className="w-full bg-green-600 hover:bg-green-700"
                       disabled={studyOptions.reviews.grammar === 0}
