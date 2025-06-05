@@ -15,15 +15,25 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
-  RotateCcw
+  RotateCcw,
+  Pause,
+  AlertCircle
 } from 'lucide-react';
 import { LearningCard as LearningCardType, UserOutput } from '@shared/learning-schema';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
+import { SavedResponses } from '@/components/saved-responses';
 import { 
   saveUserOutput, 
   getUserOutputsForVocab, 
   updateSRSLevel 
 } from '@/lib/learning-storage';
+import {
+  createHighlightedSentence,
+  checkVocabUsage,
+  saveUserResponse,
+  audioManager,
+  isMobileDevice
+} from '@/lib/vocab-utils';
 
 interface LearningCardProps {
   card: LearningCardType;
@@ -36,7 +46,9 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
   const [showHint, setShowHint] = useState(false);
   const [showPreviousOutputs, setShowPreviousOutputs] = useState(false);
   const [previousOutputs, setPreviousOutputs] = useState<UserOutput[]>([]);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+  const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
+  const [refreshResponses, setRefreshResponses] = useState(0);
 
   const {
     transcript,
@@ -51,70 +63,101 @@ export function LearningCard({ card, onComplete, className = "" }: LearningCardP
   useEffect(() => {
     const outputs = getUserOutputsForVocab(card.id);
     setPreviousOutputs(outputs);
-  }, [card.id]);
+  }, [card.id, refreshResponses]);
 
   useEffect(() => {
     return () => {
-      if (currentAudio) {
-        currentAudio.pause();
-        setCurrentAudio(null);
-      }
+      audioManager.stopAudio();
     };
-  }, [currentAudio]);
+  }, []);
 
   const handleSaveOutput = () => {
-    if (!textInput.trim() && !transcript.trim()) return;
+    const inputToCheck = textInput.trim() || transcript.trim();
+    if (!inputToCheck) return;
 
-    const output: UserOutput = {
-      vocabId: card.id,
-      textOutput: textInput.trim(),
-      spokenOutput: transcript.trim() || undefined,
-      timestamp: new Date().toISOString(),
-    };
+    // Check if vocabulary is used correctly
+    const feedbackResult = checkVocabUsage(inputToCheck, card.vocab);
+    setFeedback(feedbackResult);
 
-    saveUserOutput(output);
-    
-    // Update SRS level on successful practice
-    updateSRSLevel(card.id, card.srsLevel + 1);
-    
-    // Refresh previous outputs
-    const updatedOutputs = getUserOutputsForVocab(card.id);
-    setPreviousOutputs(updatedOutputs);
-    
-    // Reset inputs
-    setTextInput('');
-    resetTranscript();
-    
-    // Notify completion
-    onComplete?.(card.id);
+    if (feedbackResult.isCorrect) {
+      // Save to both systems for compatibility
+      const output: UserOutput = {
+        vocabId: card.id,
+        textOutput: textInput.trim(),
+        spokenOutput: transcript.trim() || undefined,
+        timestamp: new Date().toISOString(),
+      };
+
+      saveUserOutput(output);
+      saveUserResponse(card.vocab, inputToCheck);
+      
+      // Update SRS level on successful practice
+      updateSRSLevel(card.id, card.srsLevel + 1);
+      
+      // Reset inputs
+      setTextInput('');
+      resetTranscript();
+      
+      // Refresh saved responses
+      setRefreshResponses(prev => prev + 1);
+      
+      // Clear feedback after success
+      setTimeout(() => setFeedback(null), 3000);
+      
+      // Notify completion
+      onComplete?.(card.id);
+    }
   };
 
-  const playAudio = (text: string) => {
-    if (currentAudio) {
-      currentAudio.pause();
+  const playAudio = async (text: string, id: string) => {
+    if (playingAudioId === id) {
+      // Stop if currently playing this audio
+      audioManager.stopAudio();
+      setPlayingAudioId(null);
+      return;
     }
 
     try {
-      // Use Web Speech API for text-to-speech
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.8;
-      speechSynthesis.speak(utterance);
+      setPlayingAudioId(id);
+      await audioManager.playText(text, {
+        lang: 'ja-JP',
+        rate: 0.8,
+        onStart: () => setPlayingAudioId(id),
+        onEnd: () => setPlayingAudioId(null),
+        onError: (error) => {
+          console.error('Audio playback error:', error);
+          setPlayingAudioId(null);
+        }
+      });
     } catch (error) {
       console.error('Audio playback error:', error);
+      setPlayingAudioId(null);
     }
   };
 
-  const highlightVocab = (sentence: string) => {
-    const vocabBase = card.vocab.replace(/[ます|る|う|く|ぐ|す|つ|ぬ|ぶ|む|ゆ]$/, '');
-    const regex = new RegExp(`(${card.vocab}|${vocabBase})`, 'g');
+  const renderHighlightedSentence = (sentence: string) => {
+    const parts = createHighlightedSentence(sentence, card.vocab);
     
-    return sentence.split(regex).map((part, index) => 
-      regex.test(part) ? (
-        <span key={index} className="bg-pink-500/20 text-pink-300 font-semibold px-1 rounded">
-          {part}
-        </span>
-      ) : part
+    if (typeof parts === 'string') {
+      return <span className="context-sentence">{parts}</span>;
+    }
+    
+    return (
+      <span className="context-sentence">
+        {parts.map((part, index) => {
+          if (typeof part === 'string') {
+            return part;
+          }
+          return (
+            <span key={index}>
+              {part.highlighted && (
+                <span className="vocab-highlight">{part.highlighted}</span>
+              )}
+              {part.remaining}
+            </span>
+          );
+        })}
+      </span>
     );
   };
 
