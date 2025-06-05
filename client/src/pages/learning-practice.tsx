@@ -283,6 +283,25 @@ export default function LearningPractice() {
           </Card>
         </motion.div>
       )}
+
+      {/* Learning Card Creator Modal */}
+      <LearningCardCreator
+        isOpen={showCreator}
+        onClose={() => setShowCreator(false)}
+        onCardCreated={handleCardCreated}
+      />
+
+      {/* Add New Card Button */}
+      {cards.length > 0 && (
+        <div className="fixed bottom-6 right-6 z-40">
+          <Button
+            onClick={() => setShowCreator(true)}
+            className="rounded-full w-14 h-14 shadow-lg"
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
