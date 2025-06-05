@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2, Menu, X, Sun, Moon } from "lucide-react";
 import { VersionDisplay } from "@/components/version-display";
+import { MobileWrapper } from "@/components/mobile-wrapper";
 import { getQueryFn, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, createContext, useContext } from "react";
 
@@ -427,11 +428,13 @@ function App() {
       <ThemeProvider>
         <LanguageContext.Provider value={contextValue}>
           <TooltipProvider>
-            <div className="min-h-screen bg-background text-foreground">
-              <Toaster />
-              <AppRouter />
-              <VersionDisplay />
-            </div>
+            <MobileWrapper>
+              <div className="min-h-screen bg-background text-foreground">
+                <Toaster />
+                <AppRouter />
+                <VersionDisplay />
+              </div>
+            </MobileWrapper>
           </TooltipProvider>
         </LanguageContext.Provider>
       </ThemeProvider>
