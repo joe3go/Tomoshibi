@@ -721,6 +721,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Session management endpoints
+  app.put('/api/study-session/:id/pause', async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      const { cardsReviewed, cardsCorrect, timeSpentMinutes, currentCardIndex } = req.body;
+      
+      const updatedSession = await storage.updateStudySession(sessionId, {
+        cardsReviewed,
+        cardsCorrect,
+        timeSpentMinutes,
+        status: 'paused'
+      });
+      
+      if (!updatedSession) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+      
+      res.json(updatedSession);
+    } catch (error) {
+      console.error("Error pausing session:", error);
+      res.status(500).json({ error: "Failed to pause session" });
+    }
+  });
+
+  app.put('/api/study-session/:id/wrap-up', async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      const { cardsReviewed, cardsCorrect, timeSpentMinutes, incorrectCardIds } = req.body;
+      
+      const updatedSession = await storage.updateStudySession(sessionId, {
+        cardsReviewed,
+        cardsCorrect,
+        timeSpentMinutes,
+        status: 'completed'
+      });
+      
+      if (!updatedSession) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+      
+      res.json(updatedSession);
+    } catch (error) {
+      console.error("Error wrapping up session:", error);
+      res.status(500).json({ error: "Failed to wrap up session" });
+    }
+  });
+
+  app.delete('/api/study-session/:id/cancel', async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      
+      const updatedSession = await storage.updateStudySession(sessionId, {
+        status: 'cancelled'
+      });
+      
+      if (!updatedSession) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+      
+      res.json({ message: "Session cancelled successfully" });
+    } catch (error) {
+      console.error("Error cancelling session:", error);
+      res.status(500).json({ error: "Failed to cancel session" });
+    }
+  });
+
   // Version information endpoint
   app.get("/api/version", async (req, res) => {
     try {

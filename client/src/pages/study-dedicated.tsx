@@ -326,7 +326,7 @@ export default function StudyDedicatedPage() {
         const regex = new RegExp(`(${vocab})`, 'g');
         highlightedText = highlightedText.replace(
           regex, 
-          `<span class="bg-yellow-200 dark:bg-yellow-700 text-yellow-900 dark:text-yellow-100 px-1 rounded font-semibold">$1</span>`
+          `<span class="bg-blue-200 dark:bg-blue-600 text-blue-900 dark:text-blue-100 px-1 rounded font-bold border-2 border-blue-400 dark:border-blue-300">$1</span>`
         );
       }
     });
