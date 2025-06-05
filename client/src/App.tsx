@@ -82,7 +82,7 @@ function Router() {
   if (user) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader />
+        <AppHeader user={user} />
         <div className="flex">
           {/* Desktop Sidebar */}
           <div className="hidden md:block">
@@ -94,8 +94,8 @@ function Router() {
             }} />
           </div>
           
-          {/* Mobile Navigation */}
-          <MobileNav user={{
+          {/* Mobile Navigation with Sidebar Option */}
+          <MobileNavWithSidebar user={{
             displayName: user.displayName || "User",
             totalXP: user.totalXP || 0,
             currentBelt: user.currentBelt || "white",
@@ -313,6 +313,50 @@ function AuthenticatedUserMenu({ user }: { user: any }) {
         </div>
       )}
     </div>
+  );
+}
+
+function MobileNavWithSidebar({ user }: { user: any }) {
+  const [showSidebar, setShowSidebar] = useState(false);
+  
+  return (
+    <>
+      {/* Mobile Navigation Bar */}
+      <div className="md:hidden">
+        <MobileNav user={user} />
+      </div>
+      
+      {/* Mobile Sidebar Toggle Button */}
+      <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="md:hidden fixed bottom-4 right-4 z-50 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center"
+      >
+        <span className="text-sm font-bold">☰</span>
+      </button>
+      
+      {/* Mobile Sidebar Overlay */}
+      {showSidebar && (
+        <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setShowSidebar(false)} />
+      )}
+      
+      {/* Mobile Sidebar */}
+      <div className={`md:hidden fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border z-50 transform transition-transform duration-300 ${
+        showSidebar ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Menu</h2>
+            <button 
+              onClick={() => setShowSidebar(false)}
+              className="p-1 hover:bg-accent rounded"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <Sidebar user={user} />
+      </div>
+    </>
   );
 }
 
