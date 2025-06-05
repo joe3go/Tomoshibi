@@ -43,18 +43,30 @@ export default function Landing() {
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-6 px-4 sm:px-0">
                 <Link href="/auth" className="w-full sm:w-auto">
-                  <Button size="lg" className="btn-primary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto">
+                  <Button 
+                    size="lg" 
+                    className="btn-primary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                    aria-label="Start learning Japanese with Tomoshibi"
+                  >
                     <Play className="w-5 h-5 mr-2" />
                     Start Learning
                   </Button>
                 </Link>
                 <Link href="/auth" className="w-full sm:w-auto">
-                  <Button size="lg" className="btn-secondary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto">
+                  <Button 
+                    size="lg" 
+                    className="btn-secondary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                    aria-label="Sign in to your account"
+                  >
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/auth" className="w-full sm:w-auto">
-                  <Button size="lg" className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto">
+                  <Button 
+                    size="lg" 
+                    className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                    aria-label="Try demo version"
+                  >
                     Try Demo
                   </Button>
                 </Link>
@@ -354,18 +366,22 @@ export default function Landing() {
       </div>
 
       {/* CTA Section */}
-      <div className="py-24 bg-card">
-        <div className="container mx-auto px-6">
+      <div className="py-16 sm:py-24 bg-card safe-area-bottom">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-semibold text-foreground mb-6">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-4 sm:mb-6">
               Start your Japanese learning journey today
             </h2>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
               Join thousands of learners who have mastered Japanese with our proven SRS system. 
               Your first lesson is waiting.
             </p>
-            <Link href="/auth">
-              <Button size="lg" className="btn-primary px-12 py-4 text-lg rounded-xl font-medium">
+            <Link href="/auth" className="inline-block w-full sm:w-auto">
+              <Button 
+                size="lg" 
+                className="btn-primary px-10 sm:px-12 py-4 text-lg rounded-xl font-medium w-full sm:w-auto touch-feedback"
+                aria-label="Begin learning Japanese now"
+              >
                 <Play className="w-5 h-5 mr-2" />
                 Begin Learning Now
               </Button>

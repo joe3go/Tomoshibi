@@ -88,10 +88,26 @@
   @apply bg-tertiary text-tertiary-foreground hover:bg-[#D97A34] active:bg-[#C76B2A] transition-colors duration-200 shadow-md min-h-[44px] touch-manipulation;
 }
 
-/* Mobile optimizations */
+/* Advanced Mobile Optimizations */
 @media (max-width: 768px) {
   .btn-primary, .btn-secondary, .btn-tertiary {
     @apply w-full min-h-[48px] text-base;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  
+  /* Optimize tap highlighting */
+  * {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  
+  /* Improve scrolling performance */
+  body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 }
 
@@ -135,4 +151,65 @@
 
 .warm-gradient {
   background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(44, 45%, 90%) 100%);
+}
+
+/* Performance Optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-scroll {
+  will-change: scroll-position;
+}
+
+/* Safe area support for modern mobile devices */
+.safe-area-inset {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mobile-first flexbox utilities */
+.mobile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .mobile-stack {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* Enhanced touch feedback */
+.touch-feedback {
+  position: relative;
+  overflow: hidden;
+}
+
+.touch-feedback::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.touch-feedback:active::after {
+  width: 300px;
+  height: 300px;
 }
