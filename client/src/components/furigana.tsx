@@ -32,7 +32,10 @@ function CharacterWithFurigana({
       onClick={() => setShowReading(!showReading)}
       className="japanese-text text-3xl hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer inline-block"
       style={{ 
-        margin: "0 0.125rem"
+        margin: "0 0.125rem",
+        position: "relative",
+        display: "inline-block",
+        verticalAlign: "baseline"
       }}
       aria-label={showReading ? `Hide reading for ${char}` : `Show reading for ${char}`}
       role="button"
@@ -44,11 +47,24 @@ function CharacterWithFurigana({
       }}
     >
       {char}
-      {showReading && (
-        <rt className="japanese-text text-lg">
-          {reading}
-        </rt>
-      )}
+      <rt 
+        className="japanese-text"
+        style={{
+          fontSize: "0.5em",
+          fontFamily: "'Noto Sans JP', 'Noto Sans', sans-serif",
+          letterSpacing: "-0.05em",
+          position: "absolute",
+          top: "-1.2em",
+          left: "50%",
+          transform: "translateX(-50%)",
+          whiteSpace: "nowrap",
+          visibility: showReading ? "visible" : "hidden",
+          opacity: showReading ? 1 : 0,
+          transition: "opacity 0.2s ease-in-out"
+        }}
+      >
+        {reading}
+      </rt>
     </ruby>
   );
 }

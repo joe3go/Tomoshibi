@@ -857,6 +857,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // General JLPT endpoint for content browser
+  app.get('/api/jlpt', async (req, res) => {
+    try {
+      const { level = 'n5', type = 'vocab' } = req.query;
+      
+      // Validate parameters
+      const validLevels = ['n5', 'n4', 'n3', 'n2', 'n1'];
+      const validTypes = ['vocab', 'kanji', 'grammar'];
+      
+      if (!validLevels.includes(level as string) || !validTypes.includes(type as string)) {
+        return res.status(400).json({ error: 'Invalid level or type' });
+      }
+      
+      const filePath = path.join(process.cwd(), 'jlpt', level as string, `${type}.json`);
+      
+      try {
+        const data = await fs.readFile(filePath, 'utf8');
+        const jsonData = JSON.parse(data);
+        res.json(jsonData);
+      } catch (fileError) {
+        console.warn(`JLPT file not found: ${filePath}`);
+        res.json([]); // Return empty array if file doesn't exist
+      }
+    } catch (error) {
+      console.error('Error loading JLPT content:', error);
+      res.status(500).json({ error: 'Failed to load JLPT content' });
+    }
+  });
+
   // Furigana generation API route using kuroshiro.js
   app.post('/api/furigana/generate', async (req, res) => {
     try {
