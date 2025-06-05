@@ -4,60 +4,64 @@
 @tailwind utilities;
 
 :root {
-  /* Light Theme - Japanese Traditional */
-  --background: 43 45% 93%;
-  --foreground: 30 20% 25%;
-  --card: 45 50% 95%;
-  --card-foreground: 30 20% 25%;
-  --popover: 45 50% 95%;
-  --popover-foreground: 30 20% 25%;
+  /* Light Theme Colors */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 5%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 5%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 5%;
   
-  --primary: 15 85% 60%; /* Lantern orange/red */
+  /* Lantern Orange/Red Primary */
+  --primary: 15 85% 55%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 350 25% 92%;
-  --secondary-foreground: 30 20% 25%;
+  --secondary: 15 25% 95%;
+  --secondary-foreground: 0 0% 5%;
   
-  --muted: 45 40% 94%;
-  --muted-foreground: 30 15% 50%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
   
-  --accent: 60 35% 88%;
-  --accent-foreground: 30 20% 25%;
+  --accent: 15 15% 94%;
+  --accent-foreground: 0 0% 5%;
   
-  --destructive: 0 65% 65%;
-  --destructive-foreground: 45 60% 98%;
-  --border: 45 30% 88%;
-  --input: 45 40% 94%;
-  --ring: 280 100% 70%;
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --border: 0 0% 90%;
+  --input: 0 0% 96%;
+  --ring: 15 85% 55%;
   
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 220 20% 8%;
-  --foreground: 45 15% 95%;
-  --card: 220 18% 12%;
-  --card-foreground: 45 15% 95%;
-  --popover: 220 18% 12%;
-  --popover-foreground: 45 15% 95%;
+  --background: 240 10% 4%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 6%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 6%;
+  --popover-foreground: 0 0% 98%;
   
-  --primary: 15 85% 60%; /* Lantern orange/red for dark theme */
-  --primary-foreground: 220 20% 8%;
+  /* Lantern Orange/Red Primary for Dark */
+  --primary: 15 85% 55%;
+  --primary-foreground: 240 10% 4%;
   
-  --secondary: 220 12% 18%;
-  --secondary-foreground: 45 15% 92%;
+  --secondary: 240 10% 12%;
+  --secondary-foreground: 0 0% 98%;
   
-  --muted: 220 12% 15%;
-  --muted-foreground: 45 8% 75%;
+  --muted: 240 10% 15%;
+  --muted-foreground: 240 5% 65%;
   
-  --accent: 220 12% 18%;
-  --accent-foreground: 45 15% 92%;
+  --accent: 240 10% 15%;
+  --accent-foreground: 0 0% 98%;
   
-  --destructive: 0 62% 50%;
-  --destructive-foreground: 0 85% 97%;
-  --border: 220 12% 25%;
-  --input: 220 12% 18%;
-  --ring: 38 75% 70%;
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 240 10% 20%;
+  --input: 240 10% 15%;
+  --ring: 15 85% 55%;
 }
 
 @layer base {
@@ -65,25 +69,11 @@
     @apply border-border;
   }
   
-  html {
-    font-family: 'Inter', 'Noto Sans JP', sans-serif;
-  }
-  
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
     line-height: 1.6;
-  }
-}
-
-/* Mobile optimization */
-@media (max-width: 768px) {
-  .mobile-nav {
-    @apply bg-background border-border;
-  }
-  
-  .zen-card {
-    @apply bg-card text-card-foreground border-border;
   }
 }
 
@@ -93,7 +83,7 @@
 }
 
 .app-header {
-  @apply bg-background/90 backdrop-blur-lg border-border;
+  @apply bg-background/90 backdrop-blur-lg border-b border-border;
 }
 
 /* Japanese typography */
@@ -118,127 +108,23 @@
   @apply bg-primary h-full transition-all duration-300 ease-out;
 }
 
-/* Achievement styles */
-.achievement-glow {
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Neon accents for achievements */
-.neon-pink {
-  color: hsl(320, 100%, 75%);
-  text-shadow: 0 0 10px hsl(320, 100%, 75% / 0.5);
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
 }
 
-.neon-cyan {
-  color: hsl(180, 100%, 75%);
-  text-shadow: 0 0 10px hsl(180, 100%, 75% / 0.5);
-}
-
-.neon-orange {
-  color: hsl(30, 100%, 65%);
-  text-shadow: 0 0 10px hsl(30, 100%, 65% / 0.5);
-}
-
-/* Mobile PWA styles */
-@media (display-mode: standalone) {
-  body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .mobile-nav {
+    @apply bg-background border-border;
   }
-}
-
-/* Force theme application on mobile */
-@media (max-width: 1024px) {
-  html, body, #root {
-    background-color: hsl(var(--background)) !important;
-    color: hsl(var(--foreground)) !important;
+  
+  .zen-card {
+    @apply bg-card text-card-foreground border-border;
   }
-}
-
-/* Enhanced color variables for better contrast */
-:root {
-  --achievement: 280 100% 70%;
-  --achievement-gold: 45 100% 60%;
-  --matcha: 120 30% 40%;
-  --neon-cyan: 180 100% 60%;
-  --surface-2dp: 45 40% 96%;
-  --surface-4dp: 45 40% 98%;
-}
-
-.dark {
-  --achievement: 280 80% 75%;
-  --achievement-gold: 45 90% 70%;
-  --matcha: 120 40% 60%;
-  --neon-cyan: 180 80% 70%;
-  --surface-2dp: 220 15% 14%;
-  --surface-4dp: 220 15% 16%;
-}
-
-/* Visual progress components with better contrast */
-.zen-progress {
-  @apply bg-muted/50 rounded-full overflow-hidden backdrop-blur-sm;
-  border: 1px solid hsl(var(--border));
-}
-
-.zen-progress-fill {
-  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--achievement)));
-  transition: all 0.5s ease-out;
-  box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
-}
-
-.zen-pulse {
-  animation: zen-pulse 2s ease-in-out infinite;
-}
-
-@keyframes zen-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-/* Text contrast improvements */
-.text-achievement {
-  color: hsl(var(--achievement));
-  font-weight: 500;
-}
-
-.text-achievement-gold {
-  color: hsl(var(--achievement-gold));
-  font-weight: 500;
-}
-
-.text-matcha {
-  color: hsl(var(--matcha));
-  font-weight: 500;
-}
-
-.text-neon-cyan {
-  color: hsl(var(--neon-cyan));
-  font-weight: 500;
-}
-
-/* Progress text with enhanced readability */
-.progress-text {
-  color: hsl(var(--foreground));
-  text-shadow: 0 1px 2px hsl(var(--background) / 0.8);
-  font-weight: 600;
-}
-
-/* Japanese heading improvements */
-.japanese-heading {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  text-shadow: 0 1px 2px hsl(var(--background) / 0.5);
-}
-
-/* Navigation item improvements */
-.zen-nav-item {
-  @apply relative transition-all duration-200;
-  color: hsl(var(--foreground));
-}
-
-.zen-nav-item[data-state="active"] {
-  background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--achievement) / 0.1));
-  color: hsl(var(--primary));
-  border: 1px solid hsl(var(--primary) / 0.3);
 }

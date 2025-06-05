@@ -70,10 +70,10 @@ function Router() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sakura via-shiro to-kawa flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-momiji mx-auto mb-4"></div>
-          <p className="text-yami/70">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ function Router() {
           }} />
           
           {/* Main Content */}
-          <div className="flex-1 md:ml-64 pt-24 md:pt-4 min-h-screen">
+          <div className="flex-1 md:ml-64 pt-20 md:pt-4 min-h-screen">
             <Switch>
               <Route path="/" component={Dashboard} />
               <Route path="/study" component={StudyPage} />
