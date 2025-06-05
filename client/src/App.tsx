@@ -15,6 +15,7 @@ import StudyDedicatedPage from "@/pages/study-dedicated";
 import StudyModePage from "@/pages/study-mode";
 import JLPTContentPage from "@/pages/jlpt-content";
 import JLPTProgressPage from "@/pages/jlpt-progress";
+import ContentBrowserPage from "@/pages/content-browser";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
@@ -255,6 +256,7 @@ function Navigation({ user }: { user: any }) {
     { href: "/", label: "Dashboard", icon: "◦" },
     { href: "/study", label: "Study", icon: "書" },
     { href: "/study-mode", label: "Study Mode", icon: "習" },
+    { href: "/content-browser", label: "Content Library", icon: "📚" },
     { href: "/jlpt-progress", label: "JLPT Progress", icon: "📊" },
     { href: "/jlpt-content", label: "JLPT Content", icon: "級" },
     { href: "/social", label: "Social", icon: "友" },
@@ -364,6 +366,7 @@ function AppRouter() {
             <Route path="/study" component={StudyPage} />
             <Route path="/study-dedicated" component={StudyDedicatedPage} />
             <Route path="/study-mode" component={StudyModePage} />
+            <Route path="/content-browser" component={ContentBrowserPage} />
             <Route path="/jlpt-progress" component={JLPTProgressPage} />
             <Route path="/jlpt-content" component={JLPTContentPage} />
             <Route path="/social" component={Social} />
