@@ -236,7 +236,7 @@ export default function StudyPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-2xl mx-auto">
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-blue-600">{sessionStats.cardsReviewed}</div>
+                  <div className="text-2xl font-bold text-primary">{sessionStats.cardsReviewed}</div>
                   <div className="text-sm text-gray-600">Cards Reviewed</div>
                 </CardContent>
               </Card>
