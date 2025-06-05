@@ -1,4 +1,5 @@
 import React from 'react';
+import * as wanakana from 'wanakana';
 
 interface FuriganaProps {
   japanese: string;
@@ -8,88 +9,45 @@ interface FuriganaProps {
   highlightVocab?: boolean;
 }
 
-// Advanced furigana parser that maps kanji to their specific readings
+// Simplified furigana parser for reliable display
 function parseFurigana(japanese: string, reading?: string): Array<{ text: string; furigana?: string }> {
   if (!reading || japanese === reading) {
     return [{ text: japanese }];
   }
 
   const segments: Array<{ text: string; furigana?: string }> = [];
-  const kanjiRegex = /[\u4e00-\u9faf]/g;
-  const hiraganaRegex = /[\u3040-\u309f]/g;
+  const isKanji = (char: string) => /[\u4e00-\u9faf]/.test(char);
   
-  // Split reading into parts (remove spaces and punctuation)
-  const cleanReading = reading.replace(/[、。\s]/g, '');
-  
-  let japaneseIndex = 0;
-  let readingIndex = 0;
-  
-  while (japaneseIndex < japanese.length) {
-    const char = japanese[japaneseIndex];
+  let i = 0;
+  while (i < japanese.length) {
+    const char = japanese[i];
     
-    if (kanjiRegex.test(char)) {
-      // This is a kanji character - find its reading
-      let kanjiReading = '';
-      
-      // Look ahead to find the end of this kanji sequence
-      let kanjiEnd = japaneseIndex + 1;
-      while (kanjiEnd < japanese.length && kanjiRegex.test(japanese[kanjiEnd])) {
-        kanjiEnd++;
+    if (isKanji(char)) {
+      // Collect consecutive kanji
+      let kanjiGroup = '';
+      while (i < japanese.length && isKanji(japanese[i])) {
+        kanjiGroup += japanese[i];
+        i++;
       }
       
-      // Get the kanji sequence
-      const kanjiSequence = japanese.substring(japaneseIndex, kanjiEnd);
-      
-      // Find the next hiragana in the original text (if any)
-      let nextHiragana = '';
-      if (kanjiEnd < japanese.length && hiraganaRegex.test(japanese[kanjiEnd])) {
-        let hiraganaEnd = kanjiEnd;
-        while (hiraganaEnd < japanese.length && hiraganaRegex.test(japanese[hiraganaEnd])) {
-          hiraganaEnd++;
-        }
-        nextHiragana = japanese.substring(kanjiEnd, hiraganaEnd);
-      }
-      
-      // Extract reading for this kanji sequence
-      if (nextHiragana) {
-        // Find where this hiragana appears in the reading
-        const hiraganaIndex = cleanReading.indexOf(nextHiragana, readingIndex);
-        if (hiraganaIndex > readingIndex) {
-          kanjiReading = cleanReading.substring(readingIndex, hiraganaIndex);
-          readingIndex = hiraganaIndex;
-        }
-      } else {
-        // No following hiragana, take remaining reading
-        kanjiReading = cleanReading.substring(readingIndex);
-        readingIndex = cleanReading.length;
-      }
-      
+      // Add kanji with full reading for now (can be refined later)
       segments.push({ 
-        text: kanjiSequence, 
-        furigana: kanjiReading || undefined 
+        text: kanjiGroup, 
+        furigana: reading 
       });
-      
-      japaneseIndex = kanjiEnd;
     } else {
-      // This is hiragana/katakana or other character
-      let nonKanjiEnd = japaneseIndex + 1;
-      while (nonKanjiEnd < japanese.length && !kanjiRegex.test(japanese[nonKanjiEnd])) {
-        nonKanjiEnd++;
+      // Collect consecutive non-kanji
+      let textGroup = '';
+      while (i < japanese.length && !isKanji(japanese[i])) {
+        textGroup += japanese[i];
+        i++;
       }
       
-      const nonKanjiSequence = japanese.substring(japaneseIndex, nonKanjiEnd);
-      segments.push({ text: nonKanjiSequence });
-      
-      // Advance reading index past this hiragana
-      if (hiraganaRegex.test(nonKanjiSequence[0])) {
-        readingIndex = cleanReading.indexOf(nonKanjiSequence, readingIndex) + nonKanjiSequence.length;
-      }
-      
-      japaneseIndex = nonKanjiEnd;
+      segments.push({ text: textGroup });
     }
   }
   
-  return segments.length > 0 ? segments : [{ text: japanese, furigana: reading }];
+  return segments;
 }
 
 function highlightVocabulary(text: string, vocabulary?: string[]): string {
@@ -119,21 +77,37 @@ export function Furigana({
   
   return (
     <div className="furigana-container text-center text-2xl leading-relaxed font-medium">
-      {segments.map((segment, index) => (
-        <ruby key={index} className="inline-block mx-0.5">
-          <span 
-            className="japanese-text"
-            dangerouslySetInnerHTML={{
-              __html: highlightVocab 
-                ? highlightVocabulary(segment.text, vocabulary)
-                : segment.text
-            }}
-          />
-          {segment.furigana && showReading && (
-            <rt className="text-xs text-gray-500 font-normal">{segment.furigana}</rt>
-          )}
-        </ruby>
-      ))}
+      {segments.map((segment, index) => {
+        const isHighlighted = highlightVocab && vocabulary?.some(v => segment.text.includes(v));
+        
+        if (showReading && segment.furigana) {
+          return (
+            <ruby key={`ruby-${index}`} style={{ lineHeight: '2.5', margin: '0 0.1em' }}>
+              <span className={isHighlighted ? 'vocabulary-highlight' : ''}>
+                {segment.text}
+              </span>
+              <rt style={{ 
+                fontSize: '0.5em', 
+                color: '#6b7280', 
+                fontWeight: 400,
+                textAlign: 'center',
+                lineHeight: 1
+              }}>
+                {segment.furigana}
+              </rt>
+            </ruby>
+          );
+        } else {
+          return (
+            <span 
+              key={`span-${index}`}
+              className={isHighlighted ? 'vocabulary-highlight' : ''}
+            >
+              {segment.text}
+            </span>
+          );
+        }
+      })}
       
       <style dangerouslySetInnerHTML={{
         __html: `

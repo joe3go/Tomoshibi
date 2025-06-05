@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furigana Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem;
+            font-size: 24px;
+            line-height: 3;
+        }
+        
+        ruby {
+            ruby-align: center;
+            line-height: 2.5;
+            margin: 0 0.2em;
+        }
+        
+        rt {
+            ruby-position: over;
+            font-size: 0.5em;
+            line-height: 1;
+            color: #6b7280;
+            font-weight: 400;
+            text-align: center;
+        }
+        
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Furigana Display Test</h1>
+    
+    <div class="test-section">
+        <h2>Basic Ruby/RT Test:</h2>
+        <ruby>漢字<rt>かんじ</rt></ruby>
+        <ruby>日本語<rt>にほんご</rt></ruby>
+        <ruby>勉強<rt>べんきょう</rt></ruby>
+    </div>
+    
+    <div class="test-section">
+        <h2>Sentence Test:</h2>
+        <ruby>私<rt>わたし</rt></ruby>は<ruby>学生<rt>がくせい</rt></ruby>です。
+    </div>
+    
+    <div class="test-section">
+        <h2>Mixed Content:</h2>
+        <ruby>今日<rt>きょう</rt></ruby>は<ruby>天気<rt>てんき</rt></ruby>がいいです。
+    </div>
+    
+    <script>
+        // Test Japanese speech synthesis
+        function testAudio() {
+            const text = "私は学生です";
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.8;
+            
+            const voices = speechSynthesis.getVoices();
+            console.log('Available voices:', voices.map(v => ({ name: v.name, lang: v.lang })));
+            
+            const japaneseVoice = voices.find(v => v.lang === 'ja-JP');
+            if (japaneseVoice) {
+                utterance.voice = japaneseVoice;
+                console.log('Using voice:', japaneseVoice.name);
+            }
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        // Add test button
+        const button = document.createElement('button');
+        button.textContent = 'Test Audio';
+        button.onclick = testAudio;
+        button.style.cssText = 'padding: 10px 20px; font-size: 16px; margin: 20px 0;';
+        document.body.appendChild(button);
+        
+        // Load voices
+        if (speechSynthesis.getVoices().length === 0) {
+            speechSynthesis.addEventListener('voiceschanged', () => {
+                console.log('Voices loaded');
+            });
+        }
+    </script>
+</body>
+</html>
