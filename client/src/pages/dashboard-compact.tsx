@@ -143,16 +143,16 @@ export default function Dashboard() {
           </Link>
 
           <Link href="/study">
-            <div className="p-6 rounded-xl border transition-all cursor-pointer hover:border-neon-cyan/50" style={{ backgroundColor: 'hsl(var(--surface-4dp))', borderColor: 'hsl(var(--neon-cyan) / 0.3)' }}>
+            <div className="p-6 rounded-xl border transition-all cursor-pointer hover:border-primary/50" style={{ backgroundColor: 'hsl(var(--surface-4dp))', borderColor: 'hsl(var(--primary) / 0.3)' }}>
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full text-white" style={{ backgroundColor: 'hsl(var(--neon-cyan))' }}>
+                <div className="p-3 rounded-full bg-primary text-primary-foreground">
                   <BookOpen className="h-6 w-6" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg text-foreground">Learn New</h3>
                   <p className="text-muted-foreground">Practice with new sentence cards</p>
-                  <div className="text-sm text-neon-cyan font-medium mt-1 flex items-center gap-1">
-                    <span className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></span>
+                  <div className="text-sm text-primary font-medium mt-1 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
                     Expand your knowledge
                   </div>
                 </div>
