@@ -19,48 +19,48 @@ export default function Landing() {
     <div className="min-h-screen warm-gradient">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="container mx-auto px-6 py-20">
+        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
           <div className="text-center max-w-5xl mx-auto">
-            <div className="mb-12">
-              <div className="inline-flex items-center gap-6 mb-8">
-                <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center card-shadow border border-border/10">
-                  <div className="lantern-icon text-primary scale-150"></div>
+            <div className="mb-8 sm:mb-12">
+              <div className="flex flex-col sm:inline-flex sm:flex-row items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white flex items-center justify-center card-shadow border border-border/10">
+                  <div className="lantern-icon text-primary scale-125 sm:scale-150"></div>
                 </div>
-                <h1 className="text-7xl font-light text-foreground tracking-tight">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground tracking-tight">
                   Tomoshibi
                 </h1>
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-8 leading-tight">
-                2,000 kanji. 6,000 vocabulary words. <br />
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-6 sm:mb-8 leading-tight px-2">
+                2,000 kanji. 6,000 vocabulary words. <br className="hidden sm:block" />
                 <span className="text-primary font-normal">In just over a year.</span>
               </h2>
               
-              <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-3xl mx-auto font-light">
+              <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto font-light px-2">
                 Master Japanese through <span className="font-medium text-foreground">authentic JLPT N5 content</span> with 
                 our advanced spaced repetition system. Build lasting knowledge with sentence-based learning that works.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-                <Link href="/auth">
-                  <Button size="lg" className="btn-primary px-10 py-4 text-lg rounded-xl font-medium">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-6 px-4 sm:px-0">
+                <Link href="/auth" className="w-full sm:w-auto">
+                  <Button size="lg" className="btn-primary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto">
                     <Play className="w-5 h-5 mr-2" />
                     Start Learning
                   </Button>
                 </Link>
-                <Link href="/auth">
-                  <Button size="lg" className="btn-secondary px-10 py-4 text-lg rounded-xl font-medium">
+                <Link href="/auth" className="w-full sm:w-auto">
+                  <Button size="lg" className="btn-secondary px-8 sm:px-10 py-4 text-lg rounded-xl font-medium w-full sm:w-auto">
                     Sign In
                   </Button>
                 </Link>
-                <Link href="/auth">
-                  <Button size="lg" className="btn-tertiary px-8 py-4 text-lg rounded-xl font-medium">
+                <Link href="/auth" className="w-full sm:w-auto">
+                  <Button size="lg" className="btn-tertiary px-6 sm:px-8 py-4 text-lg rounded-xl font-medium w-full sm:w-auto">
                     Try Demo
                   </Button>
                 </Link>
               </div>
               
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground px-2">
                 No credit card required • Start learning immediately
               </p>
             </div>
@@ -69,38 +69,38 @@ export default function Landing() {
       </div>
 
       {/* Features Section */}
-      <div className="py-24 bg-card">
-        <div className="container mx-auto px-6">
-          <h3 className="text-3xl font-semibold text-center mb-16 text-foreground">
+      <div className="py-16 sm:py-24 bg-card">
+        <div className="container mx-auto px-4 sm:px-6">
+          <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-12 sm:mb-16 text-foreground">
             Why Tomoshibi Works
           </h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="text-center p-8 rounded-2xl bg-white card-shadow border border-border/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+            <div className="text-center p-6 sm:p-8 rounded-2xl bg-white card-shadow border border-border/10">
               <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-6">
                 <Brain className="w-8 h-8 text-white" />
               </div>
-              <h4 className="font-semibold text-xl mb-4 text-foreground">Smart SRS Algorithm</h4>
-              <p className="text-muted-foreground leading-relaxed">
+              <h4 className="font-semibold text-lg sm:text-xl mb-4 text-foreground">Smart SRS Algorithm</h4>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                 Our scientifically-proven spaced repetition system adapts to your learning pace, ensuring optimal retention.
               </p>
             </div>
             
-            <div className="text-center p-8 rounded-2xl bg-white card-shadow border border-border/10">
+            <div className="text-center p-6 sm:p-8 rounded-2xl bg-white card-shadow border border-border/10">
               <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center mx-auto mb-6">
                 <BookOpen className="w-8 h-8 text-white" />
               </div>
-              <h4 className="font-semibold text-xl mb-4 text-foreground">Authentic JLPT Content</h4>
-              <p className="text-muted-foreground leading-relaxed">
+              <h4 className="font-semibold text-lg sm:text-xl mb-4 text-foreground">Authentic JLPT Content</h4>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                 Learn with real JLPT N5 sentences and vocabulary, not artificial examples. Build practical Japanese skills.
               </p>
             </div>
             
-            <div className="text-center p-8 rounded-2xl bg-white card-shadow border border-border/10">
+            <div className="text-center p-6 sm:p-8 rounded-2xl bg-white card-shadow border border-border/10 sm:col-span-2 lg:col-span-1">
               <div className="w-16 h-16 bg-tertiary rounded-xl flex items-center justify-center mx-auto mb-6">
                 <Target className="w-8 h-8 text-tertiary-foreground" />
               </div>
-              <h4 className="font-semibold text-xl mb-4 text-foreground">Gamified Progress</h4>
-              <p className="text-muted-foreground leading-relaxed">
+              <h4 className="font-semibold text-lg sm:text-xl mb-4 text-foreground">Gamified Progress</h4>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                 Stay motivated with achievement badges, streak tracking, and personalized learning paths.
               </p>
             </div>
@@ -109,27 +109,27 @@ export default function Landing() {
       </div>
 
       {/* Testimonials Section */}
-      <div className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-semibold text-foreground mb-4 max-w-4xl mx-auto leading-tight">
+      <div className="py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-4 max-w-4xl mx-auto leading-tight">
               From Japanese residents to self learners, our members learn to read Japanese quickly
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
             <Card className="border border-border/10 card-shadow bg-white">
-              <CardContent className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-primary font-semibold text-lg">A</span>
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-primary font-semibold text-base sm:text-lg">A</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground">Andrew E.</h4>
-                    <p className="text-sm text-muted-foreground">Self-learner, Boston MA</p>
+                    <h4 className="font-semibold text-sm sm:text-base text-foreground">Andrew E.</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Self-learner, Boston MA</p>
                   </div>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   "I studied Japanese in college, but kanji was my weak point. Tomoshibi teaches kanji with mnemonics and 
                   reinforces lessons with spaced reviews. Knowing kanji helped me jump from textbooks to native material."
                 </p>
@@ -230,68 +230,68 @@ export default function Landing() {
       </div>
 
       {/* Statistics Section */}
-      <div className="py-24 bg-card">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-semibold text-foreground mb-4">
+      <div className="py-16 sm:py-24 bg-card">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-4">
               Join thousands of successful learners
             </h2>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-            <div className="text-center p-6 rounded-2xl bg-white card-shadow border border-border/10">
-              <div className="text-3xl font-bold text-primary mb-2">50,000+</div>
-              <p className="text-muted-foreground">Active Learners</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 max-w-5xl mx-auto">
+            <div className="text-center p-4 sm:p-6 rounded-2xl bg-white card-shadow border border-border/10">
+              <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">50,000+</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Active Learners</p>
             </div>
-            <div className="text-center p-6 rounded-2xl bg-white card-shadow border border-border/10">
-              <div className="text-3xl font-bold text-secondary mb-2">2.1M+</div>
-              <p className="text-muted-foreground">Reviews Completed</p>
+            <div className="text-center p-4 sm:p-6 rounded-2xl bg-white card-shadow border border-border/10">
+              <div className="text-2xl sm:text-3xl font-bold text-secondary mb-2">2.1M+</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Reviews Completed</p>
             </div>
-            <div className="text-center p-6 rounded-2xl bg-white card-shadow border border-border/10">
-              <div className="text-3xl font-bold text-tertiary mb-2">85%</div>
-              <p className="text-muted-foreground">Retention Rate</p>
+            <div className="text-center p-4 sm:p-6 rounded-2xl bg-white card-shadow border border-border/10">
+              <div className="text-2xl sm:text-3xl font-bold text-tertiary mb-2">85%</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Retention Rate</p>
             </div>
-            <div className="text-center p-6 rounded-2xl bg-white card-shadow border border-border/10">
-              <div className="text-3xl font-bold text-primary mb-2">4.8/5</div>
-              <p className="text-muted-foreground">User Rating</p>
+            <div className="text-center p-4 sm:p-6 rounded-2xl bg-white card-shadow border border-border/10">
+              <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">4.8/5</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">User Rating</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Learning Path Section */}
-      <div className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-semibold text-foreground mb-4">
+      <div className="py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-4">
               Your path to Japanese mastery
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
               Follow our carefully crafted learning progression that takes you from beginner to confident reader
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="border border-border/10 card-shadow bg-white p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+            <Card className="border border-border/10 card-shadow bg-white p-6 sm:p-8 md:col-span-2 lg:col-span-1">
               <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-bold">1</span>
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <span className="text-white text-xl sm:text-2xl font-bold">1</span>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Foundation</h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-3 sm:mb-4">Foundation</h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4 sm:mb-6">
                   Start with essential hiragana, katakana, and basic kanji. Build your foundation with core vocabulary and grammar patterns.
                 </p>
                 <div className="space-y-2">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle className="w-4 h-4 text-primary mr-2" />
+                  <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-primary mr-2" />
                     46 hiragana characters
                   </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle className="w-4 h-4 text-primary mr-2" />
+                  <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-primary mr-2" />
                     46 katakana characters
                   </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <CheckCircle className="w-4 h-4 text-primary mr-2" />
+                  <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-primary mr-2" />
                     100 basic kanji
                   </div>
                 </div>

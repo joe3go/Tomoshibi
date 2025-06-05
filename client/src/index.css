@@ -77,15 +77,22 @@
 
 /* Custom Button Styles */
 .btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-[#C5001F] active:bg-[#B5001C] transition-colors duration-200 shadow-md;
+  @apply bg-primary text-primary-foreground hover:bg-[#C5001F] active:bg-[#B5001C] transition-colors duration-200 shadow-md min-h-[44px] touch-manipulation;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-[#1F1F1F] active:bg-[#0F0F0F] transition-colors duration-200 shadow-md;
+  @apply bg-secondary text-secondary-foreground hover:bg-[#1F1F1F] active:bg-[#0F0F0F] transition-colors duration-200 shadow-md min-h-[44px] touch-manipulation;
 }
 
 .btn-tertiary {
-  @apply bg-tertiary text-tertiary-foreground hover:bg-[#D97A34] active:bg-[#C76B2A] transition-colors duration-200 shadow-md;
+  @apply bg-tertiary text-tertiary-foreground hover:bg-[#D97A34] active:bg-[#C76B2A] transition-colors duration-200 shadow-md min-h-[44px] touch-manipulation;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .btn-primary, .btn-secondary, .btn-tertiary {
+    @apply w-full min-h-[48px] text-base;
+  }
 }
 
 /* Japanese Lantern Icon */

@@ -159,11 +159,11 @@ function AppHeader({ user }: { user?: any }) {
   return (
     <header className="app-header">
       <div className="flex h-full items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20">
-            <div className="lantern-icon text-primary scale-75"></div>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20">
+            <div className="lantern-icon text-primary scale-50 sm:scale-75"></div>
           </div>
-          <h1 className="text-xl font-semibold text-foreground tracking-tight">Tomoshibi</h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">Tomoshibi</h1>
         </div>
         
         <div className="flex items-center gap-3">
