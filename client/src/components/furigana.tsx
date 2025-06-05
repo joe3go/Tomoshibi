@@ -24,19 +24,17 @@ function CharacterWithFurigana({
   const isKanji = /[\u4e00-\u9faf]/.test(char);
 
   if (!isKanji || !reading) {
-    return <span style={{ fontSize: "24px" }}>{char}</span>;
+    return <span className="japanese-text" style={{ fontSize: "24px" }}>{char}</span>;
   }
 
   return (
     <ruby
       onClick={() => setShowReading(!showReading)}
+      className="japanese-text hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer inline-block"
       style={{ 
-        cursor: "pointer",
         fontSize: "24px",
-        display: "inline-block",
         margin: "0 1px"
       }}
-      className="hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors"
       aria-label={showReading ? `Hide reading for ${char}` : `Show reading for ${char}`}
       role="button"
       tabIndex={0}
@@ -48,13 +46,7 @@ function CharacterWithFurigana({
     >
       {char}
       {showReading && (
-        <rt style={{ 
-          fontSize: "12px", 
-          color: "#666", 
-          fontWeight: 400,
-          lineHeight: "1",
-          display: "block"
-        }}>
+        <rt className="japanese-text">
           {reading}
         </rt>
       )}
@@ -207,10 +199,10 @@ export function Furigana({
     const furiganaArray = generateFuriganaArray(japanese, reading || "");
     
     return (
-      <div className="text-center" style={{ lineHeight: '3', padding: '10px 0' }}>
+      <div className="text-center japanese-text" style={{ lineHeight: '3', padding: '10px 0' }}>
         <FuriganaToggle word={japanese} furigana={furiganaArray} />
         {reading && (
-          <div className="text-sm text-gray-500 mt-2">
+          <div className="text-sm text-muted-foreground mt-2 japanese-text">
             Reading: {reading}
           </div>
         )}

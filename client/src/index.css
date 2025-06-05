@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Kosugi&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -262,4 +264,53 @@ rt {
   border-radius: 0.25rem;
   font-weight: 600;
   border-bottom: 2px solid #dc2626;
+}
+
+/* Typography System - Quicksand for Latin, Kosugi for Japanese */
+* {
+  font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Japanese Text Typography */
+.japanese-text,
+.furigana-text,
+ruby,
+rt {
+  font-family: 'Kosugi', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif !important;
+}
+
+/* Headings with Quicksand - Professional and warm */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Button and UI Elements - Friendly Quicksand */
+button, .btn, input, select, textarea {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 500;
+}
+
+/* Enhanced Furigana Styling for better dark mode visibility */
+.dark rt {
+  color: hsl(44 40% 75%) !important; /* Much better visibility in dark mode */
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Light mode furigana styling */
+:root rt {
+  color: hsl(0 0% 45%) !important; /* Better contrast in light mode */
+}
+
+/* Japanese Text Specific Styling */
+.japanese-text {
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  font-family: 'Kosugi', sans-serif;
+}
+
+/* Professional rounded design with Quicksand warmth */
+.rounded-design {
+  border-radius: 12px;
 }
