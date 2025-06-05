@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "kanji": "人",
+    "onyomi": ["ジン", "ニン"],
+    "kunyomi": ["ひと"],
+    "meaning": ["person", "human"],
+    "jlpt_level": "N5",
+    "stroke_count": 2,
+    "examples": ["人間", "日本人", "一人"],
+    "vocab_words": ["人間", "人口", "大人"],
+    "tags": ["basic", "person"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 2,
+    "kanji": "日",
+    "onyomi": ["ニチ", "ジツ"],
+    "kunyomi": ["ひ", "か"],
+    "meaning": ["day", "sun"],
+    "jlpt_level": "N5",
+    "stroke_count": 4,
+    "examples": ["今日", "明日", "日本"],
+    "vocab_words": ["今日", "毎日", "日曜日"],
+    "tags": ["time", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 3,
+    "kanji": "本",
+    "onyomi": ["ホン"],
+    "kunyomi": ["もと"],
+    "meaning": ["book", "origin"],
+    "jlpt_level": "N5",
+    "stroke_count": 5,
+    "examples": ["本", "日本", "基本"],
+    "vocab_words": ["本当", "見本", "基本"],
+    "tags": ["education", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 4,
+    "kanji": "学",
+    "onyomi": ["ガク"],
+    "kunyomi": ["まな"],
+    "meaning": ["study", "learn"],
+    "jlpt_level": "N5",
+    "stroke_count": 8,
+    "examples": ["学校", "学生", "大学"],
+    "vocab_words": ["学校", "学習", "科学"],
+    "tags": ["education"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 5,
+    "kanji": "生",
+    "onyomi": ["セイ", "ショウ"],
+    "kunyomi": ["い", "う", "なま"],
+    "meaning": ["life", "birth", "live"],
+    "jlpt_level": "N5",
+    "stroke_count": 5,
+    "examples": ["学生", "先生", "生活"],
+    "vocab_words": ["人生", "生物", "誕生"],
+    "tags": ["life", "education"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 6,
+    "kanji": "大",
+    "onyomi": ["ダイ", "タイ"],
+    "kunyomi": ["おお"],
+    "meaning": ["big", "large"],
+    "jlpt_level": "N5",
+    "stroke_count": 3,
+    "examples": ["大学", "大きい", "大切"],
+    "vocab_words": ["大人", "大変", "大丈夫"],
+    "tags": ["size", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 7,
+    "kanji": "小",
+    "onyomi": ["ショウ"],
+    "kunyomi": ["ちい", "こ"],
+    "meaning": ["small", "little"],
+    "jlpt_level": "N5",
+    "stroke_count": 3,
+    "examples": ["小学校", "小さい", "小説"],
+    "vocab_words": ["小学生", "小鳥", "小包"],
+    "tags": ["size", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 8,
+    "kanji": "水",
+    "onyomi": ["スイ"],
+    "kunyomi": ["みず"],
+    "meaning": ["water"],
+    "jlpt_level": "N5",
+    "stroke_count": 4,
+    "examples": ["水", "水曜日", "水泳"],
+    "vocab_words": ["海水", "水道", "水族館"],
+    "tags": ["nature", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 9,
+    "kanji": "車",
+    "onyomi": ["シャ"],
+    "kunyomi": ["くるま"],
+    "meaning": ["car", "vehicle"],
+    "jlpt_level": "N5",
+    "stroke_count": 7,
+    "examples": ["車", "電車", "自転車"],
+    "vocab_words": ["自動車", "汽車", "車庫"],
+    "tags": ["transport", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 10,
+    "kanji": "食",
+    "onyomi": ["ショク"],
+    "kunyomi": ["た"],
+    "meaning": ["eat", "food"],
+    "jlpt_level": "N5",
+    "stroke_count": 9,
+    "examples": ["食べる", "食事", "食堂"],
+    "vocab_words": ["食物", "食品", "食欲"],
+    "tags": ["food", "basic"],
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  }
+]

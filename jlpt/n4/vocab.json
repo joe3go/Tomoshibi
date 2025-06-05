@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "term": "写真",
+    "reading": "しゃしん",
+    "meaning": ["photograph", "picture"],
+    "type": "noun",
+    "jlpt_level": "N4",
+    "examples": ["写真を撮る。", "家族の写真を見る。"],
+    "tags": ["visual", "hobby"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 2,
+    "term": "心配",
+    "reading": "しんぱい",
+    "meaning": ["worry", "concern"],
+    "type": "noun/verb",
+    "jlpt_level": "N4",
+    "examples": ["心配しないでください。", "母が心配している。"],
+    "tags": ["emotion", "feelings"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 3,
+    "term": "説明",
+    "reading": "せつめい",
+    "meaning": ["explanation"],
+    "type": "noun/verb",
+    "jlpt_level": "N4",
+    "examples": ["説明をお願いします。", "詳しく説明する。"],
+    "tags": ["communication", "academic"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  }
+]

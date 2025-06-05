@@ -1,0 +1,172 @@
+[
+  {
+    "id": 1,
+    "term": "私",
+    "reading": "わたし",
+    "meaning": ["I", "me"],
+    "type": "pronoun",
+    "jlpt_level": "N5",
+    "examples": ["私は学生です。", "私の名前は田中です。"],
+    "tags": ["basic", "pronoun", "self"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 2,
+    "term": "学生",
+    "reading": "がくせい",
+    "meaning": ["student"],
+    "type": "noun",
+    "jlpt_level": "N5",
+    "examples": ["私は学生です。", "彼は大学生です。"],
+    "tags": ["education", "occupation"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 3,
+    "term": "食べる",
+    "reading": "たべる",
+    "meaning": ["to eat"],
+    "type": "verb",
+    "jlpt_level": "N5",
+    "examples": ["毎朝、パンを食べる。", "寿司を食べたい。"],
+    "tags": ["common", "verb", "food"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 4,
+    "term": "行く",
+    "reading": "いく",
+    "meaning": ["to go"],
+    "type": "verb",
+    "jlpt_level": "N5",
+    "examples": ["学校に行く。", "友達と映画を見に行く。"],
+    "tags": ["movement", "verb", "common"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 5,
+    "term": "来る",
+    "reading": "くる",
+    "meaning": ["to come"],
+    "type": "verb",
+    "jlpt_level": "N5",
+    "examples": ["友達が来る。", "明日また来てください。"],
+    "tags": ["movement", "verb", "common"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 6,
+    "term": "今日",
+    "reading": "きょう",
+    "meaning": ["today"],
+    "type": "noun",
+    "jlpt_level": "N5",
+    "examples": ["今日は晴れです。", "今日何をしますか？"],
+    "tags": ["time", "basic"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 7,
+    "term": "明日",
+    "reading": "あした",
+    "meaning": ["tomorrow"],
+    "type": "noun",
+    "jlpt_level": "N5",
+    "examples": ["明日雨が降る。", "明日会いましょう。"],
+    "tags": ["time", "basic"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 8,
+    "term": "家",
+    "reading": "いえ",
+    "meaning": ["house", "home"],
+    "type": "noun",
+    "jlpt_level": "N5",
+    "examples": ["家に帰る。", "新しい家を買った。"],
+    "tags": ["building", "home"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 9,
+    "term": "水",
+    "reading": "みず",
+    "meaning": ["water"],
+    "type": "noun",
+    "jlpt_level": "N5",
+    "examples": ["水を飲む。", "冷たい水が欲しい。"],
+    "tags": ["drink", "basic", "nature"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  },
+  {
+    "id": 10,
+    "term": "本",
+    "reading": "ほん",
+    "meaning": ["book"],
+    "type": "noun",
+    "jlpt_level": "N5",
+    "examples": ["本を読む。", "面白い本だった。"],
+    "tags": ["education", "reading"],
+    "audio_url": null,
+    "srs": {
+      "interval": 0,
+      "ease": 2.5,
+      "due": null,
+      "reviews": []
+    }
+  }
+]
