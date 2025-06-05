@@ -1,27 +1,75 @@
-import { Switch, Route, Redirect } from "wouter";
-import { useState, createContext, useContext, useEffect } from "react";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Route, Switch } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Sidebar, MobileNav } from "@/components/navigation";
-import InstallPrompt from "@/components/install-prompt";
-import ThemeToggle from "@/components/theme-toggle";
-import FloatingThemeToggle from "@/components/floating-theme-toggle";
-import { ThemeProvider } from "@/hooks/use-theme";
-import Dashboard from "@/pages/dashboard-compact";
+import { Loader2, Menu, X, Sun, Moon } from "lucide-react";
+import { getQueryFn, queryClient } from "@/lib/queryClient";
+import { useState, useEffect, createContext, useContext } from "react";
+
+// Pages
+import Dashboard from "@/pages/dashboard";
+import StudyPage from "@/pages/study";
+import StudyModePage from "@/pages/study-mode";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
-import StudyPage from "@/pages/study";
-import StudyModePage from "@/pages/study-mode";
 import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
-import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "@/lib/queryClient";
 
-// Language types and context
+// Theme context
+const ThemeContext = createContext<{
+  theme: "light" | "dark";
+  toggleTheme: () => void;
+}>({
+  theme: "light",
+  toggleTheme: () => {},
+});
+
+function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark" || stored === "light") {
+      setTheme(stored);
+      document.documentElement.classList.toggle("dark", stored === "dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    localStorage.setItem("theme", newTheme);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-lg hover:bg-accent transition-colors"
+      aria-label="Toggle theme"
+    >
+      {theme === "light" ? (
+        <Moon className="h-4 w-4" />
+      ) : (
+        <Sun className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
+// Language context
 export type LanguageMode = "en" | "jp" | "jp-furigana";
 
 interface LanguageContextType {
@@ -31,186 +79,12 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType>({
   languageMode: "en",
-  setLanguageMode: () => {}
+  setLanguageMode: () => {},
 });
 
 export const useLanguageMode = () => useContext(LanguageContext);
 
-function Router() {
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const {
-    data: userData,
-    isLoading: isUserLoading,
-    error: userError,
-    refetch: refetchUser
-  } = useQuery({
-    queryKey: ["/api/user"],
-    retry: false,
-    refetchOnWindowFocus: true,
-    refetchInterval: false
-  });
-
-  useEffect(() => {
-    if (!isUserLoading) {
-      setUser(userData || null);
-      setIsLoading(false);
-    }
-  }, [userData, isUserLoading]);
-
-  // Refetch user data when window gains focus (after login in another tab)
-  useEffect(() => {
-    const handleFocus = () => {
-      refetchUser();
-    };
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [refetchUser]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (user) {
-    return (
-      <div className="min-h-screen bg-background">
-        <AppHeader user={user} />
-        <div className="flex">
-          {/* Desktop Sidebar */}
-          <div className="hidden md:block">
-            <Sidebar user={{
-              displayName: user.displayName || "User",
-              totalXP: user.totalXP || 0,
-              currentBelt: user.currentBelt || "white",
-              currentStreak: user.currentStreak || 0
-            }} />
-          </div>
-          
-          {/* Mobile Navigation with Sidebar Option */}
-          <MobileNavWithSidebar user={{
-            displayName: user.displayName || "User",
-            totalXP: user.totalXP || 0,
-            currentBelt: user.currentBelt || "white",
-            currentStreak: user.currentStreak || 0
-          }} />
-          
-          {/* Main Content */}
-          <div className="main-content with-sidebar">
-            <Switch>
-              <Route path="/" component={Dashboard} />
-              <Route path="/study" component={StudyPage} />
-              <Route path="/study-mode" component={StudyModePage} />
-              <Route path="/social" component={Social} />
-              <Route path="/achievements" component={Achievements} />
-              <Route path="/settings" component={Settings} />
-              <Route path="/auth" component={AuthPage} />
-              <Route component={NotFound} />
-            </Switch>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <Route path="/" component={Landing} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-// Language content for all components
-export const LanguageContent = {
-  en: {
-    dashboard: "Dashboard",
-    social: "Social Hub",
-    achievements: "Achievements", 
-    settings: "Settings",
-    progress: "Progress Tracking",
-    kanjiMastered: "Kanji Mastered",
-    grammarPoints: "Grammar Points",
-    vocabularyAccuracy: "Vocabulary Accuracy",
-    kanjiAccuracy: "Kanji Accuracy",
-    sync: "Sync Data",
-    syncing: "Syncing...",
-    lastSynced: "Last synced",
-    setupApiKeys: "Import WaniKani Progress",
-    kanjiReviews: "Kanji Reviews",
-    grammarReviews: "Grammar Reviews",
-    totalXP: "Total XP",
-    currentStreak: "Current Streak",
-    bestStreak: "Best Streak",
-    jlptLevel: "JLPT Level",
-    recentActivity: "Recent Activity",
-    unlockedAchievements: "Unlocked Achievements",
-    viewAll: "View All"
-  },
-  jp: {
-    dashboard: "ダッシュボード",
-    social: "ソーシャルハブ",
-    achievements: "実績",
-    settings: "設定",
-    progress: "進歩追跡",
-    wanikaniLevel: "WaniKaniレベル",
-    bunproGrammar: "Bunpro文法ポイント",
-    wanikaniAccuracy: "WaniKani精度",
-    bunproAccuracy: "Bunpro精度",
-    sync: "データ同期",
-    syncing: "同期中...",
-    lastSynced: "最終同期",
-    setupApiKeys: "APIキー設定",
-    wanikaniReviews: "WaniKaniレビュー",
-    bunproReviews: "Bunproレビュー",
-    totalXP: "総経験値",
-    currentStreak: "現在の連続記録",
-    bestStreak: "最高連続記録",
-    jlptLevel: "JLPTレベル",
-    recentActivity: "最近の活動",
-    unlockedAchievements: "解放された実績",
-    viewAll: "すべて表示"
-  },
-  "jp-furigana": {
-    dashboard: "ダッシュボード",
-    social: "ソーシャルハブ",
-    achievements: "実績（じっせき）",
-    settings: "設定（せってい）",
-    progress: "進歩（しんぽ）追跡（ついせき）",
-    wanikaniLevel: "WaniKaniレベル",
-    bunproGrammar: "Bunpro文法（ぶんぽう）ポイント",
-    wanikaniAccuracy: "WaniKani精度（せいど）",
-    bunproAccuracy: "Bunpro精度（せいど）",
-    sync: "データ同期（どうき）",
-    syncing: "同期中（どうきちゅう）...",
-    lastSynced: "最終（さいしゅう）同期（どうき）",
-    setupApiKeys: "APIキー設定（せってい）",
-    wanikaniReviews: "WaniKaniレビュー",
-    bunproReviews: "Bunproレビュー",
-    totalXP: "総（そう）経験値（けいけんち）",
-    currentStreak: "現在（げんざい）の連続（れんぞく）記録（きろく）",
-    bestStreak: "最高（さいこう）連続（れんぞく）記録（きろく）",
-    jlptLevel: "JLPTレベル",
-    recentActivity: "最近（さいきん）の活動（かつどう）",
-    unlockedAchievements: "解放（かいほう）された実績（じっせき）",
-    viewAll: "すべて表示（ひょうじ）"
-  }
-};
-
-export function useLanguageContent(mode: LanguageMode) {
-  return LanguageContent[mode];
-}
-
-// Simple Language Toggle Component
-function SimpleLanguageToggle() {
+function LanguageToggle() {
   const { languageMode, setLanguageMode } = useLanguageMode();
   
   const modes = [
@@ -223,7 +97,7 @@ function SimpleLanguageToggle() {
     <select 
       value={languageMode} 
       onChange={(e) => setLanguageMode(e.target.value as LanguageMode)}
-      className="px-3 py-1 rounded border bg-background text-foreground"
+      className="px-3 py-1 rounded border bg-background text-foreground text-sm"
     >
       {modes.map((mode) => (
         <option key={mode.value} value={mode.value}>
@@ -239,25 +113,21 @@ function AppHeader({ user }: { user?: any }) {
     <header className="app-header">
       <div className="flex h-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <ThemeToggle />
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-white text-sm font-bold">日</span>
           </div>
-          <h1 className="text-lg font-semibold text-foreground">
-            Tomoshibi
-          </h1>
+          <h1 className="text-lg font-semibold text-foreground">Tomoshibi</h1>
         </div>
         
         <div className="flex items-center gap-3">
-          <SimpleLanguageToggle />
+          <LanguageToggle />
+          <ThemeToggle />
           {user ? (
-            <AuthenticatedUserMenu user={user} />
+            <UserMenu user={user} />
           ) : (
-            <div className="flex items-center gap-2 text-sm">
-              <a href="/auth" className="hover:text-primary transition-colors">Sign In</a>
-              <span className="text-muted-foreground">|</span>
-              <a href="/auth" className="hover:text-primary transition-colors">Get Started</a>
-            </div>
+            <a href="/auth" className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+              Sign In
+            </a>
           )}
         </div>
       </div>
@@ -265,15 +135,12 @@ function AppHeader({ user }: { user?: any }) {
   );
 }
 
-function AuthenticatedUserMenu({ user }: { user: any }) {
+function UserMenu({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(false);
   
   const handleLogout = async () => {
     try {
-      await fetch("/api/logout", { 
-        method: "POST",
-        credentials: "include" 
-      });
+      await fetch("/api/logout", { method: "POST" });
       window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
@@ -316,66 +183,150 @@ function AuthenticatedUserMenu({ user }: { user: any }) {
   );
 }
 
-function MobileNavWithSidebar({ user }: { user: any }) {
-  const [showSidebar, setShowSidebar] = useState(false);
+function Navigation({ user }: { user: any }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
+  const navItems = [
+    { href: "/", label: "Dashboard", icon: "🏠" },
+    { href: "/study", label: "Study", icon: "📚" },
+    { href: "/study-mode", label: "Study Mode", icon: "🎯" },
+    { href: "/social", label: "Social", icon: "👥" },
+    { href: "/achievements", label: "Achievements", icon: "🏆" },
+    { href: "/settings", label: "Settings", icon: "⚙️" },
+  ];
+
   return (
     <>
-      {/* Mobile Navigation Bar */}
-      <div className="md:hidden">
-        <MobileNav user={user} />
-      </div>
-      
-      {/* Mobile Sidebar Toggle Button */}
       <button
-        onClick={() => setShowSidebar(!showSidebar)}
-        className="md:hidden fixed bottom-4 right-4 z-50 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center"
+        onClick={() => setMobileMenuOpen(true)}
+        className="md:hidden fixed top-20 left-4 z-40 p-2 bg-background border border-border rounded-lg shadow-lg"
       >
-        <span className="text-sm font-bold">☰</span>
+        <Menu className="h-5 w-5" />
       </button>
-      
-      {/* Mobile Sidebar Overlay */}
-      {showSidebar && (
-        <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setShowSidebar(false)} />
-      )}
-      
-      {/* Mobile Sidebar */}
-      <div className={`md:hidden fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border z-50 transform transition-transform duration-300 ${
-        showSidebar ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Menu</h2>
-            <button 
-              onClick={() => setShowSidebar(false)}
-              className="p-1 hover:bg-accent rounded"
-            >
-              ✕
-            </button>
+
+      <div className="hidden md:block fixed left-0 top-16 bottom-0 w-64 bg-background border-r border-border">
+        <div className="p-4">
+          <div className="mb-6">
+            <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <span className="text-sm font-medium text-primary">
+                  {user.displayName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
+                </span>
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">{user.displayName || user.username}</div>
+                <div className="text-xs text-muted-foreground">{user.currentBelt} belt • {user.totalXP} XP</div>
+              </div>
+            </div>
           </div>
+          <nav className="space-y-2">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
+              >
+                <span className="text-lg">{item.icon}</span>
+                <span className="text-sm font-medium">{item.label}</span>
+              </a>
+            ))}
+          </nav>
         </div>
-        <Sidebar user={user} />
       </div>
+
+      {mobileMenuOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border z-50 md:hidden">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold">Navigation</h2>
+                <button onClick={() => setMobileMenuOpen(false)}>
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="space-y-2">
+                {navItems.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </a>
+                ))}
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
 
-function App() {
-  const [languageMode, setLanguageModeState] = useState<LanguageMode>(() => {
-    const saved = localStorage.getItem('language-mode');
-    return (saved as LanguageMode) || "en";
+function AppRouter() {
+  const { data: user, isLoading } = useQuery<any>({
+    queryKey: ["/api/user"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  // Register service worker for PWA functionality
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader user={user} />
+        <Navigation user={user} />
+        <div className="main-content with-sidebar">
+          <Switch>
+            <Route path="/" component={Dashboard} />
+            <Route path="/study" component={StudyPage} />
+            <Route path="/study-mode" component={StudyModePage} />
+            <Route path="/social" component={Social} />
+            <Route path="/achievements" component={Achievements} />
+            <Route path="/settings" component={Settings} />
+            <Route component={NotFound} />
+          </Switch>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AppHeader />
+      <div className="main-content">
+        <Switch>
+          <Route path="/auth" component={AuthPage} />
+          <Route path="/" component={Landing} />
+          <Route component={NotFound} />
+        </Switch>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [languageMode, setLanguageModeState] = useState<LanguageMode>("en");
+
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
-        });
+    const stored = localStorage.getItem('language-mode') as LanguageMode;
+    if (stored && ['en', 'jp', 'jp-furigana'].includes(stored)) {
+      setLanguageModeState(stored);
     }
   }, []);
 
@@ -395,10 +346,8 @@ function App() {
         <LanguageContext.Provider value={contextValue}>
           <TooltipProvider>
             <div className="min-h-screen bg-background text-foreground">
-              <FloatingThemeToggle />
               <Toaster />
-              <Router />
-              <InstallPrompt />
+              <AppRouter />
             </div>
           </TooltipProvider>
         </LanguageContext.Provider>

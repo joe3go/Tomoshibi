@@ -151,7 +151,7 @@ export class MemStorage implements IStorage {
       id: 2,
       username: "latibulize",
       email: "latibulize@japsense.com",
-      password: "acba280f3695c23ca7eb736838b91cefabb25186d1214a71e336d6cd474d54a9fda1dff64f2e961d6de22728f57cf1ff62688f14a5f47f820632837d575d92bf.1a9cb67274cd3bd0a0fb2bbfd9d26310", // hashed "123"
+      password: "3a4b9f1608ec7bef21a76be449f4eee98b356db3122500662427ddef39384062e53eea6ef0cb95252ee9cac4bf2ffd923acfc7099a8f9a600c555ac774101d51.667049cfad3dc5981ce498e66f25fca8", // hashed "123"
       displayName: "Latibulize",
       profileImageUrl: null,
       googleId: null,
