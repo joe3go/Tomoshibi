@@ -1,7 +1,7 @@
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Route, Switch, Link } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { Loader2, Menu, X, Sun, Moon } from "lucide-react";
 import { VersionDisplay } from "@/components/version-display";
 import { MobileWrapper } from "@/components/mobile-wrapper";
@@ -65,13 +65,13 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-1.5 sm:p-2 rounded-lg hover:bg-accent transition-colors touch-feedback"
+      className="p-1.5 md:p-2 rounded-lg hover:bg-accent transition-colors touch-feedback min-h-[var(--touch-target-min)] flex items-center justify-center"
       aria-label="Toggle theme"
     >
       {theme === "light" ? (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-4 w-4 md:h-5 md:w-5" />
       ) : (
-        <Sun className="h-4 w-4" />
+        <Sun className="h-4 w-4 md:h-5 md:w-5" />
       )}
     </button>
   );
@@ -162,7 +162,7 @@ function LanguageToggle() {
     <select 
       value={languageMode} 
       onChange={(e) => setLanguageMode(e.target.value as LanguageMode)}
-      className="px-2 py-1 rounded border bg-background text-foreground text-xs sm:text-sm min-w-0 touch-feedback"
+      className="px-2 py-1.5 md:py-2 rounded border bg-background text-foreground text-responsive-sm min-w-0 touch-feedback min-h-[var(--touch-target-min)]"
       style={{ fontSize: '16px' }}
     >
       {modes.map((mode) => (
