@@ -107,25 +107,10 @@ function Router() {
     );
   }
 
-  if (!user) {
-    return (
-      <Switch>
-        <Route path="/auth" component={AuthPage} />
-        <Route path="/" component={Landing} />
-        <Route component={NotFound} />
-      </Switch>
-    );
-  }
-
   return (
     <Switch>
-      <Route path="/auth">{() => { window.location.href = "/"; return null; }}</Route>
-      <Route path="/" component={Dashboard} />
-      <Route path="/study" component={StudyPage} />
-      <Route path="/study-mode" component={StudyModePage} />
-      <Route path="/achievements" component={Achievements} />
-      <Route path="/social" component={Social} />
-      <Route path="/settings" component={Settings} />
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/" component={Landing} />
       <Route component={NotFound} />
     </Switch>
   );
