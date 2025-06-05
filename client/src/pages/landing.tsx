@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguageMode, useLanguageContent } from "@/App";
-import studySceneImage from "@assets/generation-22bca52f-6e0a-4394-913c-ccbba5d287cf_1749094854694.png";
+import studySceneImage from "@assets/generation-0a824337-7cc6-4f0a-8c9b-c8daca3fc9b7_1749095442322.png";
 import { 
   Play, 
   Brain, 
@@ -55,20 +55,19 @@ export default function Landing() {
   return (
     <div className="min-h-screen warm-gradient">
       {/* Hero Section with Study Scene Display */}
-      <div className="relative overflow-hidden min-h-[60vh] flex items-end pb-12">
-        {/* Background Image positioned lower to avoid lantern overlap */}
+      <div className="relative overflow-hidden">
+        {/* Background Image with optimized positioning */}
         <div className="absolute inset-0 w-full h-full">
           <div 
-            className="w-full h-full bg-cover bg-no-repeat"
+            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-25"
             style={{
               backgroundImage: `url(${studySceneImage})`,
-              backgroundPosition: 'center bottom',
-              backgroundSize: 'cover'
+              backgroundPosition: 'center 70%',
+              backgroundSize: 'contain'
             }}
           />
-          {/* Strong overlay at top to create clear space for text */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/30 to-background/60" />
+          {/* Gentle overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/40 to-background/60" />
         </div>
         
         <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 sm:py-24">
