@@ -792,6 +792,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // JLPT Progress API Route
+  app.get('/api/jlpt/progress', async (req, res) => {
+    try {
+      // Get authenticated user
+      const sessionData = req.session as any;
+      if (!sessionData?.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const userId = sessionData.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Get user's SRS items to calculate progress
+      const userSrsItems = await storage.getUserSrsItems(userId);
+      
+      // Calculate progress for each JLPT level
+      const progress = {
+        n5: { vocab: 0, kanji: 0, grammar: 0 },
+        n4: { vocab: 0, kanji: 0, grammar: 0 },
+        n3: { vocab: 0, kanji: 0, grammar: 0 },
+        n2: { vocab: 0, kanji: 0, grammar: 0 },
+        n1: { vocab: 0, kanji: 0, grammar: 0 }
+      };
+
+      // Count learned items by level and type
+      for (const srsItem of userSrsItems) {
+        const sentenceCard = await storage.getSentenceCard(srsItem.sentenceCardId);
+        if (sentenceCard && srsItem.mastery !== 'new') {
+          const level = sentenceCard.jlptLevel?.toLowerCase();
+          if (level && progress[level as keyof typeof progress]) {
+            // For now, count all as vocab since we don't have type distinction
+            progress[level as keyof typeof progress].vocab++;
+          }
+        }
+      }
+
+      // Total items available (based on actual content files)
+      const fs = require('fs').promises;
+      const path = require('path');
+      
+      const totalItems = {
+        n5: { vocab: 10, kanji: 10, grammar: 5 }, // Based on actual data
+        n4: { vocab: 0, kanji: 0, grammar: 0 },   // Placeholder
+        n3: { vocab: 0, kanji: 0, grammar: 0 },   // Placeholder
+        n2: { vocab: 0, kanji: 0, grammar: 0 },   // Placeholder
+        n1: { vocab: 0, kanji: 0, grammar: 0 }    // Placeholder
+      };
+
+      // Try to get actual counts from files
+      for (const level of ['n5', 'n4', 'n3', 'n2', 'n1']) {
+        for (const type of ['vocab', 'kanji', 'grammar']) {
+          try {
+            const filePath = path.join(process.cwd(), 'jlpt', level, `${type}.json`);
+            const data = await fs.readFile(filePath, 'utf8');
+            const jsonData = JSON.parse(data);
+            totalItems[level as keyof typeof totalItems][type as keyof typeof totalItems.n5] = jsonData.length;
+          } catch (error) {
+            // Keep default/placeholder values if file doesn't exist
+          }
+        }
+      }
+
+      res.json({
+        userId: user.id.toString(),
+        progress,
+        totalItems
+      });
+    } catch (error) {
+      console.error('Error fetching JLPT progress:', error);
+      res.status(500).json({ error: 'Failed to fetch JLPT progress' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -2,6 +2,23 @@
 
 All notable changes to Tomoshibi will be documented in this file.
 
+## [1.0.4] - 2025-06-05
+
+### Added
+- Dynamic JLPT Progress Dashboard with vertical level cards
+- Real-time progress tracking across N5-N1 levels
+- Category-specific progress bars (vocabulary, kanji, grammar)
+- Overall completion percentage calculations
+- Progress badges (Not Started, Started, In Progress, Almost Done, Completed)
+- Quick action buttons linking to content pages and study sessions
+- API endpoint for fetching user progress data
+- Statistics cards showing total progress, current level, and completed levels
+
+### Enhanced
+- Navigation system with progress dashboard integration
+- Data-driven progress calculations from user SRS items
+- Dynamic content linking between progress and content pages
+
 ## [1.0.3] - 2025-06-05
 
 ### Added
