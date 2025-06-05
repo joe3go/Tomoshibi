@@ -177,22 +177,24 @@ function LanguageToggle() {
 function AppHeader({ user }: { user?: any }) {
   return (
     <header className="app-header safe-area-top safe-area-inset">
-      <div className="flex h-full items-center justify-between px-3 sm:px-4">
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
-          <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20 flex-shrink-0">
-            <div className="lantern-icon text-primary scale-[0.4] sm:scale-75"></div>
+      <div className="container-responsive flex h-full items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
+          <div className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20 flex-shrink-0">
+            <div className="lantern-icon text-primary scale-50 md:scale-[0.6] lg:scale-75"></div>
           </div>
-          <h1 className="text-base sm:text-xl font-semibold text-foreground tracking-tight truncate">Tomoshibi</h1>
+          <h1 className="text-responsive-lg md:text-responsive-xl lg:text-responsive-2xl font-semibold text-foreground tracking-tight truncate">
+            Tomoshibi
+          </h1>
         </Link>
         
-        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
           <LanguageToggle />
           <ThemeToggle />
           {user ? (
             <UserMenu user={user} />
           ) : (
             <Link href="/auth">
-              <a className="px-2 py-1.5 sm:px-4 sm:py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-[#5A6875] transition-colors text-xs sm:text-base touch-feedback">
+              <a className="px-2 py-1.5 md:px-3 md:py-2 lg:px-4 lg:py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-[#5A6875] transition-colors text-responsive-sm md:text-responsive-base touch-feedback min-h-[var(--touch-target-min)]">
                 Sign In
               </a>
             </Link>
@@ -219,28 +221,28 @@ function UserMenu({ user }: { user: any }) {
     <div className="relative">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"
+        className="flex items-center gap-2 p-1.5 md:p-2 rounded-lg hover:bg-accent transition-colors min-h-[var(--touch-target-min)] touch-feedback"
       >
-        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-          <span className="text-sm font-medium text-primary">
+        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+          <span className="text-xs md:text-sm font-medium text-primary">
             {user.displayName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
           </span>
         </div>
-        <div className="hidden md:block text-left">
-          <div className="text-sm font-medium">{user.displayName || user.username}</div>
-          <div className="text-xs text-muted-foreground">{user.currentBelt} belt • {user.totalXP} XP</div>
+        <div className="hidden lg:block text-left min-w-0">
+          <div className="text-responsive-sm font-medium truncate">{user.displayName || user.username}</div>
+          <div className="text-responsive-xs text-muted-foreground truncate">{user.currentBelt} belt • {user.totalXP} XP</div>
         </div>
       </button>
       
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-background border border-border rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-2 w-44 md:w-48 bg-background border border-border rounded-lg shadow-lg z-50">
           <div className="p-2">
-            <a href="/settings" className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors">
+            <a href="/settings" className="block px-3 py-2 text-responsive-sm hover:bg-accent rounded-md transition-colors min-h-[var(--touch-target-min)] flex items-center">
               Settings
             </a>
             <button 
               onClick={handleLogout}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors text-destructive"
+              className="w-full text-left px-3 py-2 text-responsive-sm hover:bg-accent rounded-md transition-colors text-destructive min-h-[var(--touch-target-min)] flex items-center"
             >
               Sign Out
             </button>
@@ -427,13 +429,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageContext.Provider value={contextValue}>
-          <MobileWrapper>
-            <div className="min-h-screen bg-background text-foreground">
-              <Toaster />
-              <AppRouter />
-              <VersionDisplay />
-            </div>
-          </MobileWrapper>
+          <div className="min-h-screen bg-background text-foreground">
+            <Toaster />
+            <AppRouter />
+            <VersionDisplay />
+          </div>
         </LanguageContext.Provider>
       </ThemeProvider>
     </QueryClientProvider>

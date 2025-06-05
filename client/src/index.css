@@ -4,53 +4,114 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mobile-First Responsive Design Variables */
+/* Fully Responsive Design System */
 :root {
-  --viewport-width: 100vw;
-  --keyboard-height: 0px;
-  --is-mobile: 1;
-  --is-tablet: 0;
-  --is-desktop: 0;
+  /* Responsive Typography with clamp() for fluid scaling */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.5rem);
   
-  /* Mobile-Optimized Typography Scale */
-  --text-xs: clamp(0.7rem, 0.65rem + 0.2vw, 0.75rem);
-  --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem);
-  --text-base: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
-  --text-lg: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
-  --text-xl: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
-  --text-2xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-  --text-3xl: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+  /* Japanese Typography Optimized */
+  --jp-text-sm: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --jp-text-base: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+  --jp-text-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --jp-text-xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
   
-  /* Mobile-Optimized Japanese Typography */
-  --jp-text-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
-  --jp-text-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
-  --jp-text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
-  --jp-text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  /* Fluid Spacing System */
+  --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.375rem);
+  --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  --space-xl: clamp(2rem, 1.6rem + 2vw, 3rem);
   
-  /* Compact Mobile Spacing */
-  --space-xs: clamp(0.25rem, 0.2rem + 0.2vw, 0.3rem);
-  --space-sm: clamp(0.4rem, 0.35rem + 0.3vw, 0.5rem);
-  --space-md: clamp(0.75rem, 0.6rem + 0.6vw, 1rem);
-  --space-lg: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
-  --space-xl: clamp(1.25rem, 1rem + 1vw, 2rem);
+  /* Touch-Friendly Sizing */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
   
-  /* Touch Target Sizes */
-  --touch-target-min: 40px;
-  --touch-target-comfortable: 44px;
+  /* App Header Height */
+  --header-height: clamp(3.5rem, 3rem + 2vw, 4rem);
+}
+
+/* Responsive Header Styles */
+.app-header {
+  height: var(--header-height);
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.dark .app-header {
+  background-color: rgba(26, 26, 26, 0.95);
+}
+
+/* Safe Area Support for Mobile */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Touch Feedback */
+.touch-feedback {
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+.touch-feedback:active {
+  transform: scale(0.98);
 }
 
 /* Responsive Breakpoints */
-@media (min-width: 481px) {
-  :root {
-    --is-mobile: 0;
-    --is-tablet: 1;
+/* Small screens: max-width: 768px */
+@media (max-width: 768px) {
+  .container { 
+    padding-left: 1rem; 
+    padding-right: 1rem; 
+  }
+  
+  .app-header {
+    height: 3.5rem;
+  }
+  
+  /* Stack navigation vertically */
+  .mobile-stack {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
 
+/* Medium screens/tablets: 769px to 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-header {
+    height: 3.75rem;
+  }
+  
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Large screens/desktops: 1025px+ */
 @media (min-width: 1025px) {
-  :root {
-    --is-tablet: 0;
-    --is-desktop: 1;
+  .app-header {
+    height: 4rem;
+  }
+  
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
@@ -184,35 +245,73 @@
     height: auto;
   }
   
-  /* Compact mobile components */
-  @media (max-width: 480px) {
-    .container { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
-    .p-4 { padding: 0.5rem !important; }
-    .p-6 { padding: 0.75rem !important; }
-    .p-8 { padding: 1rem !important; }
-    .px-4 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
-    .py-8 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
-    .text-lg { font-size: 0.9rem !important; }
-    .text-xl { font-size: 1rem !important; }
-    .text-2xl { font-size: 1.125rem !important; }
-    .text-3xl { font-size: 1.25rem !important; }
-    .gap-4 { gap: 0.5rem !important; }
-    .gap-6 { gap: 0.75rem !important; }
-    .gap-8 { gap: 1rem !important; }
-    .space-y-8 > * + * { margin-top: 1rem !important; }
-    .space-y-6 > * + * { margin-top: 0.75rem !important; }
-    .space-y-4 > * + * { margin-top: 0.5rem !important; }
-    
-    /* Mobile card optimizations */
-    .card { margin-bottom: 0.5rem !important; }
-    .card-header { padding: 0.75rem !important; }
-    .card-content { padding: 0.75rem !important; }
-    
-    /* Mobile button optimizations */
-    .btn, button { 
-      min-height: 40px !important; 
-      padding: 0.5rem 0.75rem !important;
-      font-size: 0.875rem !important;
+  /* Responsive Typography */
+  .text-responsive-xs { font-size: var(--text-xs); }
+  .text-responsive-sm { font-size: var(--text-sm); }
+  .text-responsive-base { font-size: var(--text-base); }
+  .text-responsive-lg { font-size: var(--text-lg); }
+  .text-responsive-xl { font-size: var(--text-xl); }
+  .text-responsive-2xl { font-size: var(--text-2xl); }
+  .text-responsive-3xl { font-size: var(--text-3xl); }
+  
+  /* Japanese Responsive Typography */
+  .jp-text-responsive-sm { font-size: var(--jp-text-sm); }
+  .jp-text-responsive-base { font-size: var(--jp-text-base); }
+  .jp-text-responsive-lg { font-size: var(--jp-text-lg); }
+  .jp-text-responsive-xl { font-size: var(--jp-text-xl); }
+  
+  /* Responsive Spacing */
+  .space-responsive-xs { gap: var(--space-xs); }
+  .space-responsive-sm { gap: var(--space-sm); }
+  .space-responsive-md { gap: var(--space-md); }
+  .space-responsive-lg { gap: var(--space-lg); }
+  .space-responsive-xl { gap: var(--space-xl); }
+}
+
+/* Responsive Layout Utilities */
+@layer utilities {
+  /* Fluid Grid System */
+  .grid-responsive {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  }
+  
+  /* Responsive Containers */
+  .container-responsive {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+  
+  @media (min-width: 640px) {
+    .container-responsive {
+      max-width: 640px;
+      padding-left: var(--space-md);
+      padding-right: var(--space-md);
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .container-responsive {
+      max-width: 768px;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-responsive {
+      max-width: 1024px;
+      padding-left: var(--space-lg);
+      padding-right: var(--space-lg);
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .container-responsive {
+      max-width: 1280px;
     }
   }
 }
