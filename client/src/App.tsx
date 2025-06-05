@@ -1,5 +1,5 @@
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { Route, Switch } from "wouter";
+import { Route, Switch, Link } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2, Menu, X, Sun, Moon } from "lucide-react";
@@ -133,6 +133,17 @@ export function useLanguageContent(mode: LanguageMode) {
 
 function LanguageToggle() {
   const { languageMode, setLanguageMode } = useLanguageMode();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 640);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
   
   const modes = [
     { value: "en", label: "EN", fullLabel: "English" },
@@ -145,12 +156,11 @@ function LanguageToggle() {
       value={languageMode} 
       onChange={(e) => setLanguageMode(e.target.value as LanguageMode)}
       className="px-2 py-1 rounded border bg-background text-foreground text-xs sm:text-sm min-w-0 touch-feedback"
-      style={{ fontSize: '16px' }} // Prevents zoom on iOS
+      style={{ fontSize: '16px' }}
     >
       {modes.map((mode) => (
         <option key={mode.value} value={mode.value}>
-          <span className="sm:hidden">{mode.label}</span>
-          <span className="hidden sm:inline">{mode.fullLabel}</span>
+          {isSmallScreen ? mode.label : mode.fullLabel}
         </option>
       ))}
     </select>
@@ -161,12 +171,12 @@ function AppHeader({ user }: { user?: any }) {
   return (
     <header className="app-header safe-area-top safe-area-inset">
       <div className="flex h-full items-center justify-between px-3 sm:px-4">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
           <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20 flex-shrink-0">
             <div className="lantern-icon text-primary scale-[0.4] sm:scale-75"></div>
           </div>
           <h1 className="text-base sm:text-xl font-semibold text-foreground tracking-tight truncate">Tomoshibi</h1>
-        </div>
+        </Link>
         
         <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
           <LanguageToggle />

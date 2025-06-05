@@ -12,7 +12,7 @@
     --popover-foreground: 0 0% 13%;
     --primary: 351 100% 45%; /* #E60026 - Japanese red */
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 20%; /* #333333 - Dark charcoal */
+    --secondary: 212 15% 48%; /* #6C7A89 - Muted blue-grey */
     --secondary-foreground: 0 0% 100%;
     --tertiary: 22 90% 60%; /* #F68C3F - Burnt orange */
     --tertiary-foreground: 0 0% 13%;
@@ -37,7 +37,7 @@
     --popover-foreground: 44 59% 93%;
     --primary: 351 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 25%;
+    --secondary: 212 15% 48%; /* #6C7A89 - Muted blue-grey */
     --secondary-foreground: 0 0% 100%;
     --tertiary: 22 85% 55%;
     --tertiary-foreground: 0 0% 13%;
@@ -81,7 +81,7 @@
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-[#1F1F1F] active:bg-[#0F0F0F] transition-colors duration-200 shadow-md min-h-[44px] touch-manipulation;
+  @apply bg-secondary text-secondary-foreground hover:bg-[#5A6875] active:bg-[#4E5962] transition-colors duration-200 shadow-md min-h-[44px] touch-manipulation;
 }
 
 .btn-tertiary {
