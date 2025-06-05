@@ -22,18 +22,8 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "#E55B3C", // Lantern orange/red
-          foreground: "#FFFFFF",
-          50: "#FEF7ED",
-          100: "#FDEDD3",
-          200: "#FBD7A5",
-          300: "#F8B66D",
-          400: "#F4924B",
-          500: "#E55B3C", // Main color
-          600: "#D6432A",
-          700: "#B6321F",
-          800: "#942B1E",
-          900: "#79281C",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
