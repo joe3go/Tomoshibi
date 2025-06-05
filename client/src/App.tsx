@@ -208,7 +208,8 @@ function Sidebar({ user }: { user: any }) {
   
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
-    { href: "/study", label: "Study", icon: BookOpen },
+    { href: "/vocabulary", label: "Vocabulary", icon: BookOpen },
+    { href: "/study", label: "Study", icon: Target },
     { href: "/jlpt-progress", label: "JLPT Progress", icon: BarChart3 },
     { href: "/achievements", label: "Achievements", icon: Trophy },
     { href: "/settings", label: "Settings", icon: SettingsIcon },
