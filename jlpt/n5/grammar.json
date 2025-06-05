@@ -78,5 +78,197 @@
     "example_sentence_jp": "昨日は行きませんでした。",
     "example_sentence_en": "I didn't go yesterday.",
     "srs_level": "Apprentice I"
+  },
+  {
+    "grammar_point": "です/である",
+    "meaning_en": "to be (polite/plain form)",
+    "structure_notes": "Noun + です (polite) / Noun + である (plain, written)",
+    "example_sentence_jp": "私は学生です。",
+    "example_sentence_en": "I am a student.",
+    "srs_level": "Apprentice II"
+  },
+  {
+    "grammar_point": "だ",
+    "meaning_en": "to be (casual form)",
+    "structure_notes": "Noun + だ (casual spoken form)",
+    "example_sentence_jp": "これは本だ。",
+    "example_sentence_en": "This is a book.",
+    "srs_level": "Apprentice III"
+  },
+  {
+    "grammar_point": "じゃない/ではない",
+    "meaning_en": "to not be (negative form)",
+    "structure_notes": "Noun + じゃない (casual) / Noun + ではない (polite)",
+    "example_sentence_jp": "私は先生じゃない。",
+    "example_sentence_en": "I am not a teacher.",
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "grammar_point": "ます",
+    "meaning_en": "polite verb ending",
+    "structure_notes": "Verb stem + ます (present/future polite)",
+    "example_sentence_jp": "毎日勉強します。",
+    "example_sentence_en": "I study every day.",
+    "srs_level": "Guru I"
+  },
+  {
+    "grammar_point": "ません",
+    "meaning_en": "polite negative verb ending",
+    "structure_notes": "Verb stem + ません (negative polite)",
+    "example_sentence_jp": "今日は働きません。",
+    "example_sentence_en": "I don't work today.",
+    "srs_level": "Guru II"
+  },
+  {
+    "grammar_point": "ました",
+    "meaning_en": "polite past tense",
+    "structure_notes": "Verb stem + ました (past polite)",
+    "example_sentence_jp": "昨日映画を見ました。",
+    "example_sentence_en": "I watched a movie yesterday.",
+    "srs_level": "Master"
+  },
+  {
+    "grammar_point": "ませんでした",
+    "meaning_en": "polite negative past tense",
+    "structure_notes": "Verb stem + ませんでした (negative past polite)",
+    "example_sentence_jp": "昨日は雨が降りませんでした。",
+    "example_sentence_en": "It didn't rain yesterday.",
+    "srs_level": "Enlightened"
+  },
+  {
+    "grammar_point": "を",
+    "meaning_en": "direct object particle",
+    "structure_notes": "Direct object + を + verb",
+    "example_sentence_jp": "本を読みます。",
+    "example_sentence_en": "I read a book.",
+    "srs_level": "Burned"
+  },
+  {
+    "grammar_point": "が",
+    "meaning_en": "subject particle",
+    "structure_notes": "Subject + が + predicate",
+    "example_sentence_jp": "犬がいます。",
+    "example_sentence_en": "There is a dog.",
+    "srs_level": "Apprentice I"
+  },
+  {
+    "grammar_point": "は",
+    "meaning_en": "topic particle",
+    "structure_notes": "Topic + は + comment",
+    "example_sentence_jp": "私は田中です。",
+    "example_sentence_en": "I am Tanaka.",
+    "srs_level": "Apprentice II"
+  },
+  {
+    "grammar_point": "に",
+    "meaning_en": "location/time/direction particle",
+    "structure_notes": "Place/time + に + verb",
+    "example_sentence_jp": "学校に行きます。",
+    "example_sentence_en": "I go to school.",
+    "srs_level": "Apprentice III"
+  },
+  {
+    "grammar_point": "で",
+    "meaning_en": "location of action/means particle",
+    "structure_notes": "Place/method + で + verb",
+    "example_sentence_jp": "図書館で勉強します。",
+    "example_sentence_en": "I study at the library.",
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "grammar_point": "と",
+    "meaning_en": "and/with particle",
+    "structure_notes": "Noun + と + noun / Person + と + verb",
+    "example_sentence_jp": "友達と映画を見ます。",
+    "example_sentence_en": "I watch movies with friends.",
+    "srs_level": "Guru I"
+  },
+  {
+    "grammar_point": "から",
+    "meaning_en": "from/because",
+    "structure_notes": "Place/time + から / Reason + から",
+    "example_sentence_jp": "九時から働きます。",
+    "example_sentence_en": "I work from nine o'clock.",
+    "srs_level": "Guru II"
+  },
+  {
+    "grammar_point": "まで",
+    "meaning_en": "until/to",
+    "structure_notes": "Place/time + まで",
+    "example_sentence_jp": "五時まで働きます。",
+    "example_sentence_en": "I work until five o'clock.",
+    "srs_level": "Master"
+  },
+  {
+    "grammar_point": "も",
+    "meaning_en": "also/too",
+    "structure_notes": "Noun + も + predicate",
+    "example_sentence_jp": "私も学生です。",
+    "example_sentence_en": "I am also a student.",
+    "srs_level": "Enlightened"
+  },
+  {
+    "grammar_point": "の",
+    "meaning_en": "possessive/modification particle",
+    "structure_notes": "Modifier + の + noun",
+    "example_sentence_jp": "私の本です。",
+    "example_sentence_en": "It's my book.",
+    "srs_level": "Burned"
+  },
+  {
+    "grammar_point": "どこ",
+    "meaning_en": "where",
+    "structure_notes": "どこ + particle + predicate",
+    "example_sentence_jp": "学校はどこですか。",
+    "example_sentence_en": "Where is the school?",
+    "srs_level": "Apprentice I"
+  },
+  {
+    "grammar_point": "いつ",
+    "meaning_en": "when",
+    "structure_notes": "いつ + predicate",
+    "example_sentence_jp": "いつ日本に行きますか。",
+    "example_sentence_en": "When will you go to Japan?",
+    "srs_level": "Apprentice II"
+  },
+  {
+    "grammar_point": "だれ/誰",
+    "meaning_en": "who",
+    "structure_notes": "だれ/誰 + particle + predicate",
+    "example_sentence_jp": "あの人は誰ですか。",
+    "example_sentence_en": "Who is that person?",
+    "srs_level": "Apprentice III"
+  },
+  {
+    "grammar_point": "なに/何",
+    "meaning_en": "what",
+    "structure_notes": "なに/何 + particle + predicate",
+    "example_sentence_jp": "これは何ですか。",
+    "example_sentence_en": "What is this?",
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "grammar_point": "どう",
+    "meaning_en": "how",
+    "structure_notes": "どう + predicate",
+    "example_sentence_jp": "日本語はどうですか。",
+    "example_sentence_en": "How is Japanese?",
+    "srs_level": "Guru I"
+  },
+  {
+    "grammar_point": "いくら",
+    "meaning_en": "how much (price)",
+    "structure_notes": "Noun + は + いくら + ですか",
+    "example_sentence_jp": "この本はいくらですか。",
+    "example_sentence_en": "How much is this book?",
+    "srs_level": "Guru II"
+  },
+  {
+    "grammar_point": "いくつ",
+    "meaning_en": "how many/how old",
+    "structure_notes": "いくつ + predicate",
+    "example_sentence_jp": "いくつですか。",
+    "example_sentence_en": "How old are you?",
+    "srs_level": "Master"
   }
 ]

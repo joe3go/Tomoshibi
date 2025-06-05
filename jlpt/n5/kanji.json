@@ -98,5 +98,235 @@
     "example_vocab": ["国", "中国", "外国"],
     "stroke_order_diagram": null,
     "srs_level": "Apprentice I"
+  },
+  {
+    "kanji": "年",
+    "onyomi": "ネン",
+    "kunyomi": "とし",
+    "english_meaning": "year",
+    "stroke_count": 6,
+    "example_vocab": ["年", "今年", "去年", "来年"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice II"
+  },
+  {
+    "kanji": "月",
+    "onyomi": "ゲツ、ガツ",
+    "kunyomi": "つき",
+    "english_meaning": "month, moon",
+    "stroke_count": 4,
+    "example_vocab": ["月", "今月", "先月", "来月"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice III"
+  },
+  {
+    "kanji": "週",
+    "onyomi": "シュウ",
+    "kunyomi": "",
+    "english_meaning": "week",
+    "stroke_count": 11,
+    "example_vocab": ["週", "今週", "先週", "来週"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "kanji": "曜",
+    "onyomi": "ヨウ",
+    "kunyomi": "",
+    "english_meaning": "day of the week",
+    "stroke_count": 18,
+    "example_vocab": ["曜日", "月曜日", "火曜日"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru I"
+  },
+  {
+    "kanji": "朝",
+    "onyomi": "チョウ",
+    "kunyomi": "あさ",
+    "english_meaning": "morning",
+    "stroke_count": 12,
+    "example_vocab": ["朝", "今朝", "朝食"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru II"
+  },
+  {
+    "kanji": "昼",
+    "onyomi": "チュウ",
+    "kunyomi": "ひる",
+    "english_meaning": "noon, daytime",
+    "stroke_count": 9,
+    "example_vocab": ["昼", "昼食", "昼間"],
+    "stroke_order_diagram": null,
+    "srs_level": "Master"
+  },
+  {
+    "kanji": "夜",
+    "onyomi": "ヤ",
+    "kunyomi": "よる、よ",
+    "english_meaning": "night",
+    "stroke_count": 8,
+    "example_vocab": ["夜", "今夜", "夜中"],
+    "stroke_order_diagram": null,
+    "srs_level": "Enlightened"
+  },
+  {
+    "kanji": "晩",
+    "onyomi": "バン",
+    "kunyomi": "",
+    "english_meaning": "evening",
+    "stroke_count": 12,
+    "example_vocab": ["晩", "今晩", "夕晩"],
+    "stroke_order_diagram": null,
+    "srs_level": "Burned"
+  },
+  {
+    "kanji": "午",
+    "onyomi": "ゴ",
+    "kunyomi": "",
+    "english_meaning": "noon",
+    "stroke_count": 4,
+    "example_vocab": ["午前", "午後", "正午"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice I"
+  },
+  {
+    "kanji": "前",
+    "onyomi": "ゼン",
+    "kunyomi": "まえ",
+    "english_meaning": "front, before",
+    "stroke_count": 9,
+    "example_vocab": ["前", "午前", "名前"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice II"
+  },
+  {
+    "kanji": "後",
+    "onyomi": "ゴ、コウ",
+    "kunyomi": "あと、うしろ",
+    "english_meaning": "after, behind",
+    "stroke_count": 9,
+    "example_vocab": ["後", "午後", "最後"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice III"
+  },
+  {
+    "kanji": "半",
+    "onyomi": "ハン",
+    "kunyomi": "なか-ば",
+    "english_meaning": "half",
+    "stroke_count": 5,
+    "example_vocab": ["半", "半分", "時半"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "kanji": "分",
+    "onyomi": "ブン、フン",
+    "kunyomi": "わ-ける",
+    "english_meaning": "minute, part",
+    "stroke_count": 4,
+    "example_vocab": ["分", "半分", "十分"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru I"
+  },
+  {
+    "kanji": "秒",
+    "onyomi": "ビョウ",
+    "kunyomi": "",
+    "english_meaning": "second",
+    "stroke_count": 9,
+    "example_vocab": ["秒", "一秒", "何秒"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru II"
+  },
+  {
+    "kanji": "春",
+    "onyomi": "シュン",
+    "kunyomi": "はる",
+    "english_meaning": "spring",
+    "stroke_count": 9,
+    "example_vocab": ["春", "春休み", "青春"],
+    "stroke_order_diagram": null,
+    "srs_level": "Master"
+  },
+  {
+    "kanji": "夏",
+    "onyomi": "カ、ゲ",
+    "kunyomi": "なつ",
+    "english_meaning": "summer",
+    "stroke_count": 10,
+    "example_vocab": ["夏", "夏休み", "真夏"],
+    "stroke_order_diagram": null,
+    "srs_level": "Enlightened"
+  },
+  {
+    "kanji": "秋",
+    "onyomi": "シュウ",
+    "kunyomi": "あき",
+    "english_meaning": "autumn",
+    "stroke_count": 9,
+    "example_vocab": ["秋", "秋分", "紅葉"],
+    "stroke_order_diagram": null,
+    "srs_level": "Burned"
+  },
+  {
+    "kanji": "冬",
+    "onyomi": "トウ",
+    "kunyomi": "ふゆ",
+    "english_meaning": "winter",
+    "stroke_count": 5,
+    "example_vocab": ["冬", "冬休み", "真冬"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice I"
+  },
+  {
+    "kanji": "雨",
+    "onyomi": "ウ",
+    "kunyomi": "あめ",
+    "english_meaning": "rain",
+    "stroke_count": 8,
+    "example_vocab": ["雨", "大雨", "雨天"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice II"
+  },
+  {
+    "kanji": "雪",
+    "onyomi": "セツ",
+    "kunyomi": "ゆき",
+    "english_meaning": "snow",
+    "stroke_count": 11,
+    "example_vocab": ["雪", "大雪", "雪国"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice III"
+  },
+  {
+    "kanji": "風",
+    "onyomi": "フウ",
+    "kunyomi": "かぜ",
+    "english_meaning": "wind",
+    "stroke_count": 9,
+    "example_vocab": ["風", "台風", "風邪"],
+    "stroke_order_diagram": null,
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "kanji": "天",
+    "onyomi": "テン",
+    "kunyomi": "あま",
+    "english_meaning": "heaven, sky",
+    "stroke_count": 4,
+    "example_vocab": ["天気", "天国", "天才"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru I"
+  },
+  {
+    "kanji": "気",
+    "onyomi": "キ、ケ",
+    "kunyomi": "",
+    "english_meaning": "spirit, atmosphere",
+    "stroke_count": 6,
+    "example_vocab": ["天気", "気分", "元気"],
+    "stroke_order_diagram": null,
+    "srs_level": "Guru II"
   }
 ]

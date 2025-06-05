@@ -88,5 +88,221 @@
     "example_sentence_en": "I like Japanese food.",
     "audio_url": null,
     "srs_level": "Apprentice I"
+  },
+  {
+    "kanji": "今年",
+    "kana_reading": "ことし",
+    "english_meaning": "this year",
+    "example_sentence_jp": "今年は忙しかったです。",
+    "example_sentence_en": "This year was busy.",
+    "audio_url": null,
+    "srs_level": "Apprentice II"
+  },
+  {
+    "kanji": "去年",
+    "kana_reading": "きょねん",
+    "english_meaning": "last year",
+    "example_sentence_jp": "去年日本に行きました。",
+    "example_sentence_en": "I went to Japan last year.",
+    "audio_url": null,
+    "srs_level": "Apprentice III"
+  },
+  {
+    "kanji": "来年",
+    "kana_reading": "らいねん",
+    "english_meaning": "next year",
+    "example_sentence_jp": "来年結婚します。",
+    "example_sentence_en": "I will get married next year.",
+    "audio_url": null,
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "kanji": "昨日",
+    "kana_reading": "きのう",
+    "english_meaning": "yesterday",
+    "example_sentence_jp": "昨日は雨でした。",
+    "example_sentence_en": "It was rainy yesterday.",
+    "audio_url": null,
+    "srs_level": "Guru I"
+  },
+  {
+    "kanji": "明日",
+    "kana_reading": "あした",
+    "english_meaning": "tomorrow",
+    "example_sentence_jp": "明日は晴れるでしょう。",
+    "example_sentence_en": "It will probably be sunny tomorrow.",
+    "audio_url": null,
+    "srs_level": "Guru II"
+  },
+  {
+    "kanji": "先生",
+    "kana_reading": "せんせい",
+    "english_meaning": "teacher",
+    "example_sentence_jp": "田中先生は親切です。",
+    "example_sentence_en": "Tanaka-sensei is kind.",
+    "audio_url": null,
+    "srs_level": "Master"
+  },
+  {
+    "kanji": "学生",
+    "kana_reading": "がくせい",
+    "english_meaning": "student",
+    "example_sentence_jp": "私は大学生です。",
+    "example_sentence_en": "I am a university student.",
+    "audio_url": null,
+    "srs_level": "Enlightened"
+  },
+  {
+    "kanji": "会社員",
+    "kana_reading": "かいしゃいん",
+    "english_meaning": "company employee",
+    "example_sentence_jp": "父は会社員です。",
+    "example_sentence_en": "My father is a company employee.",
+    "audio_url": null,
+    "srs_level": "Burned"
+  },
+  {
+    "kanji": "医者",
+    "kana_reading": "いしゃ",
+    "english_meaning": "doctor",
+    "example_sentence_jp": "母は医者です。",
+    "example_sentence_en": "My mother is a doctor.",
+    "audio_url": null,
+    "srs_level": "Apprentice I"
+  },
+  {
+    "kanji": "看護師",
+    "kana_reading": "かんごし",
+    "english_meaning": "nurse",
+    "example_sentence_jp": "姉は看護師です。",
+    "example_sentence_en": "My older sister is a nurse.",
+    "audio_url": null,
+    "srs_level": "Apprentice II"
+  },
+  {
+    "kanji": "警察官",
+    "kana_reading": "けいさつかん",
+    "english_meaning": "police officer",
+    "example_sentence_jp": "兄は警察官です。",
+    "example_sentence_en": "My older brother is a police officer.",
+    "audio_url": null,
+    "srs_level": "Apprentice III"
+  },
+  {
+    "kanji": "運転手",
+    "kana_reading": "うんてんしゅ",
+    "english_meaning": "driver",
+    "example_sentence_jp": "タクシーの運転手です。",
+    "example_sentence_en": "I am a taxi driver.",
+    "audio_url": null,
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "kanji": "店員",
+    "kana_reading": "てんいん",
+    "english_meaning": "store clerk",
+    "example_sentence_jp": "コンビニの店員です。",
+    "example_sentence_en": "I am a convenience store clerk.",
+    "audio_url": null,
+    "srs_level": "Guru I"
+  },
+  {
+    "kanji": "銀行",
+    "kana_reading": "ぎんこう",
+    "english_meaning": "bank",
+    "example_sentence_jp": "銀行でお金を下ろします。",
+    "example_sentence_en": "I withdraw money at the bank.",
+    "audio_url": null,
+    "srs_level": "Guru II"
+  },
+  {
+    "kanji": "郵便局",
+    "kana_reading": "ゆうびんきょく",
+    "english_meaning": "post office",
+    "example_sentence_jp": "郵便局で手紙を送ります。",
+    "example_sentence_en": "I send letters at the post office.",
+    "audio_url": null,
+    "srs_level": "Master"
+  },
+  {
+    "kanji": "病院",
+    "kana_reading": "びょういん",
+    "english_meaning": "hospital",
+    "example_sentence_jp": "病院で診察を受けます。",
+    "example_sentence_en": "I receive a medical examination at the hospital.",
+    "audio_url": null,
+    "srs_level": "Enlightened"
+  },
+  {
+    "kanji": "薬局",
+    "kana_reading": "やっきょく",
+    "english_meaning": "pharmacy",
+    "example_sentence_jp": "薬局で薬を買います。",
+    "example_sentence_en": "I buy medicine at the pharmacy.",
+    "audio_url": null,
+    "srs_level": "Burned"
+  },
+  {
+    "kanji": "駅",
+    "kana_reading": "えき",
+    "english_meaning": "station",
+    "example_sentence_jp": "駅で電車を待ちます。",
+    "example_sentence_en": "I wait for the train at the station.",
+    "audio_url": null,
+    "srs_level": "Apprentice I"
+  },
+  {
+    "kanji": "空港",
+    "kana_reading": "くうこう",
+    "english_meaning": "airport",
+    "example_sentence_jp": "空港で飛行機を待ちます。",
+    "example_sentence_en": "I wait for the airplane at the airport.",
+    "audio_url": null,
+    "srs_level": "Apprentice II"
+  },
+  {
+    "kanji": "ホテル",
+    "kana_reading": "ホテル",
+    "english_meaning": "hotel",
+    "example_sentence_jp": "そのホテルは高いです。",
+    "example_sentence_en": "That hotel is expensive.",
+    "audio_url": null,
+    "srs_level": "Apprentice III"
+  },
+  {
+    "kanji": "レストラン",
+    "kana_reading": "レストラン",
+    "english_meaning": "restaurant",
+    "example_sentence_jp": "そのレストランはおいしいです。",
+    "example_sentence_en": "That restaurant is delicious.",
+    "audio_url": null,
+    "srs_level": "Apprentice IV"
+  },
+  {
+    "kanji": "喫茶店",
+    "kana_reading": "きっさてん",
+    "english_meaning": "coffee shop",
+    "example_sentence_jp": "喫茶店でコーヒーを飲みます。",
+    "example_sentence_en": "I drink coffee at the coffee shop.",
+    "audio_url": null,
+    "srs_level": "Guru I"
+  },
+  {
+    "kanji": "デパート",
+    "kana_reading": "デパート",
+    "english_meaning": "department store",
+    "example_sentence_jp": "デパートで買い物をします。",
+    "example_sentence_en": "I shop at the department store.",
+    "audio_url": null,
+    "srs_level": "Guru II"
+  },
+  {
+    "kanji": "スーパー",
+    "kana_reading": "スーパー",
+    "english_meaning": "supermarket",
+    "example_sentence_jp": "スーパーで野菜を買います。",
+    "example_sentence_en": "I buy vegetables at the supermarket.",
+    "audio_url": null,
+    "srs_level": "Master"
   }
 ]
