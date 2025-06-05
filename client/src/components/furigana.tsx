@@ -8,18 +8,88 @@ interface FuriganaProps {
   highlightVocab?: boolean;
 }
 
-// Furigana parser that groups text into words and applies readings
+// Advanced furigana parser that maps kanji to their specific readings
 function parseFurigana(japanese: string, reading?: string): Array<{ text: string; furigana?: string }> {
   if (!reading || japanese === reading) {
     return [{ text: japanese }];
   }
 
-  // For demonstration, show the full reading above the entire text
-  // This ensures furigana is visible while we work on more sophisticated parsing
-  return [{ 
-    text: japanese, 
-    furigana: reading 
-  }];
+  const segments: Array<{ text: string; furigana?: string }> = [];
+  const kanjiRegex = /[\u4e00-\u9faf]/g;
+  const hiraganaRegex = /[\u3040-\u309f]/g;
+  
+  // Split reading into parts (remove spaces and punctuation)
+  const cleanReading = reading.replace(/[、。\s]/g, '');
+  
+  let japaneseIndex = 0;
+  let readingIndex = 0;
+  
+  while (japaneseIndex < japanese.length) {
+    const char = japanese[japaneseIndex];
+    
+    if (kanjiRegex.test(char)) {
+      // This is a kanji character - find its reading
+      let kanjiReading = '';
+      
+      // Look ahead to find the end of this kanji sequence
+      let kanjiEnd = japaneseIndex + 1;
+      while (kanjiEnd < japanese.length && kanjiRegex.test(japanese[kanjiEnd])) {
+        kanjiEnd++;
+      }
+      
+      // Get the kanji sequence
+      const kanjiSequence = japanese.substring(japaneseIndex, kanjiEnd);
+      
+      // Find the next hiragana in the original text (if any)
+      let nextHiragana = '';
+      if (kanjiEnd < japanese.length && hiraganaRegex.test(japanese[kanjiEnd])) {
+        let hiraganaEnd = kanjiEnd;
+        while (hiraganaEnd < japanese.length && hiraganaRegex.test(japanese[hiraganaEnd])) {
+          hiraganaEnd++;
+        }
+        nextHiragana = japanese.substring(kanjiEnd, hiraganaEnd);
+      }
+      
+      // Extract reading for this kanji sequence
+      if (nextHiragana) {
+        // Find where this hiragana appears in the reading
+        const hiraganaIndex = cleanReading.indexOf(nextHiragana, readingIndex);
+        if (hiraganaIndex > readingIndex) {
+          kanjiReading = cleanReading.substring(readingIndex, hiraganaIndex);
+          readingIndex = hiraganaIndex;
+        }
+      } else {
+        // No following hiragana, take remaining reading
+        kanjiReading = cleanReading.substring(readingIndex);
+        readingIndex = cleanReading.length;
+      }
+      
+      segments.push({ 
+        text: kanjiSequence, 
+        furigana: kanjiReading || undefined 
+      });
+      
+      japaneseIndex = kanjiEnd;
+    } else {
+      // This is hiragana/katakana or other character
+      let nonKanjiEnd = japaneseIndex + 1;
+      while (nonKanjiEnd < japanese.length && !kanjiRegex.test(japanese[nonKanjiEnd])) {
+        nonKanjiEnd++;
+      }
+      
+      const nonKanjiSequence = japanese.substring(japaneseIndex, nonKanjiEnd);
+      segments.push({ text: nonKanjiSequence });
+      
+      // Advance reading index past this hiragana
+      if (hiraganaRegex.test(nonKanjiSequence[0])) {
+        readingIndex = cleanReading.indexOf(nonKanjiSequence, readingIndex) + nonKanjiSequence.length;
+      }
+      
+      japaneseIndex = nonKanjiEnd;
+    }
+  }
+  
+  return segments.length > 0 ? segments : [{ text: japanese, furigana: reading }];
 }
 
 function highlightVocabulary(text: string, vocabulary?: string[]): string {
