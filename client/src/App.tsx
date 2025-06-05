@@ -103,7 +103,7 @@ function Router() {
           }} />
           
           {/* Main Content */}
-          <div className="flex-1 md:ml-64 pt-20 md:pt-0 min-h-screen">
+          <div className="flex-1 md:ml-64 pt-24 md:pt-4 min-h-screen">
             <Switch>
               <Route path="/" component={Dashboard} />
               <Route path="/study" component={StudyPage} />
