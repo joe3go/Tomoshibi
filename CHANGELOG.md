@@ -2,6 +2,24 @@
 
 All notable changes to Tomoshibi will be documented in this file.
 
+## [1.0.3] - 2025-06-05
+
+### Added
+- Complete JLPT content organization system (N5-N1)
+- Dynamic content page with tabs for vocabulary, kanji, and grammar
+- Authentic N5 vocabulary dataset with 10 essential terms
+- Authentic N5 kanji dataset with stroke counts and readings
+- Authentic N5 grammar points with detailed explanations
+- Search and filtering functionality by tags and content
+- SRS-ready JSON structure for future progress tracking
+- API endpoints for serving JLPT content files
+- Navigation integration with Japanese kanji icon (級)
+
+### Enhanced
+- Furigana display system with working test examples
+- Audio pronunciation system for vocabulary terms
+- Content organization by JLPT levels with proper file structure
+
 ## [1.0.2] - 2025-06-05
 
 ### Added

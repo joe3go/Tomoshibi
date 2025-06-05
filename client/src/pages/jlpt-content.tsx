@@ -84,9 +84,10 @@ export default function JLPTContentPage() {
   // Filter data based on search and tags
   const filteredData = getCurrentData().filter(item => {
     const searchMatch = searchTerm === '' || 
-      (item.term && item.term.includes(searchTerm)) ||
-      (item.kanji && item.kanji.includes(searchTerm)) ||
-      (item.reading && item.reading.includes(searchTerm)) ||
+      ('term' in item && item.term && item.term.includes(searchTerm)) ||
+      ('kanji' in item && item.kanji && item.kanji.includes(searchTerm)) ||
+      ('reading' in item && item.reading && item.reading.includes(searchTerm)) ||
+      ('grammar_point' in item && item.grammar_point && item.grammar_point.includes(searchTerm)) ||
       item.meaning.some(m => m.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const tagMatch = selectedTags.length === 0 || 

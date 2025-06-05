@@ -12,6 +12,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import Dashboard from "@/pages/dashboard";
 import StudyPage from "@/pages/study";
 import StudyModePage from "@/pages/study-mode";
+import JLPTContentPage from "@/pages/jlpt-content";
 import Social from "@/pages/social";
 import Achievements from "@/pages/achievements";
 import Settings from "@/pages/settings";
@@ -252,6 +253,7 @@ function Navigation({ user }: { user: any }) {
     { href: "/", label: "Dashboard", icon: "◦" },
     { href: "/study", label: "Study", icon: "書" },
     { href: "/study-mode", label: "Study Mode", icon: "習" },
+    { href: "/jlpt-content", label: "JLPT Content", icon: "級" },
     { href: "/social", label: "Social", icon: "友" },
     { href: "/achievements", label: "Achievements", icon: "賞" },
     { href: "/settings", label: "Settings", icon: "設" },
@@ -358,6 +360,7 @@ function AppRouter() {
             <Route path="/" component={Dashboard} />
             <Route path="/study" component={StudyPage} />
             <Route path="/study-mode" component={StudyModePage} />
+            <Route path="/jlpt-content" component={JLPTContentPage} />
             <Route path="/social" component={Social} />
             <Route path="/achievements" component={Achievements} />
             <Route path="/settings" component={Settings} />

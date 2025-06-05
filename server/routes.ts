@@ -760,6 +760,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // JLPT Content API Routes
+  app.get('/api/jlpt/:level/:type', async (req, res) => {
+    try {
+      const { level, type } = req.params;
+      
+      // Validate parameters
+      const validLevels = ['n5', 'n4', 'n3', 'n2', 'n1'];
+      const validTypes = ['vocab', 'kanji', 'grammar'];
+      
+      if (!validLevels.includes(level) || !validTypes.includes(type)) {
+        return res.status(400).json({ error: 'Invalid level or type' });
+      }
+      
+      const fs = require('fs').promises;
+      const path = require('path');
+      
+      const filePath = path.join(process.cwd(), 'jlpt', level, `${type}.json`);
+      
+      try {
+        const data = await fs.readFile(filePath, 'utf8');
+        const jsonData = JSON.parse(data);
+        res.json(jsonData);
+      } catch (fileError) {
+        console.warn(`JLPT file not found: ${filePath}`);
+        res.json([]); // Return empty array if file doesn't exist
+      }
+    } catch (error) {
+      console.error('Error loading JLPT content:', error);
+      res.status(500).json({ error: 'Failed to load JLPT content' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
