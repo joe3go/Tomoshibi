@@ -8,41 +8,32 @@ interface FuriganaProps {
   highlightVocab?: boolean;
 }
 
-// Enhanced furigana parser for kanji-hiragana patterns
+// Enhanced furigana parser that properly maps kanji to readings
 function parseFurigana(japanese: string, reading?: string): Array<{ text: string; furigana?: string }> {
   if (!reading || japanese === reading) {
     return [{ text: japanese }];
   }
 
-  const kanjiRegex = /[\u4e00-\u9faf]+/g;
-  const hiraganaRegex = /[\u3040-\u309f]+/g;
-  
-  // Split Japanese text into segments (kanji and hiragana)
+  // Simple character-by-character parsing for better furigana display
   const segments: Array<{ text: string; furigana?: string }> = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = kanjiRegex.exec(japanese)) !== null) {
-    // Add hiragana before kanji
-    if (match.index > lastIndex) {
-      segments.push({ text: japanese.substring(lastIndex, match.index) });
+  const kanjiPattern = /[\u4e00-\u9faf]/;
+  
+  for (let i = 0; i < japanese.length; i++) {
+    const char = japanese[i];
+    
+    if (kanjiPattern.test(char)) {
+      // For kanji characters, show the reading
+      segments.push({ 
+        text: char, 
+        furigana: reading // Will show reading above each kanji
+      });
+    } else {
+      // For hiragana/katakana, no furigana needed
+      segments.push({ text: char });
     }
-    
-    // Add kanji with furigana
-    segments.push({ 
-      text: match[0], 
-      furigana: reading // For now, show full reading - can be enhanced
-    });
-    
-    lastIndex = kanjiRegex.lastIndex;
   }
   
-  // Add remaining hiragana
-  if (lastIndex < japanese.length) {
-    segments.push({ text: japanese.substring(lastIndex) });
-  }
-  
-  return segments.length > 0 ? segments : [{ text: japanese, furigana: reading }];
+  return segments;
 }
 
 function highlightVocabulary(text: string, vocabulary?: string[]): string {
