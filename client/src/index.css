@@ -350,12 +350,17 @@ input, select, textarea {
 .text-6xl { font-size: 4rem; line-height: 1.2; }
 
 /* Stable Furigana Positioning - No Layout Shift */
+ruby {
+  position: relative !important;
+  display: inline-block !important;
+}
+
 rt {
-  color: #2563eb !important; /* Blue color for visibility */
+  color: #ef4444 !important; /* Red color for visibility */
   font-size: 0.5em !important; /* 50% of main text size */
   font-family: 'Noto Sans JP', 'Noto Sans', sans-serif !important;
   position: absolute !important;
-  top: -1.2em !important; /* Position above kanji */
+  top: -1.5em !important; /* Position above kanji */
   left: 50% !important;
   transform: translateX(-50%) !important; /* Center above kanji */
   white-space: nowrap !important;
@@ -365,6 +370,7 @@ rt {
   margin: 0 !important;
   padding: 0 !important;
   z-index: 10 !important;
+  pointer-events: none !important;
 }
 
 .dark rt {

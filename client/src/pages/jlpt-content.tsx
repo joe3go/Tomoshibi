@@ -84,16 +84,13 @@ export default function JLPTContentPage() {
   // Filter data based on search and tags
   const filteredData = getCurrentData().filter(item => {
     const searchMatch = searchTerm === '' || 
-      ('term' in item && item.term && item.term.includes(searchTerm)) ||
       ('kanji' in item && item.kanji && item.kanji.includes(searchTerm)) ||
-      ('reading' in item && item.reading && item.reading.includes(searchTerm)) ||
+      ('kana_reading' in item && item.kana_reading && item.kana_reading.includes(searchTerm)) ||
+      ('english_meaning' in item && item.english_meaning && item.english_meaning.toLowerCase().includes(searchTerm.toLowerCase())) ||
       ('grammar_point' in item && item.grammar_point && item.grammar_point.includes(searchTerm)) ||
-      item.meaning.some(m => m.toLowerCase().includes(searchTerm.toLowerCase()));
+      ('meaning_en' in item && item.meaning_en && item.meaning_en.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const tagMatch = selectedTags.length === 0 || 
-      selectedTags.some(tag => item.tags.includes(tag));
-    
-    return searchMatch && tagMatch;
+    return searchMatch;
   });
 
   // Get all unique tags from current data
@@ -110,44 +107,36 @@ export default function JLPTContentPage() {
     }
   };
 
-  const renderVocabCard = (item: JLPTItem) => (
-    <Card key={item.id} className="mb-4">
+  const renderVocabCard = (item: any) => (
+    <Card key={item.kanji} className="mb-4">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Furigana 
-              japanese={item.term || ''} 
-              reading={item.reading}
+              japanese={item.kanji} 
+              reading={item.kana_reading}
               showReading={true}
             />
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => playAudio(item.term || item.reading)}
+              onClick={() => playAudio(item.kanji)}
             >
               <Volume2 className="h-4 w-4" />
             </Button>
           </div>
-          <Badge variant="secondary">{item.jlpt_level}</Badge>
+          <Badge variant="secondary">{item.srs_level}</Badge>
         </div>
         <div className="text-lg font-medium text-blue-700 dark:text-blue-300">
-          {item.meaning.join(', ')}
+          {item.english_meaning}
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {item.examples.map((example, idx) => (
-            <div key={idx} className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Example:</div>
-              <div className="font-medium">{example}</div>
-            </div>
-          ))}
-          <div className="flex flex-wrap gap-1 mt-2">
-            {item.tags.map(tag => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
+          <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
+            <div className="text-sm text-gray-600 dark:text-gray-400">Example:</div>
+            <div className="font-medium japanese-text">{item.example_sentence_jp}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{item.example_sentence_en}</div>
           </div>
         </div>
       </CardContent>

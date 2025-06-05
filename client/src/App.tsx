@@ -12,6 +12,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import Dashboard from "@/pages/dashboard";
 import StudyPage from "@/pages/study";
 import StudyDedicatedPage from "@/pages/study-dedicated";
+import StudyFullscreenPage from "@/pages/study-fullscreen";
 import StudyModePage from "@/pages/study-mode";
 import JLPTContentPage from "@/pages/jlpt-content";
 import JLPTProgressPage from "@/pages/jlpt-progress";
@@ -365,6 +366,7 @@ function AppRouter() {
             <Route path="/" component={Dashboard} />
             <Route path="/study" component={StudyPage} />
             <Route path="/study-dedicated" component={StudyDedicatedPage} />
+            <Route path="/study-fullscreen" component={StudyFullscreenPage} />
             <Route path="/study-mode" component={StudyModePage} />
             <Route path="/content-browser" component={ContentBrowserPage} />
             <Route path="/jlpt-progress" component={JLPTProgressPage} />
