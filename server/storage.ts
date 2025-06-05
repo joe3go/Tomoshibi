@@ -162,7 +162,7 @@ export class MemStorage implements IStorage {
     console.log(`Generated ${authenticSentences.length} clean sentence cards without bracketed furigana`);
   }
 
-  private async seedData() {
+  private seedData() {
     // Create demo user with Google ID support
     const demoUser: User = {
       id: 1,

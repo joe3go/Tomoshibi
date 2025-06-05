@@ -1,0 +1,88 @@
+Got it! Here's a React component that displays furigana correctly above each kanji and lets users toggle furigana visibility by clicking the word — just like Bunpro.
+
+It uses proper <ruby> and <rt> tags and is easy to integrate into your site:
+
+jsx
+Copy
+Edit
+import React, { useState } from "react";
+
+/**
+ * FuriganaToggle Component
+ * 
+ * Props:
+ * - word: string — the base Japanese word (kanji + kana)
+ * - furigana: array of strings — the furigana readings matching each kanji character, 
+ *            or an empty string for kana without furigana.
+ * 
+ * Example usage:
+ * <FuriganaToggle 
+ *    word="勉強する" 
+ *    furigana={["べん", "きょう", ""]} 
+ * />
+ */
+export default function FuriganaToggle({ word, furigana }) {
+  const [showFurigana, setShowFurigana] = useState(true);
+
+  // Sanity check: ensure word and furigana length match or furigana shorter
+  if (!word || !furigana || furigana.length > word.length) {
+    return <span>{word}</span>;
+  }
+
+  return (
+    <ruby
+      onClick={() => setShowFurigana(!showFurigana)}
+      style={{ cursor: "pointer", userSelect: "none" }}
+      aria-label={showFurigana ? "Hide furigana" : "Show furigana"}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          setShowFurigana(!showFurigana);
+        }
+      }}
+    >
+      {Array.from(word).map((char, i) => (
+        <React.Fragment key={i}>
+          {char}
+          {showFurigana && furigana[i] ? <rt>{furigana[i]}</rt> : null}
+        </React.Fragment>
+      ))}
+    </ruby>
+  );
+}
+How to use it:
+jsx
+Copy
+Edit
+<FuriganaToggle
+  word="勉強する"
+  furigana={["べん", "きょう", ""]} // Empty string for kana with no furigana
+/>
+Explanation
+Each character in word is wrapped in <ruby> with corresponding <rt> furigana (if any)
+
+Clicking the whole word toggles furigana on/off
+
+Keyboard accessible (toggle with Enter/Space)
+
+cursor: pointer shows clickable style
+
+Bonus: How to generate the furigana array?
+If you have:
+
+term = "勉強する"
+
+reading = "べんきょうする"
+
+You can write a small function to segment reading by kanji and kana so the furigana array lines up per character, for example:
+
+js
+Copy
+Edit
+const word = "勉強する";
+const reading = "べんきょうする";
+
+// Manually created furigana array for demo:
+const furigana = ["べん", "きょう", ""];
+For full automation, consider using libraries like kuroshiro.js to parse and segment reading.
