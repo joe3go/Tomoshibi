@@ -103,7 +103,7 @@ function Router() {
           }} />
           
           {/* Main Content */}
-          <div className="flex-1 md:ml-64 pt-20 md:pt-4 min-h-screen">
+          <div className="main-content with-sidebar">
             <Switch>
               <Route path="/" component={Dashboard} />
               <Route path="/study" component={StudyPage} />
@@ -236,11 +236,11 @@ function SimpleLanguageToggle() {
 
 function AppHeader({ user }: { user?: any }) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background border-b border-border shadow-sm">
+    <header className="app-header">
       <div className="flex h-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <ThemeToggle />
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-white text-sm font-bold">日</span>
           </div>
           <h1 className="text-lg font-semibold text-foreground">

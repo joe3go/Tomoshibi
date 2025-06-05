@@ -3,35 +3,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CONSOLIDATED TOMOSHIBI COLOR SYSTEM - SINGLE SOURCE OF TRUTH */
 :root {
-  /* Light Theme Colors */
+  /* Tomoshibi Orange Brand Colors */
+  --tomoshibi-primary: #E55B3C;
+  --tomoshibi-primary-hover: #CC4A2C;
+  --tomoshibi-primary-light: #F26D4F;
+  
+  /* Light Theme */
   --background: 0 0% 100%;
   --foreground: 0 0% 5%;
   --card: 0 0% 100%;
   --card-foreground: 0 0% 5%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 5%;
-  
-  /* Lantern Orange/Red Primary */
   --primary: 15 85% 55%;
   --primary-foreground: 0 0% 100%;
-  
   --secondary: 15 25% 95%;
   --secondary-foreground: 0 0% 5%;
-  
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 45%;
-  
   --accent: 15 15% 94%;
   --accent-foreground: 0 0% 5%;
-  
   --destructive: 0 65% 55%;
   --destructive-foreground: 0 0% 100%;
-  
   --border: 0 0% 90%;
   --input: 0 0% 96%;
   --ring: 15 85% 55%;
-  
   --radius: 0.75rem;
 }
 
@@ -42,26 +40,93 @@
   --card-foreground: 0 0% 98%;
   --popover: 240 10% 6%;
   --popover-foreground: 0 0% 98%;
-  
-  /* Lantern Orange/Red Primary for Dark */
   --primary: 15 85% 55%;
-  --primary-foreground: 240 10% 4%;
-  
+  --primary-foreground: 0 0% 100%;
   --secondary: 240 10% 12%;
   --secondary-foreground: 0 0% 98%;
-  
   --muted: 240 10% 15%;
   --muted-foreground: 240 5% 65%;
-  
   --accent: 240 10% 15%;
   --accent-foreground: 0 0% 98%;
-  
   --destructive: 0 65% 55%;
   --destructive-foreground: 0 0% 98%;
-  
   --border: 240 10% 20%;
   --input: 240 10% 15%;
   --ring: 15 85% 55%;
+}
+
+/* FORCE OVERRIDE ALL COLORS TO TOMOSHIBI ORANGE */
+.bg-primary,
+.text-primary,
+.border-primary,
+button[data-state="active"],
+[aria-selected="true"],
+.active,
+.selected {
+  background-color: var(--tomoshibi-primary) !important;
+  color: var(--tomoshibi-primary) !important;
+  border-color: var(--tomoshibi-primary) !important;
+}
+
+.bg-primary {
+  color: white !important;
+}
+
+.text-primary {
+  background-color: transparent !important;
+}
+
+.hover\:bg-primary:hover,
+button:hover,
+[role="button"]:hover {
+  background-color: var(--tomoshibi-primary-hover) !important;
+}
+
+.hover\:text-primary:hover {
+  color: var(--tomoshibi-primary) !important;
+}
+
+/* Override focus and ring colors */
+*:focus,
+*:focus-visible,
+button:focus,
+[role="button"]:focus {
+  outline-color: var(--tomoshibi-primary) !important;
+  box-shadow: 0 0 0 2px var(--tomoshibi-primary) !important;
+}
+
+/* FIXED HEADER LAYOUT */
+.app-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 50 !important;
+  height: 64px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.dark .app-header {
+  background: rgba(10, 10, 10, 0.95) !important;
+}
+
+/* MAIN CONTENT SPACING */
+.main-content {
+  padding-top: 80px !important;
+  min-height: 100vh;
+}
+
+.main-content.with-sidebar {
+  padding-top: 80px !important;
+}
+
+@media (min-width: 768px) {
+  .main-content.with-sidebar {
+    margin-left: 256px !important;
+    padding-top: 20px !important;
+  }
 }
 
 @layer base {
@@ -77,15 +142,6 @@
   }
 }
 
-/* Component styles */
-.zen-card {
-  @apply bg-card text-card-foreground rounded-lg border border-border p-4;
-}
-
-.app-header {
-  @apply bg-background/90 backdrop-blur-lg border-b border-border;
-}
-
 /* Japanese typography */
 .japanese-text {
   font-family: 'Noto Sans JP', sans-serif;
@@ -99,15 +155,6 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Progress bars */
-.progress-bar {
-  @apply bg-muted rounded-full overflow-hidden;
-}
-
-.progress-fill {
-  @apply bg-primary h-full transition-all duration-300 ease-out;
-}
-
 /* Animation utilities */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -116,66 +163,4 @@
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
-}
-
-/* FORCE OVERRIDE ALL PURPLE COLORS WITH LANTERN ORANGE */
-* {
-  --tw-ring-color: #E55B3C !important;
-}
-
-/* Override ALL possible primary color variants */
-.bg-primary, .text-primary, .border-primary, .ring-primary,
-[data-state="active"], [data-selected="true"], [aria-selected="true"],
-button[data-state="active"], .active, .selected {
-  color: #E55B3C !important;
-  background-color: #E55B3C !important;
-  border-color: #E55B3C !important;
-  --tw-ring-color: #E55B3C !important;
-}
-
-/* Override hover states */
-.hover\:bg-primary:hover, .hover\:text-primary:hover,
-button:hover, [role="button"]:hover {
-  background-color: #CC4A2C !important;
-  color: #FFFFFF !important;
-}
-
-/* Override ALL purple/violet variants */
-.bg-purple-50, .bg-purple-100, .bg-purple-200, .bg-purple-300, .bg-purple-400, .bg-purple-500, .bg-purple-600, .bg-purple-700, .bg-purple-800, .bg-purple-900,
-.bg-violet-50, .bg-violet-100, .bg-violet-200, .bg-violet-300, .bg-violet-400, .bg-violet-500, .bg-violet-600, .bg-violet-700, .bg-violet-800, .bg-violet-900,
-.text-purple-50, .text-purple-100, .text-purple-200, .text-purple-300, .text-purple-400, .text-purple-500, .text-purple-600, .text-purple-700, .text-purple-800, .text-purple-900,
-.text-violet-50, .text-violet-100, .text-violet-200, .text-violet-300, .text-violet-400, .text-violet-500, .text-violet-600, .text-violet-700, .text-violet-800, .text-violet-900 {
-  background-color: #E55B3C !important;
-  color: #E55B3C !important;
-}
-
-/* Override focus and ring colors */
-.focus\:ring-primary:focus, .focus-visible\:ring-primary:focus-visible,
-*:focus, *:focus-visible {
-  --tw-ring-color: #E55B3C !important;
-  box-shadow: 0 0 0 2px #E55B3C !important;
-}
-
-/* Override any CSS custom properties that might contain purple */
-:root {
-  --primary: 15 85% 55% !important;
-  --primary-foreground: 0 0% 100% !important;
-  --ring: 15 85% 55% !important;
-}
-
-.dark {
-  --primary: 15 85% 55% !important;
-  --primary-foreground: 240 10% 4% !important;
-  --ring: 15 85% 55% !important;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .mobile-nav {
-    @apply bg-background border-border;
-  }
-  
-  .zen-card {
-    @apply bg-card text-card-foreground border-border;
-  }
 }
