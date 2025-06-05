@@ -24,7 +24,7 @@ function CharacterWithFurigana({
   const isKanji = /[\u4e00-\u9faf]/.test(char);
 
   if (!isKanji || !reading) {
-    return <span className="japanese-text" style={{ fontSize: "24px" }}>{char}</span>;
+    return <span className="japanese-text" style={{ fontSize: "28px" }}>{char}</span>;
   }
 
   return (
@@ -32,8 +32,9 @@ function CharacterWithFurigana({
       onClick={() => setShowReading(!showReading)}
       className="japanese-text hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-1 transition-colors cursor-pointer inline-block"
       style={{ 
-        fontSize: "24px",
-        margin: "0 1px"
+        fontSize: "28px",
+        margin: "0 2px",
+        lineHeight: "2.5"
       }}
       aria-label={showReading ? `Hide reading for ${char}` : `Show reading for ${char}`}
       role="button"
@@ -46,7 +47,7 @@ function CharacterWithFurigana({
     >
       {char}
       {showReading && (
-        <rt className="japanese-text">
+        <rt className="japanese-text" style={{ fontSize: "16px" }}>
           {reading}
         </rt>
       )}

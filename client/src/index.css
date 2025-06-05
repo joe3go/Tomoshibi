@@ -219,41 +219,32 @@
 /* Ruby/Furigana support for proper Japanese text display */
 ruby {
   ruby-align: center !important;
-  line-height: 2.5 !important;
+  line-height: 2.2 !important;
   margin: 0 0.1em !important;
   display: inline-block !important;
   vertical-align: baseline !important;
+  position: relative !important;
 }
 
 rt {
   ruby-position: over !important;
-  font-size: 0.5em !important;
-  line-height: 1.2 !important;
-  color: #6b7280 !important;
+  font-size: 0.65em !important;
+  line-height: 1 !important;
   font-weight: 400 !important;
   text-align: center !important;
   display: block !important;
   margin: 0 !important;
   padding: 0 !important;
+  position: absolute !important;
+  top: -0.8em !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  white-space: nowrap !important;
 }
 
 /* Force ruby support across browsers */
 ruby, rt, rp {
   unicode-bidi: isolate;
-}
-
-/* Fallback for browsers without native ruby support */
-ruby {
-  position: relative;
-}
-
-rt {
-  position: absolute !important;
-  top: -1.2em !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  white-space: nowrap !important;
-  font-size: 0.5em !important;
 }
 
 /* Vocabulary highlighting */
@@ -269,6 +260,7 @@ rt {
 /* Typography System - Quicksand for Latin, Kosugi for Japanese */
 * {
   font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px; /* Base size increase for better readability */
 }
 
 /* Japanese Text Typography */
@@ -280,6 +272,13 @@ rt {
 }
 
 /* Headings with Quicksand - Professional and warm */
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1.125rem; }
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Quicksand', sans-serif;
   font-weight: 600;
@@ -290,17 +289,26 @@ h1, h2, h3, h4, h5, h6 {
 button, .btn, input, select, textarea {
   font-family: 'Quicksand', sans-serif;
   font-weight: 500;
+  font-size: 1rem; /* Larger buttons for better readability */
 }
 
-/* Enhanced Furigana Styling for better dark mode visibility */
+/* Card text sizes */
+.text-sm { font-size: 0.95rem; }
+.text-base { font-size: 1.1rem; }
+.text-lg { font-size: 1.25rem; }
+.text-xl { font-size: 1.5rem; }
+.text-2xl { font-size: 2rem; }
+
+/* Enhanced Furigana Styling for better visibility */
 .dark rt {
-  color: hsl(44 40% 75%) !important; /* Much better visibility in dark mode */
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  color: hsl(44 60% 85%) !important; /* High contrast in dark mode */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Light mode furigana styling */
 :root rt {
-  color: hsl(0 0% 45%) !important; /* Better contrast in light mode */
+  color: hsl(0 0% 25%) !important; /* Strong contrast in light mode */
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 /* Japanese Text Specific Styling */
