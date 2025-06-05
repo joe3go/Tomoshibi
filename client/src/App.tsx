@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2, Menu, X, Sun, Moon } from "lucide-react";
 import { getQueryFn, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, createContext, useContext } from "react";
-import logoImage from "@assets/generation-6a02e368-0179-44e8-b30c-e27dd8718770_1749086561653.png";
+
 
 // Pages
 import Dashboard from "@/pages/dashboard";
@@ -159,16 +159,11 @@ function AppHeader({ user }: { user?: any }) {
   return (
     <header className="app-header">
       <div className="flex h-full items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <img 
-            src={logoImage} 
-            alt="Tomoshibi" 
-            className="h-10 w-auto object-contain"
-            style={{
-              filter: 'drop-shadow(0 0 0 transparent)',
-              mixBlendMode: 'multiply'
-            }}
-          />
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-white text-sm font-bold">日</span>
+          </div>
+          <h1 className="text-lg font-semibold text-foreground">Tomoshibi</h1>
         </div>
         
         <div className="flex items-center gap-3">
