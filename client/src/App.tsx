@@ -345,108 +345,108 @@ function Navigation({ user }: { user: any }) {
 // Mobile Components
 function MobileHeader({ user }: { user: any }) {
   return (
-    <header className="bg-slate-800 p-4 flex items-center justify-between">
-      <Menu className="h-6 w-6 text-white" />
-      <h1 className="text-lg font-semibold text-white">Dashboard</h1>
-      <Bell className="h-6 w-6 text-white" />
+    <header className="bg-slate-800 px-3 py-2 flex items-center justify-between">
+      <Menu className="h-5 w-5 text-white" />
+      <h1 className="text-base font-semibold text-white">Dashboard</h1>
+      <Bell className="h-5 w-5 text-white" />
     </header>
   );
 }
 
 function MobileDashboard() {
   return (
-    <div className="space-y-4 mt-4">
+    <div className="space-y-3 mt-3">
       {/* Learn Card */}
-      <div className="bg-pink-300 rounded-lg p-4 flex items-center justify-between">
+      <div className="bg-pink-300 rounded-lg p-3 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-black">Learn</h2>
-          <div className="w-32 h-2 bg-gray-300 rounded-full mt-2">
-            <div className="w-0 h-2 bg-gray-500 rounded-full"></div>
+          <h2 className="text-base font-semibold text-black">Learn</h2>
+          <div className="w-24 h-1.5 bg-gray-300 rounded-full mt-1">
+            <div className="w-0 h-1.5 bg-gray-500 rounded-full"></div>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-sm text-black">0/10</div>
-          <Menu className="h-5 w-5 text-black mt-1" />
+          <div className="text-xs text-black">0/10</div>
+          <Menu className="h-4 w-4 text-black mt-1" />
         </div>
       </div>
 
       {/* Review Card */}
-      <div className="bg-red-400 rounded-lg p-4 flex items-center justify-between">
+      <div className="bg-red-400 rounded-lg p-3 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-black">Review</h2>
-          <p className="text-sm text-black">Grammar & Vocab</p>
+          <h2 className="text-base font-semibold text-black">Review</h2>
+          <p className="text-xs text-black">Grammar & Vocab</p>
         </div>
         <div className="text-right">
-          <div className="bg-black text-white px-3 py-1 rounded text-sm">53</div>
-          <Menu className="h-5 w-5 text-black mt-1" />
+          <div className="bg-black text-white px-2 py-0.5 rounded text-xs">53</div>
+          <Menu className="h-4 w-4 text-black mt-1" />
         </div>
       </div>
 
       {/* Progress Card */}
-      <div className="bg-slate-800 rounded-lg p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-pink-200 rounded-full flex items-center justify-center">
-              <span className="text-sm">📚</span>
+      <div className="bg-slate-800 rounded-lg p-3">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-pink-200 rounded-full flex items-center justify-center">
+              <span className="text-xs">📚</span>
             </div>
             <div>
-              <h3 className="text-white font-semibold">Latibulize</h3>
-              <p className="text-gray-400 text-sm">Lvl 38 (1560 XP until Lvl 39)</p>
+              <h3 className="text-white text-sm font-semibold">Tomoshibi</h3>
+              <p className="text-gray-400 text-xs">Lvl 38 (1560 XP until Lvl 39)</p>
             </div>
           </div>
-          <button className="text-blue-400 text-sm">Share</button>
+          <button className="text-blue-400 text-xs">Share</button>
         </div>
 
-        <div className="mb-4">
-          <div className="w-full h-2 bg-gray-600 rounded-full">
-            <div className="w-3/4 h-2 bg-red-500 rounded-full"></div>
+        <div className="mb-3">
+          <div className="w-full h-1.5 bg-gray-600 rounded-full">
+            <div className="w-3/4 h-1.5 bg-red-500 rounded-full"></div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h4 className="text-white text-sm flex items-center gap-2">
+        <div className="space-y-2">
+          <h4 className="text-white text-xs flex items-center gap-1">
             JLPT Progress (Grammar)
-            <BarChart3 className="h-4 w-4" />
+            <BarChart3 className="h-3 w-3" />
           </h4>
           
           {['N5', 'N4', 'N3', 'N2', 'N1'].map((level, index) => (
             <div key={level} className="flex items-center justify-between">
-              <span className="text-white text-sm font-mono">{level}</span>
-              <div className="flex-1 mx-3 h-2 bg-gray-600 rounded-full">
+              <span className="text-white text-xs font-mono w-6">{level}</span>
+              <div className="flex-1 mx-2 h-1.5 bg-gray-600 rounded-full">
                 <div 
-                  className={`h-2 rounded-full ${
+                  className={`h-1.5 rounded-full ${
                     level === 'N5' ? 'bg-pink-400 w-5/6' : 'bg-gray-600 w-0'
                   }`}
                 ></div>
               </div>
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-400 text-xs w-12 text-right">
                 {level === 'N5' ? '110/126' : level === 'N4' ? '0/177' : level === 'N3' ? '0/219' : level === 'N2' ? '0/213' : '0/180'}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-6">
-          <div className="bg-slate-700 rounded-lg p-3 text-center">
-            <h5 className="text-gray-400 text-sm">Study Streak</h5>
-            <p className="text-white text-2xl font-bold">14</p>
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          <div className="bg-slate-700 rounded-lg p-2 text-center">
+            <h5 className="text-gray-400 text-xs">Study Streak</h5>
+            <p className="text-white text-lg font-bold">14</p>
           </div>
-          <div className="bg-slate-700 rounded-lg p-3 text-center">
-            <h5 className="text-gray-400 text-sm">Days Studied</h5>
-            <p className="text-white text-2xl font-bold">138</p>
+          <div className="bg-slate-700 rounded-lg p-2 text-center">
+            <h5 className="text-gray-400 text-xs">Days Studied</h5>
+            <p className="text-white text-lg font-bold">138</p>
           </div>
         </div>
 
-        <div className="mt-4 text-center">
-          <h5 className="text-gray-400 text-sm">Last Session</h5>
-          <p className="text-white text-2xl font-bold">95%</p>
+        <div className="mt-3 text-center">
+          <h5 className="text-gray-400 text-xs">Last Session</h5>
+          <p className="text-white text-lg font-bold">95%</p>
         </div>
 
-        <div className="mt-6">
-          <h5 className="text-gray-400 text-sm mb-3">Recent Badges</h5>
-          <div className="flex justify-center gap-2">
+        <div className="mt-4">
+          <h5 className="text-gray-400 text-xs mb-2">Recent Badges</h5>
+          <div className="flex justify-center gap-1">
             {[1, 2, 3, 4].map((badge) => (
-              <div key={badge} className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+              <div key={badge} className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">🏆</span>
               </div>
             ))}
@@ -460,26 +460,26 @@ function MobileDashboard() {
 function MobileBottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700">
-      <div className="grid grid-cols-5 py-2">
-        <Link href="/" className="flex flex-col items-center p-2 text-blue-400">
-          <BarChart3 className="h-5 w-5" />
-          <span className="text-xs mt-1">Dashboard</span>
+      <div className="grid grid-cols-5 py-1">
+        <Link href="/" className="flex flex-col items-center p-1 text-blue-400">
+          <BarChart3 className="h-4 w-4" />
+          <span className="text-xs mt-0.5">Dashboard</span>
         </Link>
-        <Link href="/grammar" className="flex flex-col items-center p-2 text-gray-400">
-          <BookOpen className="h-5 w-5" />
-          <span className="text-xs mt-1">Grammar</span>
+        <Link href="/grammar" className="flex flex-col items-center p-1 text-gray-400">
+          <BookOpen className="h-4 w-4" />
+          <span className="text-xs mt-0.5">Grammar</span>
         </Link>
-        <Link href="/decks" className="flex flex-col items-center p-2 text-gray-400">
-          <div className="h-5 w-5 bg-gray-400 rounded"></div>
-          <span className="text-xs mt-1">Decks</span>
+        <Link href="/decks" className="flex flex-col items-center p-1 text-gray-400">
+          <div className="h-4 w-4 bg-gray-400 rounded"></div>
+          <span className="text-xs mt-0.5">Decks</span>
         </Link>
-        <Link href="/content" className="flex flex-col items-center p-2 text-gray-400">
-          <BookOpen className="h-5 w-5" />
-          <span className="text-xs mt-1">Content</span>
+        <Link href="/content" className="flex flex-col items-center p-1 text-gray-400">
+          <BookOpen className="h-4 w-4" />
+          <span className="text-xs mt-0.5">Content</span>
         </Link>
-        <Link href="/search" className="flex flex-col items-center p-2 text-gray-400">
-          <Search className="h-5 w-5" />
-          <span className="text-xs mt-1">Search</span>
+        <Link href="/search" className="flex flex-col items-center p-1 text-gray-400">
+          <Search className="h-4 w-4" />
+          <span className="text-xs mt-0.5">Search</span>
         </Link>
       </div>
     </nav>
@@ -513,7 +513,7 @@ function AppRouter() {
         <Route>
           <div className="min-h-screen bg-slate-900 text-white">
             <MobileHeader user={user} />
-            <main className="pb-16 px-4">
+            <main className="pb-12 px-3">
               <Switch>
                 <Route path="/" component={MobileDashboard} />
                 <Route path="/study" component={StudyPage} />

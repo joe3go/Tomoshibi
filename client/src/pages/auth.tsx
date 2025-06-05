@@ -204,6 +204,19 @@ export default function AuthPage() {
                     Continue with Google
                   </Button>
                   
+                  <Button
+                    onClick={async () => {
+                      setLoginForm({ username: "demo", password: "demo" });
+                      const event = { preventDefault: () => {} } as React.FormEvent;
+                      await handleLogin(event);
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    variant="default"
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Try Demo Account
+                  </Button>
+                  
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <Separator className="w-full" />
