@@ -64,11 +64,11 @@
 
 /* Layout */
 .app-header {
-  @apply fixed top-0 left-0 right-0 z-50 h-16 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm;
+  @apply fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm;
 }
 
 .main-content {
-  @apply pt-16 min-h-screen;
+  @apply pt-14 sm:pt-16 min-h-screen;
 }
 
 .main-content.with-sidebar {

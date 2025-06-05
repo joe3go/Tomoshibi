@@ -58,7 +58,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg hover:bg-accent transition-colors"
+      className="p-1.5 sm:p-2 rounded-lg hover:bg-accent transition-colors touch-feedback"
       aria-label="Toggle theme"
     >
       {theme === "light" ? (
@@ -135,20 +135,22 @@ function LanguageToggle() {
   const { languageMode, setLanguageMode } = useLanguageMode();
   
   const modes = [
-    { value: "en", label: "English" },
-    { value: "jp", label: "日本語" },
-    { value: "jp-furigana", label: "ふりがな" }
+    { value: "en", label: "EN", fullLabel: "English" },
+    { value: "jp", label: "JP", fullLabel: "日本語" },
+    { value: "jp-furigana", label: "FU", fullLabel: "ふりがな" }
   ] as const;
   
   return (
     <select 
       value={languageMode} 
       onChange={(e) => setLanguageMode(e.target.value as LanguageMode)}
-      className="px-3 py-1 rounded border bg-background text-foreground text-sm"
+      className="px-2 py-1 rounded border bg-background text-foreground text-xs sm:text-sm min-w-0 touch-feedback"
+      style={{ fontSize: '16px' }} // Prevents zoom on iOS
     >
       {modes.map((mode) => (
         <option key={mode.value} value={mode.value}>
-          {mode.label}
+          <span className="sm:hidden">{mode.label}</span>
+          <span className="hidden sm:inline">{mode.fullLabel}</span>
         </option>
       ))}
     </select>
@@ -157,22 +159,22 @@ function LanguageToggle() {
 
 function AppHeader({ user }: { user?: any }) {
   return (
-    <header className="app-header">
-      <div className="flex h-full items-center justify-between px-4">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20">
-            <div className="lantern-icon text-primary scale-50 sm:scale-75"></div>
+    <header className="app-header safe-area-top safe-area-inset">
+      <div className="flex h-full items-center justify-between px-3 sm:px-4">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-border/20 flex-shrink-0">
+            <div className="lantern-icon text-primary scale-[0.4] sm:scale-75"></div>
           </div>
-          <h1 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">Tomoshibi</h1>
+          <h1 className="text-base sm:text-xl font-semibold text-foreground tracking-tight truncate">Tomoshibi</h1>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
           <LanguageToggle />
           <ThemeToggle />
           {user ? (
             <UserMenu user={user} />
           ) : (
-            <a href="/auth" className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+            <a href="/auth" className="px-2 py-1.5 sm:px-4 sm:py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs sm:text-base touch-feedback">
               Sign In
             </a>
           )}
