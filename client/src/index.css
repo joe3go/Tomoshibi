@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* FORCE ORANGE COLOR SCHEME - CACHE BUSTER v2 */
+html, body, #root {
+  --primary-orange: #E55B3C !important;
+  --primary-orange-light: #FEF7ED !important;
+}
+
 @layer base {
   :root {
     /* Tomoshibi Color System - Lantern Orange/Red Primary */
@@ -117,17 +123,37 @@
   @apply md:pl-64;
 }
 
-/* Remove any purple colors */
+/* Aggressive purple color removal and orange enforcement */
 .text-purple-600,
 .text-purple-500,
 .text-purple-700,
+.text-purple-400,
+.text-purple-800,
 .bg-purple-100,
 .bg-purple-200,
 .bg-purple-500,
 .bg-purple-600,
+.bg-purple-50,
+.bg-purple-300,
 .border-purple-200,
-.border-purple-300 {
-  @apply text-primary bg-primary/10 border-primary/20 !important;
+.border-purple-300,
+.border-purple-500,
+[style*="purple"],
+[class*="purple"] {
+  color: #E55B3C !important;
+  background-color: #FEF7ED !important;
+  border-color: #E55B3C !important;
+}
+
+/* Force all primary colors to orange */
+* {
+  --tw-text-opacity: 1;
+}
+
+*[class*="text-primary"],
+*[class*="bg-primary"],
+*[class*="border-primary"] {
+  --primary: #E55B3C !important;
 }
 
 /* Ensure primary color consistency */
