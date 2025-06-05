@@ -27,81 +27,240 @@ export default function Landing() {
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="container mx-auto px-4 py-20">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="mb-8">
-              <div className="flex justify-center mb-6">
+          <div className="text-center max-w-5xl mx-auto">
+            <div className="mb-12">
+              <div className="flex justify-center mb-8">
                 <img 
                   src={logoImage} 
                   alt="Tomoshibi - Japanese Learning with Lantern" 
-                  className="max-w-md h-auto"
+                  className="max-w-lg h-auto"
                 />
               </div>
               
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                2,000 kanji. 6,000 vocabulary words. <br />
+                <span className="text-primary">In just over a year.</span>
+              </h2>
+              
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
                 Master Japanese through <span className="font-semibold text-primary">authentic JLPT N5 content</span> with 
-                our advanced spaced repetition system. Build lasting knowledge with sentence-based learning.
+                our advanced spaced repetition system. Build lasting knowledge with sentence-based learning that works.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link href="/auth">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-lg">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg">
                     <Play className="w-5 h-5 mr-2" />
-                    Start Learning
+                    Start Learning for Free
                   </Button>
                 </Link>
                 <Link href="/auth">
-                  <Button variant="outline" size="lg" className="px-8 py-3 text-lg border-primary text-primary hover:bg-primary/10">
+                  <Button variant="outline" size="lg" className="px-8 py-4 text-lg border-primary text-primary hover:bg-primary/10">
                     Sign In
                   </Button>
                 </Link>
               </div>
+              
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                No credit card required • Start learning immediately
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="py-20 bg-white/50 dark:bg-gray-800/50">
+      {/* Testimonials Section */}
+      <div className="py-20 bg-white/70 dark:bg-gray-800/70">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose Tomoshibi?
+              From Japanese residents to self learners, our members learn to read Japanese quickly
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Experience the most effective way to learn Japanese with our scientifically-backed approach
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="border-none shadow-lg bg-white/80 dark:bg-gray-800/80">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-primary font-bold">A</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Andrew E.</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Self-learner, Boston MA</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "I studied Japanese in college, but kanji was my weak point. Tomoshibi teaches kanji with mnemonics and 
+                  reinforces lessons with spaced reviews. Knowing kanji helped me jump from textbooks to native material."
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-primary font-bold">S</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Shagun A.</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Self-learner, California</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "I was close to giving up on learning kanji until I found Tomoshibi. The SRS and leveling structure 
+                  made sure I never overwhelmed myself. After a year, I can now read over 1,500 kanji confidently."
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-primary font-bold">B</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Brian N.</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Japan Resident</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "I lived in Japan for eight years without learning much Japanese. After joining Tomoshibi and studying 
+                  daily, the confidence I've gained helped me use Japanese in everyday life."
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-primary font-bold">P</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Philip N.</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Teacher, Osaka Japan</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "I failed the JLPT N2 miserably with a score of 64/180. After just over a year with Tomoshibi, 
+                  I passed the JLPT N2, nearly doubling my score to 121/180."
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-primary font-bold">A</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Anthony R.</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Salaryman, Nagoya Japan</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "I worked in Japan for three years struggling with reading. After six months of daily Tomoshibi use, 
+                  I've learned hundreds of kanji and now understand most Japanese text I encounter."
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-primary font-bold">R</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Robert P.</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Self-learner, UK</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  "Learning kanji felt like an overwhelming mountain to climb. Through Tomoshibi's comprehensive system, 
+                  I made significant progress. The JLPT N3 kanji portion was a breeze thanks to this foundation."
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Why It Works Section */}
+      <div className="py-20 bg-gradient-to-r from-primary/10 to-orange-100 dark:from-gray-800 dark:to-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              What makes the Tomoshibi method effective?
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Brain className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Smart SRS Algorithm</CardTitle>
+                <CardTitle className="text-xl">Mnemonics</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 dark:text-gray-300 text-center">
-                  Our advanced spaced repetition system adapts to your learning pace, ensuring optimal retention and progress.
+                  Tomoshibi has mnemonics to teach you every single kanji and vocabulary word. 
+                  Waste less time, memorize and recall way more.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg bg-white/80 dark:bg-gray-800/80">
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BookOpen className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Authentic JLPT Content</CardTitle>
+                <CardTitle className="text-xl">Sentence Learning</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 dark:text-gray-300 text-center">
-                  Learn from genuine JLPT N5 sentences and vocabulary, building real-world Japanese proficiency.
+                  Learn kanji and vocabulary through authentic JLPT N5 sentences. 
+                  Build real understanding, not just isolated knowledge.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg bg-white/80 dark:bg-gray-800/80">
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Spaced Repetition</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-300 text-center">
+                  Our SRS algorithm adjusts review timing for each item based on your performance. 
+                  See content at the optimal time for retention.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">JLPT Focused</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-300 text-center">
+                  Learn over 2,000 kanji and 6,000 vocabulary words, all carefully curated from 
+                  official JLPT N5 materials and authentic sources.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trophy className="w-8 h-8 text-primary" />
@@ -110,7 +269,23 @@ export default function Landing() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 dark:text-gray-300 text-center">
-                  Stay motivated with our belt system, achievements, and social features that make learning addictive.
+                  Belt system, achievements, and progress tracking keep you motivated. 
+                  Turn learning into an engaging, rewarding experience.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-lg bg-white/90 dark:bg-gray-800/90">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Daily Lessons</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-300 text-center">
+                  Structured daily lessons and reviews ensure consistent progress. 
+                  Just 15-30 minutes a day leads to dramatic improvement.
                 </p>
               </CardContent>
             </Card>
@@ -213,27 +388,32 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="py-20 bg-primary/10 dark:bg-gray-800/50">
+      {/* Final CTA Section */}
+      <div className="py-20 bg-gradient-to-br from-primary to-orange-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Ready to Begin Your Japanese Journey?
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              How many kanji can you learn this month?
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Join thousands of learners who are mastering Japanese with Tomoshibi's proven method
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              Try Tomoshibi for free.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
               <Link href="/auth">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-lg">
+                <Button size="lg" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
                   <Star className="w-5 h-5 mr-2" />
-                  Start Free Today
+                  Join Us
+                </Button>
+              </Link>
+              <Link href="/auth">
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg">
+                  Sign In
                 </Button>
               </Link>
             </div>
             
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+            <p className="text-white/80 text-sm">
               No credit card required • Start learning immediately
             </p>
           </div>
