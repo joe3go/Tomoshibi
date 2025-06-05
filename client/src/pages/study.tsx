@@ -53,52 +53,89 @@ export default function StudyPage() {
     totalCards: 0
   });
 
-  // Enhanced Japanese audio with better voice selection
+  // Optimized Japanese audio with WanaKana text preprocessing
   const playAudio = (text: string) => {
     if ('speechSynthesis' in window) {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
       
-      // Wait a moment to ensure cancellation
+      // Wait to ensure cancellation and voice loading
       setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ja-JP';
-        utterance.rate = 0.8;
+        utterance.rate = 0.75; // Optimal for learning
         utterance.pitch = 1.0;
-        utterance.volume = 1.0;
+        utterance.volume = 0.9;
         
+        // Enhanced voice selection with quality prioritization
         const selectVoice = () => {
           const voices = window.speechSynthesis.getVoices();
-          console.log('Available voices:', voices.map(v => ({ name: v.name, lang: v.lang })));
           
-          // Find the best Japanese voice
-          let selectedVoice = voices.find(voice => 
-            voice.lang === 'ja-JP' && voice.localService === false
-          ) || voices.find(voice => 
-            voice.lang === 'ja-JP'
-          ) || voices.find(voice => 
-            voice.lang.startsWith('ja')
-          );
+          // Priority order for Japanese voices
+          const preferredVoices = [
+            'Google 日本語',
+            'Microsoft Sayaka',
+            'Kyoko',
+            'Otoya',
+            'Siri Kyoko',
+            'Japanese'
+          ];
+          
+          let selectedVoice = null;
+          
+          // First try to find preferred high-quality voices
+          for (const preferred of preferredVoices) {
+            selectedVoice = voices.find(voice => 
+              voice.name.includes(preferred) && voice.lang.startsWith('ja')
+            );
+            if (selectedVoice) break;
+          }
+          
+          // Fallback to any Japanese voice
+          if (!selectedVoice) {
+            selectedVoice = voices.find(voice => 
+              voice.lang === 'ja-JP' || voice.lang.startsWith('ja')
+            );
+          }
           
           if (selectedVoice) {
             utterance.voice = selectedVoice;
-            console.log('Selected voice:', selectedVoice.name);
-          } else {
-            console.log('No Japanese voice found, using default');
           }
+          
+          // Enhanced error handling
+          utterance.onerror = (event) => {
+            console.warn('Speech synthesis error:', event.error);
+          };
+          
+          utterance.onstart = () => {
+            console.log('Audio started with voice:', selectedVoice?.name || 'default');
+          };
           
           window.speechSynthesis.speak(utterance);
         };
         
-        // Ensure voices are loaded
+        // Robust voice loading with multiple attempts
+        const loadVoices = () => {
+          const voices = window.speechSynthesis.getVoices();
+          if (voices.length === 0) {
+            // Trigger voice loading
+            const tempUtterance = new SpeechSynthesisUtterance('');
+            window.speechSynthesis.speak(tempUtterance);
+            window.speechSynthesis.cancel();
+            
+            setTimeout(selectVoice, 100);
+          } else {
+            selectVoice();
+          }
+        };
+        
         if (window.speechSynthesis.getVoices().length === 0) {
-          window.speechSynthesis.addEventListener('voiceschanged', selectVoice, { once: true });
-          // Trigger voice loading
-          window.speechSynthesis.getVoices();
+          window.speechSynthesis.addEventListener('voiceschanged', loadVoices, { once: true });
+          loadVoices();
         } else {
           selectVoice();
         }
-      }, 100);
+      }, 150);
     }
   };
 

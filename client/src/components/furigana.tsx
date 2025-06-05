@@ -9,36 +9,59 @@ interface FuriganaProps {
   highlightVocab?: boolean;
 }
 
-// Simplified furigana parser for reliable display
+// Enhanced furigana parser using WanaKana for accurate text processing
 function parseFurigana(japanese: string, reading?: string): Array<{ text: string; furigana?: string }> {
   if (!reading || japanese === reading) {
     return [{ text: japanese }];
   }
 
   const segments: Array<{ text: string; furigana?: string }> = [];
-  const isKanji = (char: string) => /[\u4e00-\u9faf]/.test(char);
   
+  // Use WanaKana to identify different character types
   let i = 0;
   while (i < japanese.length) {
     const char = japanese[i];
     
-    if (isKanji(char)) {
-      // Collect consecutive kanji
+    if (wanakana.isKanji(char)) {
+      // Collect consecutive kanji using WanaKana
       let kanjiGroup = '';
-      while (i < japanese.length && isKanji(japanese[i])) {
+      while (i < japanese.length && wanakana.isKanji(japanese[i])) {
         kanjiGroup += japanese[i];
         i++;
       }
       
-      // Add kanji with full reading for now (can be refined later)
+      // Find corresponding reading for this kanji group
+      let kanjiReading = '';
+      
+      // Look for hiragana/katakana that follows in the original text
+      let nextKanaStart = i;
+      let nextKanaEnd = i;
+      while (nextKanaEnd < japanese.length && 
+             (wanakana.isHiragana(japanese[nextKanaEnd]) || wanakana.isKatakana(japanese[nextKanaEnd]))) {
+        nextKanaEnd++;
+      }
+      const followingKana = japanese.substring(nextKanaStart, nextKanaEnd);
+      
+      if (followingKana && reading.includes(followingKana)) {
+        // Find where this kana appears in the reading
+        const kanaIndex = reading.indexOf(followingKana);
+        if (kanaIndex > 0) {
+          // Extract the reading up to this point
+          kanjiReading = reading.substring(0, kanaIndex);
+        }
+      } else {
+        // No following kana or not found, use full reading
+        kanjiReading = reading;
+      }
+      
       segments.push({ 
         text: kanjiGroup, 
-        furigana: reading 
+        furigana: kanjiReading 
       });
     } else {
-      // Collect consecutive non-kanji
+      // Collect consecutive kana or other characters
       let textGroup = '';
-      while (i < japanese.length && !isKanji(japanese[i])) {
+      while (i < japanese.length && !wanakana.isKanji(japanese[i])) {
         textGroup += japanese[i];
         i++;
       }
