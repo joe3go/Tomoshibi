@@ -1,325 +1,321 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { BookOpen, Languages, GraduationCap, TrendingUp, Target, Star } from 'lucide-react';
-import { Link } from 'wouter';
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  BookOpen, 
+  Award, 
+  TrendingUp,
+  Clock,
+  Target,
+  Star,
+  Calendar,
+  Brain
+} from "lucide-react";
+import { Link } from "wouter";
 
-interface JLPTProgress {
-  userId: string;
-  progress: {
-    n5: {
-      vocab: number;
-      kanji: number;
-      grammar: number;
-    };
-    n4: {
-      vocab: number;
-      kanji: number;
-      grammar: number;
-    };
-    n3: {
-      vocab: number;
-      kanji: number;
-      grammar: number;
-    };
-    n2: {
-      vocab: number;
-      kanji: number;
-      grammar: number;
-    };
-    n1: {
-      vocab: number;
-      kanji: number;
-      grammar: number;
-    };
-  };
-  totalItems: {
-    n5: { vocab: number; kanji: number; grammar: number };
-    n4: { vocab: number; kanji: number; grammar: number };
-    n3: { vocab: number; kanji: number; grammar: number };
-    n2: { vocab: number; kanji: number; grammar: number };
-    n1: { vocab: number; kanji: number; grammar: number };
-  };
+interface JLPTStats {
+  level: string;
+  vocabularyMastered: number;
+  totalVocabulary: number;
+  kanjiMastered: number;
+  totalKanji: number;
+  grammarMastered: number;
+  totalGrammar: number;
+  overallProgress: number;
+  estimatedStudyTime: number;
+  nextMilestone: string;
 }
 
-const JLPT_LEVELS = [
-  { 
-    level: 'N5', 
-    name: 'Beginner', 
-    color: 'bg-green-500', 
-    description: 'Basic Japanese',
-    difficulty: 1
-  },
-  { 
-    level: 'N4', 
-    name: 'Elementary', 
-    color: 'bg-blue-500', 
-    description: 'Elementary Japanese',
-    difficulty: 2
-  },
-  { 
-    level: 'N3', 
-    name: 'Intermediate', 
-    color: 'bg-yellow-500', 
-    description: 'Intermediate Japanese',
-    difficulty: 3
-  },
-  { 
-    level: 'N2', 
-    name: 'Upper Intermediate', 
-    color: 'bg-orange-500', 
-    description: 'Advanced Japanese',
-    difficulty: 4
-  },
-  { 
-    level: 'N1', 
-    name: 'Advanced', 
-    color: 'bg-red-500', 
-    description: 'Native-level Japanese',
-    difficulty: 5
-  }
-];
+const jlptLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
-export default function JLPTProgressPage() {
-  const { data: progressData, isLoading } = useQuery<JLPTProgress>({
-    queryKey: ['/api/jlpt/progress']
+export default function JLPTProgress() {
+  const { data: user } = useQuery<any>({
+    queryKey: ["/api/user"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  const calculateOverallProgress = (levelKey: string) => {
-    if (!progressData) return 0;
-    
-    const level = levelKey.toLowerCase() as keyof typeof progressData.progress;
-    const progress = progressData.progress[level];
-    const totals = progressData.totalItems[level];
-    
-    const learned = progress.vocab + progress.kanji + progress.grammar;
-    const total = totals.vocab + totals.kanji + totals.grammar;
-    
-    return total > 0 ? Math.round((learned / total) * 100) : 0;
-  };
+  const { data: jlptStats } = useQuery<JLPTStats[]>({
+    queryKey: ["/api/jlpt/progress"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+  });
 
-  const calculateCategoryProgress = (levelKey: string, category: 'vocab' | 'kanji' | 'grammar') => {
-    if (!progressData) return { learned: 0, total: 0, percentage: 0 };
-    
-    const level = levelKey.toLowerCase() as keyof typeof progressData.progress;
-    const learned = progressData.progress[level][category];
-    const total = progressData.totalItems[level][category];
-    const percentage = total > 0 ? Math.round((learned / total) * 100) : 0;
-    
-    return { learned, total, percentage };
-  };
+  const { data: weeklyProgress } = useQuery<any[]>({
+    queryKey: ["/api/jlpt/weekly-progress"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+  });
 
-  const getProgressBadge = (percentage: number) => {
-    if (percentage === 100) return { text: 'Completed', variant: 'default' as const };
-    if (percentage >= 80) return { text: 'Almost Done', variant: 'secondary' as const };
-    if (percentage >= 50) return { text: 'In Progress', variant: 'outline' as const };
-    if (percentage > 0) return { text: 'Started', variant: 'outline' as const };
-    return { text: 'Not Started', variant: 'secondary' as const };
-  };
-
-  if (isLoading) {
+  if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-8">Loading JLPT progress...</div>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <p className="mb-4">Please log in to view JLPT progress</p>
+          <Link href="/auth">
+            <Button>Login</Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const currentLevelStats = jlptStats?.find(stat => stat.level === user.currentJLPTLevel);
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">JLPT Progress Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Track your journey from beginner to advanced Japanese proficiency
+    <div className="px-2 py-2 space-y-3 h-full overflow-y-auto">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-lg font-bold">JLPT Progress</h1>
+        <p className="text-sm text-muted-foreground">
+          Track your Japanese proficiency journey
         </p>
       </div>
 
-      {/* Overall Stats */}
-      {progressData && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Progress</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {Math.round(
-                  JLPT_LEVELS.reduce((acc, level) => acc + calculateOverallProgress(level.level), 0) / 5
-                )}%
+      {/* Current Level Overview */}
+      {currentLevelStats && (
+        <Card className="p-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Award className="h-5 w-5 text-primary" />
+                <span className="font-semibold">Current Level: {currentLevelStats.level}</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Across all JLPT levels
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Current Level</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {JLPT_LEVELS.find(level => calculateOverallProgress(level.level) > 0 && calculateOverallProgress(level.level) < 100)?.level || 'N5'}
+              <Badge variant="secondary">
+                {currentLevelStats.overallProgress}% Complete
+              </Badge>
+            </div>
+            
+            <Progress value={currentLevelStats.overallProgress} className="h-3" />
+            
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Vocabulary</p>
+                <p className="text-sm font-medium">
+                  {currentLevelStats.vocabularyMastered}/{currentLevelStats.totalVocabulary}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Actively studying
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Levels</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {JLPT_LEVELS.filter(level => calculateOverallProgress(level.level) === 100).length}
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Kanji</p>
+                <p className="text-sm font-medium">
+                  {currentLevelStats.kanjiMastered}/{currentLevelStats.totalKanji}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Out of 5 levels
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Grammar</p>
+                <p className="text-sm font-medium">
+                  {currentLevelStats.grammarMastered}/{currentLevelStats.totalGrammar}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
       )}
 
-      {/* JLPT Level Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {JLPT_LEVELS.map((levelInfo) => {
-          const overallProgress = calculateOverallProgress(levelInfo.level);
-          const vocabProgress = calculateCategoryProgress(levelInfo.level, 'vocab');
-          const kanjiProgress = calculateCategoryProgress(levelInfo.level, 'kanji');
-          const grammarProgress = calculateCategoryProgress(levelInfo.level, 'grammar');
-          const badge = getProgressBadge(overallProgress);
+      {/* Study Goals */}
+      <Card className="p-3">
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <Target className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold">Study Goals</span>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Daily Goal</span>
+              <div className="flex items-center space-x-2">
+                <Progress value={75} className="w-16 h-2" />
+                <span className="text-xs text-muted-foreground">15/20 min</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Weekly Goal</span>
+              <div className="flex items-center space-x-2">
+                <Progress value={60} className="w-16 h-2" />
+                <span className="text-xs text-muted-foreground">4/7 days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
 
-          return (
-            <Card key={levelInfo.level} className="relative overflow-hidden hover:shadow-lg transition-shadow">
-              <div className={`absolute top-0 left-0 right-0 h-1 ${levelInfo.color}`} />
+      {/* JLPT Levels Overview */}
+      <Card className="p-3">
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold">JLPT Levels</span>
+          </div>
+          
+          <div className="space-y-2">
+            {jlptLevels.map((level) => {
+              const stats = jlptStats?.find(s => s.level === level);
+              const progress = stats?.overallProgress || 0;
+              const isCurrentLevel = level === user.currentJLPTLevel;
               
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl font-bold">{levelInfo.level}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{levelInfo.name}</p>
+              return (
+                <div key={level} className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 w-12">
+                    <span className={`text-xs font-mono ${isCurrentLevel ? 'text-primary font-bold' : 'text-muted-foreground'}`}>
+                      {level}
+                    </span>
+                    {isCurrentLevel && <Star className="h-3 w-3 text-primary" />}
                   </div>
-                  <Badge variant={badge.variant} className="text-xs">
-                    {badge.text}
-                  </Badge>
+                  <Progress value={progress} className="flex-1 h-2" />
+                  <span className="text-xs text-muted-foreground w-8">
+                    {progress}%
+                  </span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {levelInfo.description}
-                </p>
-              </CardHeader>
+              );
+            })}
+          </div>
+        </div>
+      </Card>
 
-              <CardContent className="space-y-4">
-                {/* Overall Progress */}
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Overall Progress</span>
-                    <span className="font-medium">{overallProgress}%</span>
-                  </div>
-                  <Progress value={overallProgress} className="h-2" />
+      {/* Study Categories */}
+      <Tabs defaultValue="vocabulary" className="space-y-3">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="vocabulary" className="text-xs">Vocabulary</TabsTrigger>
+          <TabsTrigger value="kanji" className="text-xs">Kanji</TabsTrigger>
+          <TabsTrigger value="grammar" className="text-xs">Grammar</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="vocabulary" className="space-y-2">
+          <Card className="p-3">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Vocabulary Progress</span>
+                <Badge variant="outline">{currentLevelStats?.level || 'N5'}</Badge>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Words Mastered</span>
+                  <span>{currentLevelStats?.vocabularyMastered || 0} / {currentLevelStats?.totalVocabulary || 800}</span>
                 </div>
-
-                {/* Category Breakdown */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="h-4 w-4 text-blue-500" />
-                    <div className="flex-1">
-                      <div className="flex justify-between text-xs">
-                        <span>Vocabulary</span>
-                        <span>{vocabProgress.learned}/{vocabProgress.total}</span>
-                      </div>
-                      <Progress value={vocabProgress.percentage} className="h-1 mt-1" />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Languages className="h-4 w-4 text-green-500" />
-                    <div className="flex-1">
-                      <div className="flex justify-between text-xs">
-                        <span>Kanji</span>
-                        <span>{kanjiProgress.learned}/{kanjiProgress.total}</span>
-                      </div>
-                      <Progress value={kanjiProgress.percentage} className="h-1 mt-1" />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <GraduationCap className="h-4 w-4 text-purple-500" />
-                    <div className="flex-1">
-                      <div className="flex justify-between text-xs">
-                        <span>Grammar</span>
-                        <span>{grammarProgress.learned}/{grammarProgress.total}</span>
-                      </div>
-                      <Progress value={grammarProgress.percentage} className="h-1 mt-1" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Button */}
-                <Link href={`/jlpt-content?level=${levelInfo.level}`}>
-                  <Button 
-                    variant={overallProgress > 0 ? "default" : "outline"} 
-                    className="w-full text-xs"
-                    size="sm"
-                  >
-                    {overallProgress === 100 ? 'Review' : overallProgress > 0 ? 'Continue' : 'Start Learning'}
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Study</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Jump into a study session based on your current progress
-            </p>
-            <div className="flex gap-2">
-              <Link href="/study?mode=review">
-                <Button variant="outline" size="sm">
-                  Review Mode
+                <Progress value={(currentLevelStats?.vocabularyMastered || 0) / (currentLevelStats?.totalVocabulary || 800) * 100} className="h-2" />
+              </div>
+              
+              <div className="flex justify-between">
+                <Button variant="outline" size="sm" className="flex-1 mr-1">
+                  Review Words
                 </Button>
-              </Link>
-              <Link href="/study?mode=new">
-                <Button size="sm">
+                <Button size="sm" className="flex-1 ml-1">
                   Learn New
                 </Button>
-              </Link>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </Card>
+        </TabsContent>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Study Plan</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Set daily goals and track your consistency
-            </p>
-            <Link href="/settings">
-              <Button variant="outline" size="sm" className="w-full">
-                Configure Study Plan
-              </Button>
+        <TabsContent value="kanji" className="space-y-2">
+          <Card className="p-3">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Kanji Progress</span>
+                <Badge variant="outline">{currentLevelStats?.level || 'N5'}</Badge>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Kanji Mastered</span>
+                  <span>{currentLevelStats?.kanjiMastered || 0} / {currentLevelStats?.totalKanji || 80}</span>
+                </div>
+                <Progress value={(currentLevelStats?.kanjiMastered || 0) / (currentLevelStats?.totalKanji || 80) * 100} className="h-2" />
+              </div>
+              
+              <div className="flex justify-between">
+                <Button variant="outline" size="sm" className="flex-1 mr-1">
+                  Review Kanji
+                </Button>
+                <Button size="sm" className="flex-1 ml-1">
+                  Learn New
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="grammar" className="space-y-2">
+          <Card className="p-3">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Grammar Progress</span>
+                <Badge variant="outline">{currentLevelStats?.level || 'N5'}</Badge>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Grammar Points</span>
+                  <span>{currentLevelStats?.grammarMastered || 0} / {currentLevelStats?.totalGrammar || 120}</span>
+                </div>
+                <Progress value={(currentLevelStats?.grammarMastered || 0) / (currentLevelStats?.totalGrammar || 120) * 100} className="h-2" />
+              </div>
+              
+              <div className="flex justify-between">
+                <Button variant="outline" size="sm" className="flex-1 mr-1">
+                  Review Grammar
+                </Button>
+                <Button size="sm" className="flex-1 ml-1">
+                  Learn New
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Weekly Activity */}
+      <Card className="p-3">
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <Calendar className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold">This Week</span>
+          </div>
+          
+          <div className="grid grid-cols-7 gap-1">
+            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+              <div key={index} className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">{day}</div>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                  index < 4 ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                }`}>
+                  {index < 4 ? '✓' : ''}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground">4 day streak this week!</p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Study Recommendations */}
+      <Card className="p-3">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Brain className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold">Recommended Study</span>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="p-2 bg-muted rounded-lg">
+              <p className="text-sm font-medium">Focus on Vocabulary</p>
+              <p className="text-xs text-muted-foreground">
+                You're making great progress! Review 10 words today to maintain momentum.
+              </p>
+            </div>
+            
+            <Link href="/study">
+              <Button className="w-full">Start Studying</Button>
             </Link>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

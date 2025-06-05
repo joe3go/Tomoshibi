@@ -1,544 +1,255 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
-import { ChevronLeft, Volume2, Eye, EyeOff, RotateCcw, CheckCircle, XCircle, Star } from "lucide-react";
+import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { 
+  BookOpen, 
+  Volume2, 
+  Check, 
+  X, 
+  RotateCcw, 
+  Zap,
+  Target,
+  Trophy,
+  Clock
+} from "lucide-react";
 import { Link } from "wouter";
-import { Furigana } from "@/components/furigana";
 
-interface ReviewCard {
-  srsItem: {
-    id: number;
-    interval: number;
-    repetitions: number;
-    mastery: string;
-    correctCount: number;
-    incorrectCount: number;
-  };
-  sentenceCard: {
-    id: number;
-    japanese: string;
-    reading: string;
-    english: string;
-    jlptLevel: string;
-    difficulty: number;
-    register: string;
-    theme: string;
-    source: string;
-    grammarPoints: string[];
-    vocabulary: string[];
-    culturalNotes: string;
-  };
-}
-
-interface StudySession {
+interface StudyCard {
   id: number;
-  cardsReviewed: number;
-  cardsCorrect: number;
-  timeSpentMinutes: number;
+  japanese: string;
+  reading: string | null;
+  english: string;
+  jlptLevel: string;
+  difficulty: number;
 }
 
-export default function StudyPage() {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+export default function Study() {
+  const [currentCard, setCurrentCard] = useState<StudyCard | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [showReading, setShowReading] = useState(false);
-  const [sessionStartTime] = useState(Date.now());
-  const [currentSession, setCurrentSession] = useState<StudySession | null>(null);
-  const [sessionStats, setSessionStats] = useState({
-    cardsReviewed: 0,
-    cardsCorrect: 0,
-    totalCards: 0
+  const [streak, setStreak] = useState(0);
+  const [sessionXP, setSessionXP] = useState(0);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [cardsStudied, setCardsStudied] = useState(0);
+
+  const { data: reviewQueue } = useQuery<StudyCard[]>({
+    queryKey: ["/api/study/review-queue"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  // Advanced Japanese audio system with authentic pronunciation
-  const playAudio = async (text: string) => {
-    if (!('speechSynthesis' in window)) {
-      console.warn('Speech synthesis not supported');
-      return;
-    }
-
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
-    
-    // Wait for proper cancellation
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    try {
-      const utterance = new SpeechSynthesisUtterance(text);
-      
-      // Optimal settings for Japanese pronunciation
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.8;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
-      
-      // Advanced voice selection with quality ranking
-      const getJapaneseVoice = () => {
-        const voices = window.speechSynthesis.getVoices();
-        
-        // High-quality Japanese voices in priority order
-        const premiumVoices = [
-          'Google 日本語',
-          'Microsoft Ayumi - Japanese (Japan)',
-          'Microsoft Haruka - Japanese (Japan)',
-          'Microsoft Sayaka - Japanese (Japan)',
-          'Kyoko (Enhanced)',
-          'Otoya (Enhanced)',
-          'Google Japanese',
-          'Japanese (Japan)'
-        ];
-        
-        // Find best available voice
-        for (const preferred of premiumVoices) {
-          const voice = voices.find(v => 
-            v.name.includes(preferred.split(' ')[0]) && 
-            (v.lang === 'ja-JP' || v.lang === 'ja')
-          );
-          if (voice) return voice;
-        }
-        
-        // Fallback to any Japanese voice
-        return voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja'));
-      };
-      
-      // Ensure voices are loaded
-      const loadVoicesAndSpeak = () => {
-        const selectedVoice = getJapaneseVoice();
-        
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-          console.log('Using Japanese voice:', selectedVoice.name);
-        } else {
-          console.warn('No Japanese voice found, using system default');
-        }
-        
-        // Enhanced event handling
-        utterance.onstart = () => {
-          console.log('Japanese audio playback started');
-        };
-        
-        utterance.onerror = (event) => {
-          console.error('Speech synthesis error:', event.error);
-        };
-        
-        utterance.onend = () => {
-          console.log('Japanese audio playback completed');
-        };
-        
-        window.speechSynthesis.speak(utterance);
-      };
-      
-      // Handle voice loading timing
-      if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.addEventListener('voiceschanged', loadVoicesAndSpeak, { once: true });
-        // Trigger voice loading
-        window.speechSynthesis.getVoices();
-      } else {
-        loadVoicesAndSpeak();
-      }
-      
-    } catch (error) {
-      console.error('Audio playback failed:', error);
-    }
-  };
-
-  // Get study mode from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const studyMode = urlParams.get('mode') || 'all-reviews';
-
-  // Fetch review queue with mode filtering
-  const { data: reviewQueue, isLoading, error } = useQuery<ReviewCard[]>({
-    queryKey: ["/api/review-queue", studyMode],
-    queryFn: async () => {
-      const response = await fetch(`/api/review-queue?mode=${studyMode}`);
-      if (!response.ok) throw new Error('Failed to fetch review queue');
-      return response.json();
-    },
-    refetchOnWindowFocus: false
+  const { data: user } = useQuery<any>({
+    queryKey: ["/api/user"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  // Start study session
-  const startSessionMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/study-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionType: "review" })
-      });
-      if (!response.ok) throw new Error("Failed to start session");
-      return response.json();
-    },
-    onSuccess: (session) => {
-      setCurrentSession(session);
-    }
-  });
-
-  // Submit review
-  const submitReviewMutation = useMutation({
-    mutationFn: async ({ srsItemId, quality }: { srsItemId: number; quality: number }) => {
-      const response = await fetch(`/api/review/${srsItemId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quality })
-      });
-      if (!response.ok) throw new Error("Failed to submit review");
-      return response.json();
+  const reviewMutation = useMutation({
+    mutationFn: async ({ cardId, difficulty }: { cardId: number; difficulty: number }) => {
+      return await apiRequest("POST", "/api/study/review", { cardId, difficulty });
     },
     onSuccess: () => {
-      // Refresh review queue
-      queryClient.invalidateQueries({ queryKey: ["/api/review-queue"] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["/api/study/review-queue"] });
+      setCardsStudied(prev => prev + 1);
+      loadNextCard();
+    },
   });
 
-  // Complete session
-  const completeSessionMutation = useMutation({
-    mutationFn: async () => {
-      if (!currentSession) return null;
-      
-      const timeSpentMinutes = Math.round((Date.now() - sessionStartTime) / 60000);
-      const response = await fetch(`/api/study-session/${currentSession.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cardsReviewed: sessionStats.cardsReviewed,
-          cardsCorrect: sessionStats.cardsCorrect,
-          timeSpentMinutes
-        })
-      });
-      if (!response.ok) throw new Error("Failed to complete session");
-      return response.json();
-    }
-  });
-
-  // Start session on component mount
   useEffect(() => {
-    if (!currentSession && reviewQueue && reviewQueue.length > 0) {
-      startSessionMutation.mutate();
-      setSessionStats(prev => ({ ...prev, totalCards: reviewQueue.length }));
+    if (reviewQueue && reviewQueue.length > 0 && !currentCard) {
+      setCurrentCard(reviewQueue[0]);
     }
-  }, [reviewQueue]);
+  }, [reviewQueue, currentCard]);
 
-  const handleAnswer = async (quality: number) => {
-    if (!reviewQueue || !reviewQueue[currentCardIndex]) return;
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeSpent(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    const currentCard = reviewQueue[currentCardIndex];
-    const wasCorrect = quality >= 3;
-
-    // Submit review
-    await submitReviewMutation.mutateAsync({
-      srsItemId: currentCard.srsItem.id,
-      quality
-    });
-
-    // Update session stats
-    setSessionStats(prev => ({
-      ...prev,
-      cardsReviewed: prev.cardsReviewed + 1,
-      cardsCorrect: prev.cardsCorrect + (wasCorrect ? 1 : 0)
-    }));
-
-    // Move to next card or complete session
-    if (currentCardIndex < reviewQueue.length - 1) {
-      setCurrentCardIndex(prev => prev + 1);
+  const loadNextCard = () => {
+    if (reviewQueue && reviewQueue.length > 1) {
+      const nextIndex = Math.floor(Math.random() * (reviewQueue.length - 1)) + 1;
+      setCurrentCard(reviewQueue[nextIndex]);
       setShowAnswer(false);
-      setShowReading(false);
     } else {
-      // Session complete
-      completeSessionMutation.mutate();
+      setCurrentCard(null);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  const handleReview = (difficulty: number) => {
+    if (!currentCard) return;
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to load review queue</h2>
-          <p className="text-gray-600">Please try refreshing the page</p>
-        </div>
-      </div>
-    );
-  }
+    const xpGained = difficulty >= 3 ? 10 : difficulty >= 2 ? 5 : 2;
+    setSessionXP(prev => prev + xpGained);
+    
+    if (difficulty >= 3) {
+      setStreak(prev => prev + 1);
+    } else {
+      setStreak(0);
+    }
 
-  if (!reviewQueue || reviewQueue.length === 0) {
-    return (
-      <div className="p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-16">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">All caught up!</h2>
-            <p className="text-gray-600 mb-6">
-              No cards are due for review right now. Great job on staying consistent!
-            </p>
-            <Link href="/">
-              <Button>Return to Dashboard</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Session completed
-  if (sessionStats.cardsReviewed >= reviewQueue.length) {
-    const accuracy = Math.round((sessionStats.cardsCorrect / sessionStats.cardsReviewed) * 100);
-    const timeSpent = Math.round((Date.now() - sessionStartTime) / 60000);
-
-    return (
-      <div className="p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-16">
-            <Star className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Session Complete!</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-2xl mx-auto">
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-primary">{sessionStats.cardsReviewed}</div>
-                  <div className="text-sm text-gray-600">Cards Reviewed</div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-green-600">{accuracy}%</div>
-                  <div className="text-sm text-gray-600">Accuracy</div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-purple-600">{timeSpent}</div>
-                  <div className="text-sm text-gray-600">Minutes</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="space-y-4">
-              <Link href="/">
-                <Button size="lg">
-                  Return to Dashboard
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const currentCard = reviewQueue[currentCardIndex];
-  const progress = ((currentCardIndex + 1) / reviewQueue.length) * 100;
-
-  // Register color coding
-  const registerColors: Record<string, string> = {
-    polite: "bg-blue-100 text-blue-800",
-    casual: "bg-green-100 text-green-800",
-    anime: "bg-purple-100 text-purple-800",
-    workplace: "bg-gray-100 text-gray-800"
+    reviewMutation.mutate({ cardId: currentCard.id, difficulty });
   };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <p className="mb-4">Please log in to start studying</p>
+          <Link href="/auth">
+            <Button>Login</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentCard) {
+    return (
+      <div className="px-4 py-6 text-center space-y-4">
+        <Trophy className="h-16 w-16 text-primary mx-auto" />
+        <h2 className="text-xl font-bold">Study Session Complete!</h2>
+        <div className="space-y-2">
+          <p className="text-muted-foreground">Cards studied: {cardsStudied}</p>
+          <p className="text-muted-foreground">XP earned: {sessionXP}</p>
+          <p className="text-muted-foreground">Time: {formatTime(timeSpent)}</p>
+        </div>
+        <Link href="/dashboard">
+          <Button className="w-full">Return to Dashboard</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 max-h-screen overflow-y-auto">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="text-center flex-1">
-            <div className="text-sm text-gray-600 mb-2">
-              Card {currentCardIndex + 1} of {reviewQueue.length}
-            </div>
-            <Progress value={progress} className="w-64 mx-auto" />
+    <div className="px-2 py-2 space-y-3 h-full overflow-y-auto">
+      {/* Study Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">{formatTime(timeSpent)}</span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1">
+            <Target className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">{streak}</span>
           </div>
-          
-          <div className="text-sm text-gray-600">
-            {sessionStats.cardsCorrect}/{sessionStats.cardsReviewed} correct
+          <div className="flex items-center space-x-1">
+            <Zap className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">{sessionXP}</span>
           </div>
         </div>
-
-        {/* Main Card */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Badge className={registerColors[currentCard.sentenceCard.register] || "bg-gray-100 text-gray-800"}>
-                  {currentCard.sentenceCard.register}
-                </Badge>
-                <Badge variant="outline">{currentCard.sentenceCard.jlptLevel}</Badge>
-                <Badge variant="outline">{currentCard.sentenceCard.theme}</Badge>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowReading(!showReading)}
-                >
-                  {showReading ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  Reading
-                </Button>
-                <div className="flex gap-1">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => playAudio(currentCard.sentenceCard.japanese)}
-                    title="Play Japanese audio"
-                  >
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      const voices = window.speechSynthesis.getVoices();
-                      console.log('Available voices:', voices.map(v => ({
-                        name: v.name,
-                        lang: v.lang,
-                        localService: v.localService,
-                        default: v.default
-                      })));
-                      console.log('Japanese voices:', voices.filter(v => v.lang.startsWith('ja')));
-                    }}
-                    title="Debug audio voices"
-                    className="text-xs px-2"
-                  >
-                    🔍
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-6">
-            {/* Japanese Sentence with Furigana */}
-            <div className="py-6">
-              <Furigana
-                japanese={currentCard.sentenceCard.japanese}
-                reading={currentCard.sentenceCard.reading}
-                vocabulary={currentCard.sentenceCard.vocabulary}
-                showReading={showReading}
-                highlightVocab={true}
-              />
-            </div>
-
-            {/* Show Answer Button */}
-            {!showAnswer && (
-              <div className="text-center">
-                <Button
-                  onClick={() => setShowAnswer(true)}
-                  size="lg"
-                  className="px-8"
-                >
-                  Show Answer
-                </Button>
-              </div>
-            )}
-
-            {/* Answer Section */}
-            {showAnswer && (
-              <div className="space-y-6">
-                {/* English Translation */}
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-xl text-gray-900">
-                    {currentCard.sentenceCard.english}
-                  </div>
-                </div>
-
-                {/* Grammar Points */}
-                {currentCard.sentenceCard.grammarPoints && currentCard.sentenceCard.grammarPoints.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Grammar Points:</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {currentCard.sentenceCard.grammarPoints.map((point, index) => (
-                        <Badge key={index} variant="secondary">{point}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Vocabulary */}
-                {currentCard.sentenceCard.vocabulary && currentCard.sentenceCard.vocabulary.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Key Vocabulary:</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {currentCard.sentenceCard.vocabulary.map((word, index) => (
-                        <Badge key={index} variant="outline">{word}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Cultural Notes */}
-                {currentCard.sentenceCard.culturalNotes && (
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <h3 className="font-semibold text-blue-900 mb-2">Cultural Note:</h3>
-                    <p className="text-blue-800">{currentCard.sentenceCard.culturalNotes}</p>
-                  </div>
-                )}
-
-                {/* Source */}
-                {currentCard.sentenceCard.source && (
-                  <div className="text-sm text-gray-600 text-center">
-                    Source: {currentCard.sentenceCard.source}
-                  </div>
-                )}
-
-                {/* Answer Buttons */}
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    onClick={() => handleAnswer(1)}
-                    variant="destructive"
-                    size="lg"
-                    className="flex flex-col py-6 h-auto"
-                    disabled={submitReviewMutation.isPending}
-                  >
-                    <XCircle className="h-8 w-8 mb-2" />
-                    <span className="text-lg font-semibold">No</span>
-                    <span className="text-sm opacity-80">I didn't know this</span>
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleAnswer(4)}
-                    variant="default"
-                    size="lg"
-                    className="flex flex-col py-6 h-auto bg-green-600 hover:bg-green-700"
-                    disabled={submitReviewMutation.isPending}
-                  >
-                    <CheckCircle className="h-8 w-8 mb-2" />
-                    <span className="text-lg font-semibold">Yes</span>
-                    <span className="text-sm opacity-80">I knew this</span>
-                  </Button>
-                </div>
-
-                {/* SRS Info */}
-                <div className="text-center text-sm text-gray-600 p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    Mastery: <span className="font-medium">{currentCard.srsItem.mastery}</span> •
-                    Interval: <span className="font-medium">{currentCard.srsItem.interval} days</span> •
-                    Reviews: <span className="font-medium">{currentCard.srsItem.repetitions}</span>
-                  </div>
-                  <div className="mt-1">
-                    Success Rate: <span className="font-medium">
-                      {currentCard.srsItem.correctCount + currentCard.srsItem.incorrectCount > 0
-                        ? Math.round((currentCard.srsItem.correctCount / (currentCard.srsItem.correctCount + currentCard.srsItem.incorrectCount)) * 100)
-                        : 0}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Progress */}
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span>Cards studied: {cardsStudied}</span>
+          <Badge variant="secondary">{currentCard.jlptLevel}</Badge>
+        </div>
+        <Progress value={(cardsStudied / (reviewQueue?.length || 1)) * 100} className="h-2" />
+      </div>
+
+      {/* Study Card */}
+      <Card className="p-6 text-center space-y-4 min-h-[300px] flex flex-col justify-center">
+        <div className="space-y-3">
+          <div className="text-3xl font-bold text-primary font-japanese">
+            {currentCard.japanese}
+          </div>
+          
+          {currentCard.reading && showAnswer && (
+            <div className="text-lg text-muted-foreground font-japanese">
+              {currentCard.reading}
+            </div>
+          )}
+          
+          {showAnswer && (
+            <div className="text-lg font-medium">
+              {currentCard.english}
+            </div>
+          )}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="mx-auto"
+            onClick={() => {
+              // Audio pronunciation would go here
+              console.log("Playing audio for:", currentCard.japanese);
+            }}
+          >
+            <Volume2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </Card>
+
+      {/* Action Buttons */}
+      {!showAnswer ? (
+        <Button 
+          className="w-full h-12 text-lg"
+          onClick={() => setShowAnswer(true)}
+        >
+          Show Answer
+        </Button>
+      ) : (
+        <div className="grid grid-cols-4 gap-2">
+          <Button
+            variant="destructive"
+            className="h-12 flex flex-col items-center justify-center space-y-1"
+            onClick={() => handleReview(1)}
+            disabled={reviewMutation.isPending}
+          >
+            <X className="h-4 w-4" />
+            <span className="text-xs">Again</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            className="h-12 flex flex-col items-center justify-center space-y-1"
+            onClick={() => handleReview(2)}
+            disabled={reviewMutation.isPending}
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span className="text-xs">Hard</span>
+          </Button>
+          
+          <Button
+            variant="secondary"
+            className="h-12 flex flex-col items-center justify-center space-y-1"
+            onClick={() => handleReview(3)}
+            disabled={reviewMutation.isPending}
+          >
+            <Check className="h-4 w-4" />
+            <span className="text-xs">Good</span>
+          </Button>
+          
+          <Button
+            className="h-12 flex flex-col items-center justify-center space-y-1"
+            onClick={() => handleReview(4)}
+            disabled={reviewMutation.isPending}
+          >
+            <Zap className="h-4 w-4" />
+            <span className="text-xs">Easy</span>
+          </Button>
+        </div>
+      )}
+
+      {/* Study Tips */}
+      <Card className="p-3">
+        <div className="text-sm text-muted-foreground text-center">
+          <p className="font-medium mb-1">Study Tip</p>
+          <p>Focus on the meaning first, then the reading. Take your time to understand the context.</p>
+        </div>
+      </Card>
     </div>
   );
 }
