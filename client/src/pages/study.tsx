@@ -53,89 +53,95 @@ export default function StudyPage() {
     totalCards: 0
   });
 
-  // Optimized Japanese audio with WanaKana text preprocessing
-  const playAudio = (text: string) => {
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
+  // Advanced Japanese audio system with authentic pronunciation
+  const playAudio = async (text: string) => {
+    if (!('speechSynthesis' in window)) {
+      console.warn('Speech synthesis not supported');
+      return;
+    }
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    // Wait for proper cancellation
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    try {
+      const utterance = new SpeechSynthesisUtterance(text);
       
-      // Wait to ensure cancellation and voice loading
-      setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ja-JP';
-        utterance.rate = 0.75; // Optimal for learning
-        utterance.pitch = 1.0;
-        utterance.volume = 0.9;
+      // Optimal settings for Japanese pronunciation
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.8;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Advanced voice selection with quality ranking
+      const getJapaneseVoice = () => {
+        const voices = window.speechSynthesis.getVoices();
         
-        // Enhanced voice selection with quality prioritization
-        const selectVoice = () => {
-          const voices = window.speechSynthesis.getVoices();
-          
-          // Priority order for Japanese voices
-          const preferredVoices = [
-            'Google 日本語',
-            'Microsoft Sayaka',
-            'Kyoko',
-            'Otoya',
-            'Siri Kyoko',
-            'Japanese'
-          ];
-          
-          let selectedVoice = null;
-          
-          // First try to find preferred high-quality voices
-          for (const preferred of preferredVoices) {
-            selectedVoice = voices.find(voice => 
-              voice.name.includes(preferred) && voice.lang.startsWith('ja')
-            );
-            if (selectedVoice) break;
-          }
-          
-          // Fallback to any Japanese voice
-          if (!selectedVoice) {
-            selectedVoice = voices.find(voice => 
-              voice.lang === 'ja-JP' || voice.lang.startsWith('ja')
-            );
-          }
-          
-          if (selectedVoice) {
-            utterance.voice = selectedVoice;
-          }
-          
-          // Enhanced error handling
-          utterance.onerror = (event) => {
-            console.warn('Speech synthesis error:', event.error);
-          };
-          
-          utterance.onstart = () => {
-            console.log('Audio started with voice:', selectedVoice?.name || 'default');
-          };
-          
-          window.speechSynthesis.speak(utterance);
-        };
+        // High-quality Japanese voices in priority order
+        const premiumVoices = [
+          'Google 日本語',
+          'Microsoft Ayumi - Japanese (Japan)',
+          'Microsoft Haruka - Japanese (Japan)',
+          'Microsoft Sayaka - Japanese (Japan)',
+          'Kyoko (Enhanced)',
+          'Otoya (Enhanced)',
+          'Google Japanese',
+          'Japanese (Japan)'
+        ];
         
-        // Robust voice loading with multiple attempts
-        const loadVoices = () => {
-          const voices = window.speechSynthesis.getVoices();
-          if (voices.length === 0) {
-            // Trigger voice loading
-            const tempUtterance = new SpeechSynthesisUtterance('');
-            window.speechSynthesis.speak(tempUtterance);
-            window.speechSynthesis.cancel();
-            
-            setTimeout(selectVoice, 100);
-          } else {
-            selectVoice();
-          }
-        };
-        
-        if (window.speechSynthesis.getVoices().length === 0) {
-          window.speechSynthesis.addEventListener('voiceschanged', loadVoices, { once: true });
-          loadVoices();
-        } else {
-          selectVoice();
+        // Find best available voice
+        for (const preferred of premiumVoices) {
+          const voice = voices.find(v => 
+            v.name.includes(preferred.split(' ')[0]) && 
+            (v.lang === 'ja-JP' || v.lang === 'ja')
+          );
+          if (voice) return voice;
         }
-      }, 150);
+        
+        // Fallback to any Japanese voice
+        return voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja'));
+      };
+      
+      // Ensure voices are loaded
+      const loadVoicesAndSpeak = () => {
+        const selectedVoice = getJapaneseVoice();
+        
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+          console.log('Using Japanese voice:', selectedVoice.name);
+        } else {
+          console.warn('No Japanese voice found, using system default');
+        }
+        
+        // Enhanced event handling
+        utterance.onstart = () => {
+          console.log('Japanese audio playback started');
+        };
+        
+        utterance.onerror = (event) => {
+          console.error('Speech synthesis error:', event.error);
+        };
+        
+        utterance.onend = () => {
+          console.log('Japanese audio playback completed');
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      };
+      
+      // Handle voice loading timing
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.addEventListener('voiceschanged', loadVoicesAndSpeak, { once: true });
+        // Trigger voice loading
+        window.speechSynthesis.getVoices();
+      } else {
+        loadVoicesAndSpeak();
+      }
+      
+    } catch (error) {
+      console.error('Audio playback failed:', error);
     }
   };
 
@@ -380,14 +386,34 @@ export default function StudyPage() {
                   {showReading ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   Reading
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => playAudio(currentCard.sentenceCard.japanese)}
-                  title="Play audio"
-                >
-                  <Volume2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => playAudio(currentCard.sentenceCard.japanese)}
+                    title="Play Japanese audio"
+                  >
+                    <Volume2 className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      const voices = window.speechSynthesis.getVoices();
+                      console.log('Available voices:', voices.map(v => ({
+                        name: v.name,
+                        lang: v.lang,
+                        localService: v.localService,
+                        default: v.default
+                      })));
+                      console.log('Japanese voices:', voices.filter(v => v.lang.startsWith('ja')));
+                    }}
+                    title="Debug audio voices"
+                    className="text-xs px-2"
+                  >
+                    🔍
+                  </Button>
+                </div>
               </div>
             </div>
           </CardHeader>

@@ -2,6 +2,26 @@
 
 All notable changes to Tomoshibi will be documented in this file.
 
+## [1.0.2] - 2025-06-05
+
+### Added
+- Audio debugging system with voice diagnostics button
+- Advanced furigana parser with intelligent kanji-to-reading mapping
+- Enhanced Japanese voice selection with premium voice prioritization
+- Absolute positioning for furigana display with improved CSS
+- Comprehensive audio error handling and logging
+
+### Fixed
+- Furigana display issues with proper HTML ruby/rt structure
+- Audio quality improvements with better voice loading timing
+- Character detection accuracy using WanaKana library
+- Browser compatibility for speech synthesis
+
+### Changed
+- Updated audio system to prioritize Microsoft Ayumi, Haruka, and Sayaka voices
+- Enhanced furigana positioning with relative/absolute CSS layout
+- Improved voice selection algorithm with fallback mechanisms
+
 ## [1.0.1] - 2025-06-05
 
 ### Added
