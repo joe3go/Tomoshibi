@@ -29,7 +29,7 @@ export default function Dashboard() {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  if (!user || !stats) {
+  if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">Loading dashboard...</div>
@@ -59,7 +59,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold text-primary">{user.totalXP}</div>
             <p className="text-xs text-muted-foreground">
-              +{stats.todayXP || 0} today
+              +{stats?.todayXP || 0} today
             </p>
           </CardContent>
         </Card>
@@ -83,9 +83,9 @@ export default function Dashboard() {
             <Brain className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{stats.masteredCards || 0}</div>
+            <div className="text-2xl font-bold text-primary">{stats?.masteredCards || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.totalCards || 0} total cards
+              {stats?.totalCards || 0} total cards
             </p>
           </CardContent>
         </Card>
@@ -161,11 +161,11 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span>Mastered Cards</span>
-                    <span className="font-bold">{stats.masteredCards || 0} / {stats.totalCards || 0}</span>
+                    <span className="font-bold">{stats?.masteredCards || 0} / {stats?.totalCards || 0}</span>
                   </div>
-                  <Progress value={(stats.masteredCards || 0) / Math.max(stats.totalCards || 1, 1) * 100} className="h-3" />
+                  <Progress value={(stats?.masteredCards || 0) / Math.max(stats?.totalCards || 1, 1) * 100} className="h-3" />
                   <div className="text-sm text-muted-foreground">
-                    {Math.round((stats.masteredCards || 0) / Math.max(stats.totalCards || 1, 1) * 100)}% mastery rate
+                    {Math.round((stats?.masteredCards || 0) / Math.max(stats?.totalCards || 1, 1) * 100)}% mastery rate
                   </div>
                 </div>
               </CardContent>

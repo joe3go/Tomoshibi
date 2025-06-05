@@ -248,12 +248,12 @@ function Navigation({ user }: { user: any }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const navItems = [
-    { href: "/", label: "Dashboard", icon: "🏠" },
-    { href: "/study", label: "Study", icon: "📚" },
-    { href: "/study-mode", label: "Study Mode", icon: "🎯" },
-    { href: "/social", label: "Social", icon: "👥" },
-    { href: "/achievements", label: "Achievements", icon: "🏆" },
-    { href: "/settings", label: "Settings", icon: "⚙️" },
+    { href: "/", label: "Dashboard", icon: "◦" },
+    { href: "/study", label: "Study", icon: "書" },
+    { href: "/study-mode", label: "Study Mode", icon: "習" },
+    { href: "/social", label: "Social", icon: "友" },
+    { href: "/achievements", label: "Achievements", icon: "賞" },
+    { href: "/settings", label: "Settings", icon: "設" },
   ];
 
   return (
