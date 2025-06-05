@@ -8,7 +8,7 @@ export function setupGoogleAuth(app: Express) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    callbackURL: `https://${process.env.REPLIT_DEV_DOMAIN || process.env.REPL_SLUG || 'tomoshibi'}.${process.env.REPLIT_CLUSTER || 'replit'}.dev/api/auth/google/callback`
+    callbackURL: `https://${process.env.REPLIT_DEV_DOMAIN || '07fd8776-7a53-46cf-a172-fe680c45880f-00-28nph8yxratj.janeway.replit.dev'}/api/auth/google/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -37,7 +37,7 @@ export function setupGoogleAuth(app: Express) {
 
       return done(null, user);
     } catch (error) {
-      return done(error, null);
+      return done(error, false);
     }
   }));
 
