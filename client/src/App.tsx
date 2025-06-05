@@ -345,141 +345,39 @@ function Navigation({ user }: { user: any }) {
 // Mobile Components
 function MobileHeader({ user }: { user: any }) {
   return (
-    <header className="bg-slate-800 px-3 py-2 flex items-center justify-between">
-      <Menu className="h-5 w-5 text-white" />
-      <h1 className="text-base font-semibold text-white">Dashboard</h1>
-      <Bell className="h-5 w-5 text-white" />
+    <header className="bg-background border-b border-border px-3 py-2 flex items-center justify-between">
+      <Menu className="h-5 w-5 text-foreground" />
+      <h1 className="text-base font-semibold text-foreground">Dashboard</h1>
+      <Bell className="h-5 w-5 text-foreground" />
     </header>
   );
 }
 
-function MobileDashboard() {
-  return (
-    <div className="space-y-3 mt-3">
-      {/* Learn Card */}
-      <div className="bg-pink-300 rounded-lg p-3 flex items-center justify-between">
-        <div>
-          <h2 className="text-base font-semibold text-black">Learn</h2>
-          <div className="w-24 h-1.5 bg-gray-300 rounded-full mt-1">
-            <div className="w-0 h-1.5 bg-gray-500 rounded-full"></div>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-xs text-black">0/10</div>
-          <Menu className="h-4 w-4 text-black mt-1" />
-        </div>
-      </div>
 
-      {/* Review Card */}
-      <div className="bg-red-400 rounded-lg p-3 flex items-center justify-between">
-        <div>
-          <h2 className="text-base font-semibold text-black">Review</h2>
-          <p className="text-xs text-black">Grammar & Vocab</p>
-        </div>
-        <div className="text-right">
-          <div className="bg-black text-white px-2 py-0.5 rounded text-xs">53</div>
-          <Menu className="h-4 w-4 text-black mt-1" />
-        </div>
-      </div>
-
-      {/* Progress Card */}
-      <div className="bg-slate-800 rounded-lg p-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-pink-200 rounded-full flex items-center justify-center">
-              <span className="text-xs">📚</span>
-            </div>
-            <div>
-              <h3 className="text-white text-sm font-semibold">Tomoshibi</h3>
-              <p className="text-gray-400 text-xs">Lvl 38 (1560 XP until Lvl 39)</p>
-            </div>
-          </div>
-          <button className="text-blue-400 text-xs">Share</button>
-        </div>
-
-        <div className="mb-3">
-          <div className="w-full h-1.5 bg-gray-600 rounded-full">
-            <div className="w-3/4 h-1.5 bg-red-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="text-white text-xs flex items-center gap-1">
-            JLPT Progress (Grammar)
-            <BarChart3 className="h-3 w-3" />
-          </h4>
-          
-          {['N5', 'N4', 'N3', 'N2', 'N1'].map((level, index) => (
-            <div key={level} className="flex items-center justify-between">
-              <span className="text-white text-xs font-mono w-6">{level}</span>
-              <div className="flex-1 mx-2 h-1.5 bg-gray-600 rounded-full">
-                <div 
-                  className={`h-1.5 rounded-full ${
-                    level === 'N5' ? 'bg-pink-400 w-5/6' : 'bg-gray-600 w-0'
-                  }`}
-                ></div>
-              </div>
-              <span className="text-gray-400 text-xs w-12 text-right">
-                {level === 'N5' ? '110/126' : level === 'N4' ? '0/177' : level === 'N3' ? '0/219' : level === 'N2' ? '0/213' : '0/180'}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          <div className="bg-slate-700 rounded-lg p-2 text-center">
-            <h5 className="text-gray-400 text-xs">Study Streak</h5>
-            <p className="text-white text-lg font-bold">14</p>
-          </div>
-          <div className="bg-slate-700 rounded-lg p-2 text-center">
-            <h5 className="text-gray-400 text-xs">Days Studied</h5>
-            <p className="text-white text-lg font-bold">138</p>
-          </div>
-        </div>
-
-        <div className="mt-3 text-center">
-          <h5 className="text-gray-400 text-xs">Last Session</h5>
-          <p className="text-white text-lg font-bold">95%</p>
-        </div>
-
-        <div className="mt-4">
-          <h5 className="text-gray-400 text-xs mb-2">Recent Badges</h5>
-          <div className="flex justify-center gap-1">
-            {[1, 2, 3, 4].map((badge) => (
-              <div key={badge} className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">🏆</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function MobileBottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border">
       <div className="grid grid-cols-5 py-1">
-        <Link href="/" className="flex flex-col items-center p-1 text-blue-400">
+        <Link href="/" className="flex flex-col items-center p-1 text-primary">
           <BarChart3 className="h-4 w-4" />
           <span className="text-xs mt-0.5">Dashboard</span>
         </Link>
-        <Link href="/grammar" className="flex flex-col items-center p-1 text-gray-400">
+        <Link href="/study" className="flex flex-col items-center p-1 text-muted-foreground">
           <BookOpen className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Grammar</span>
+          <span className="text-xs mt-0.5">Study</span>
         </Link>
-        <Link href="/decks" className="flex flex-col items-center p-1 text-gray-400">
-          <div className="h-4 w-4 bg-gray-400 rounded"></div>
-          <span className="text-xs mt-0.5">Decks</span>
+        <Link href="/jlpt-progress" className="flex flex-col items-center p-1 text-muted-foreground">
+          <div className="h-4 w-4 bg-muted-foreground rounded"></div>
+          <span className="text-xs mt-0.5">Progress</span>
         </Link>
-        <Link href="/content" className="flex flex-col items-center p-1 text-gray-400">
+        <Link href="/achievements" className="flex flex-col items-center p-1 text-muted-foreground">
           <BookOpen className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Content</span>
+          <span className="text-xs mt-0.5">Achievements</span>
         </Link>
-        <Link href="/search" className="flex flex-col items-center p-1 text-gray-400">
+        <Link href="/settings" className="flex flex-col items-center p-1 text-muted-foreground">
           <Search className="h-4 w-4" />
-          <span className="text-xs mt-0.5">Search</span>
+          <span className="text-xs mt-0.5">Settings</span>
         </Link>
       </div>
     </nav>
@@ -511,11 +409,11 @@ function AppRouter() {
       {/* Regular authenticated routes */}
       {user ? (
         <Route>
-          <div className="min-h-screen bg-slate-900 text-white">
+          <div className="min-h-screen bg-background text-foreground">
             <MobileHeader user={user} />
             <main className="pb-12 px-3">
               <Switch>
-                <Route path="/" component={MobileDashboard} />
+                <Route path="/" component={Dashboard} />
                 <Route path="/study" component={StudyPage} />
                 <Route path="/study-dedicated" component={StudyDedicatedPage} />
                 <Route path="/study-mode" component={StudyModePage} />
