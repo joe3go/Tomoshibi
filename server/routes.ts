@@ -335,7 +335,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const mode = req.query.mode as string;
       const limit = parseInt(req.query.limit as string) || 20;
       
-      const items = await storage.getReviewQueue(userId, 1000); // Get more to filter
+      let items = await storage.getReviewQueue(userId, 1000); // Get more to filter
+      
+      // If no SRS items exist yet, create initial ones for first study session
+      if (items.length === 0) {
+        const sentenceCards = await storage.getSentenceCards();
+        const cardsToAdd = sentenceCards.slice(0, 5); // Start with 5 cards
+        
+        for (const card of cardsToAdd) {
+          await storage.createSrsItem({
+            userId,
+            sentenceCardId: card.id,
+            interval: 1,
+            easeFactor: 2.5,
+            repetitions: 0,
+            lastReviewed: null,
+            nextReview: new Date(),
+            correctCount: 0,
+            incorrectCount: 0,
+            mastery: 'learning'
+          });
+        }
+        
+        items = await storage.getReviewQueue(userId, 1000);
+      }
       
       let filteredItems = items;
       
