@@ -128,12 +128,12 @@ export class MemStorage implements IStorage {
       displayName: "Akira Tanaka",
       profileImageUrl: null,
       googleId: null,
-      currentBelt: "yellow",
+      currentBelt: "white",
       currentJLPTLevel: "N5",
-      totalXP: 1250,
-      currentStreak: 7,
-      bestStreak: 12,
-      lastStudyDate: new Date(),
+      totalXP: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      lastStudyDate: null,
       studyGoal: "Understand anime without subtitles",
       dailyGoalMinutes: 30,
       dailyGoalKanji: 5,
@@ -194,25 +194,7 @@ export class MemStorage implements IStorage {
       this.sentenceCards.set(card.id, card);
     });
 
-    // Create SRS items for the first few cards
-    [1, 2, 3, 4, 5].forEach(cardId => {
-      const srsItem: SrsItem = {
-        id: cardId,
-        userId: 1,
-        sentenceCardId: cardId,
-        interval: 1,
-        easeFactor: 2.5,
-        repetitions: 0,
-        lastReviewed: null,
-        nextReview: new Date(),
-        correctCount: 0,
-        incorrectCount: 0,
-        mastery: 'learning',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      this.srsItems.set(cardId, srsItem);
-    });
+    // SRS items will be created when user starts studying
 
     // Seed achievements
     const achievements = [
@@ -244,19 +226,7 @@ export class MemStorage implements IStorage {
       this.achievements.set(achievement.id, achievement);
     });
 
-    // Sample study session
-    const studySession: StudySession = {
-      id: 1,
-      userId: 1,
-      sessionType: "review",
-      cardsReviewed: 5,
-      cardsCorrect: 4,
-      timeSpentMinutes: 15,
-      xpEarned: 100,
-      startedAt: new Date(Date.now() - 900000), // 15 minutes ago
-      completedAt: new Date()
-    };
-    this.studySessions.set(1, studySession);
+    // No pre-existing study sessions - start fresh
   }
 
   // User operations
