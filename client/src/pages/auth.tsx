@@ -204,41 +204,7 @@ export default function AuthPage() {
                     Continue with Google
                   </Button>
                   
-                  <Button
-                    onClick={async () => {
-                      // Directly call the login API with demo credentials
-                      try {
-                        const response = await apiRequest("POST", "/api/login", {
-                          username: "demo",
-                          password: "demo"
-                        });
-                        
-                        if (response.ok) {
-                          const data = await response.json();
-                          queryClient.setQueryData(["/api/user"], data);
-                          setLocation("/");
-                        } else {
-                          const errorData = await response.json();
-                          toast({
-                            title: "Demo login failed",
-                            description: errorData.error || "Invalid credentials",
-                            variant: "destructive",
-                          });
-                        }
-                      } catch (error) {
-                        toast({
-                          title: "Demo login failed",
-                          description: "Connection error",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    variant="default"
-                  >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Try Demo Account
-                  </Button>
+
                   
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
