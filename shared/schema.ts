@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   displayName: varchar("display_name", { length: 100 }).notNull(),
   profileImageUrl: varchar("profile_image_url", { length: 500 }),
   googleId: varchar("google_id", { length: 100 }).unique(),
+  userType: varchar("user_type", { length: 20 }).notNull().default("free_user"), // global_admin, premium_user, free_user
   
   // Learning progress
   currentBelt: varchar("current_belt", { length: 20 }).notNull().default("white"),

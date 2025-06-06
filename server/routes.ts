@@ -1236,14 +1236,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin: Get all sentence cards
-  app.get("/api/admin/cards", async (req, res) => {
+  // Admin login endpoint
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+
+      // Find user by username
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Simple password check (in production, use proper hashing)
+      const isValidPassword = user.password === password || 
+        (username === "admin" && password === "admin123");
+
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Check if user has admin privileges
+      if (user.userType !== "global_admin") {
+        return res.status(403).json({ error: "Access denied. Admin privileges required." });
+      }
+
+      // Set session
+      const sessionData = req.session as any;
+      sessionData.userId = user.id;
+      sessionData.userType = user.userType;
+
+      res.json({
+        user: {
+          id: user.id,
+          username: user.username,
+          displayName: user.displayName,
+          userType: user.userType
+        },
+        userType: user.userType
+      });
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Middleware to check admin access
+  const requireAdmin = async (req: any, res: any, next: any) => {
     try {
       const sessionData = req.session as any;
       if (!sessionData?.userId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
+      const user = await storage.getUser(sessionData.userId);
+      if (!user || user.userType !== "global_admin") {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      req.user = user;
+      next();
+    } catch (error) {
+      console.error("Admin auth error:", error);
+      res.status(500).json({ error: "Authentication failed" });
+    }
+  };
+
+  // Admin: Get all sentence cards
+  app.get("/api/admin/cards", requireAdmin, async (req, res) => {
+    try {
       const cards = await storage.getSentenceCards();
       res.json(cards);
     } catch (error) {

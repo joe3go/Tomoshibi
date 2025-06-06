@@ -215,6 +215,7 @@ export class MemStorage implements IStorage {
       displayName: "Akira Tanaka",
       profileImageUrl: null,
       googleId: null,
+      userType: "free_user",
       currentBelt: "white",
       currentJLPTLevel: "N5",
       totalXP: 0,
@@ -233,6 +234,34 @@ export class MemStorage implements IStorage {
     };
     this.users.set(1, demoUser);
 
+    // Create admin user
+    const adminUser: User = {
+      id: 3,
+      username: "admin",
+      email: "admin@tomoshibi.app",
+      password: "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9", // hashed "admin123"
+      displayName: "Global Administrator",
+      profileImageUrl: null,
+      googleId: null,
+      userType: "global_admin",
+      currentBelt: "black",
+      currentJLPTLevel: "N1",
+      totalXP: 10000,
+      currentStreak: 100,
+      bestStreak: 365,
+      lastStudyDate: new Date(),
+      studyGoal: "System administration",
+      dailyGoalMinutes: 60,
+      dailyGoalKanji: 20,
+      dailyGoalGrammar: 15,
+      dailyGoalVocabulary: 50,
+      preferredStudyTime: "morning",
+      enableReminders: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(3, adminUser);
+
     // Create test user for latibulize
     const testUser: User = {
       id: 2,
@@ -242,6 +271,7 @@ export class MemStorage implements IStorage {
       displayName: "Latibulize",
       profileImageUrl: null,
       googleId: null,
+      userType: "premium_user",
       currentBelt: "white",
       currentJLPTLevel: "N5",
       totalXP: 0,
