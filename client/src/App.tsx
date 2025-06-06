@@ -161,14 +161,18 @@ function Header({ user }: { user: any }) {
   const [showMobileNav, setShowMobileNav] = useState(false);
   
   const navItems = [
-    { href: "/", label: "Home", icon: Home },
+    { href: "/", label: "Dashboard", icon: Home },
     { href: "/vocabulary", label: "Vocab", icon: BookOpen },
+    { href: "/kanji", label: "Kanji", icon: BarChart3 },
+    { href: "/grammar", label: "Grammar", icon: Search },
     { href: "/learning-practice", label: "Practice", icon: Target },
+    { href: "/study-mode", label: "Study", icon: Award },
+    { href: "/jlpt-progress", label: "Progress", icon: Trophy },
     { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-50 md:left-80">
+    <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-50">
       <div className="flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-bold text-primary">Tomoshibi</h1>
@@ -240,93 +244,7 @@ function Header({ user }: { user: any }) {
   );
 }
 
-function Sidebar({ user }: { user: any }) {
-  const [location] = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-  
-  const navItems = [
-    { href: "/", label: "Dashboard", icon: Home },
-    { href: "/vocabulary", label: "Vocabulary", icon: BookOpen },
-    { href: "/learning-practice", label: "Practice Cards", icon: Target },
-    { href: "/study", label: "Study", icon: BarChart3 },
-    { href: "/jlpt-progress", label: "JLPT Progress", icon: Trophy },
-    { href: "/achievements", label: "Achievements", icon: Trophy },
-    { href: "/settings", label: "Settings", icon: SettingsIcon },
-  ];
 
-  return (
-    <>
-      {/* Sidebar Toggle Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed top-3 left-3 z-50 p-2 bg-background border border-border rounded-lg shadow-lg md:hidden"
-      >
-        <Menu className="h-4 w-4" />
-      </button>
-
-      {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setIsOpen(false)}
-          onTouchEnd={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div className={`fixed left-0 top-0 bottom-0 w-80 bg-background border-r border-border z-50 transform transition-transform duration-300 ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:translate-x-0 md:w-1/3 max-w-sm`}>
-        <div className="p-4 h-full overflow-y-auto">
-          {/* Close Button */}
-          <button
-            onClick={() => setIsOpen(false)}
-            className="absolute top-3 right-3 p-1 hover:bg-accent rounded md:hidden"
-          >
-            <X className="h-4 w-4" />
-          </button>
-
-          {/* User Profile */}
-          <div className="mb-6 mt-8 md:mt-4">
-            <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-sm font-medium text-primary">
-                  {user.displayName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "U"}
-                </span>
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{user.displayName || user.username}</div>
-                <div className="text-xs text-muted-foreground">{user.currentBelt} belt • {user.totalXP} XP</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location === item.href;
-              
-              return (
-                <Link key={item.href} href={item.href}>
-                  <button 
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span className="text-sm">{item.label}</span>
-                  </button>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function AppRouter() {
   const { data: user, isLoading } = useQuery<any>({
@@ -355,12 +273,13 @@ function AppRouter() {
   return (
     <MobileWrapper>
       <Header user={user} />
-      <Sidebar user={user} />
       
-      <div className="pt-14 md:pl-80 min-h-screen overflow-y-auto">
+      <div className="pt-14 min-h-screen overflow-y-auto">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/vocabulary" component={Vocabulary} />
+          <Route path="/kanji" component={KanjiPage} />
+          <Route path="/grammar" component={GrammarPage} />
           <Route path="/learning-practice" component={LearningPractice} />
           <Route path="/study" component={Study} />
           <Route path="/jlpt-progress" component={JLPTProgress} />
