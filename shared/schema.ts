@@ -118,9 +118,10 @@ export const srsItems = pgTable("srs_items", {
   userId: integer("user_id").notNull().references(() => users.id),
   sentenceCardId: integer("sentence_card_id").notNull().references(() => sentenceCards.id),
   
-  // SRS algorithm data
+  // FSRS5 algorithm data
   interval: integer("interval").notNull().default(1), // days until next review
-  easeFactor: real("ease_factor").notNull().default(2.5),
+  difficulty: real("difficulty").notNull().default(5.0), // FSRS5 difficulty (1-10)
+  stability: real("stability").notNull().default(1.0), // FSRS5 stability
   repetitions: integer("repetitions").notNull().default(0),
   lastReviewed: timestamp("last_reviewed"),
   nextReview: timestamp("next_review").notNull(),

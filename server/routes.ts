@@ -20,48 +20,82 @@ import {
 } from "@shared/schema";
 import { comparePasswords } from "./auth";
 
-// SRS Algorithm Implementation
-class SRSAlgorithm {
-  static calculateNextReview(
-    currentInterval: number,
-    easeFactor: number,
-    repetitions: number,
-    quality: number // 0-5 scale (0=total blackout, 5=perfect response)
-  ): { newInterval: number; newEaseFactor: number; newRepetitions: number } {
-    let newEaseFactor = easeFactor;
-    let newRepetitions = repetitions;
-    let newInterval = currentInterval;
+// FSRS5 Algorithm Implementation
+class FSRS5Algorithm {
+  // FSRS5 default parameters
+  static defaultParams = [
+    0.5701, 1.4436, 4.1386, 10.9355, 5.1443, 1.2006, 0.8627, 0.0362,
+    1.629, 0.1342, 1.0166, 2.1174, 0.0839, 0.3204, 1.4676, 0.219, 2.8237
+  ];
 
-    if (quality >= 3) {
-      // Correct response
-      newRepetitions += 1;
+  static FSRS_VERSION = 1;
+  static FACTOR = 19 / 81;
 
-      if (newRepetitions === 1) {
-        newInterval = 1;
-      } else if (newRepetitions === 2) {
-        newInterval = 6;
-      } else {
-        newInterval = Math.round(currentInterval * easeFactor);
-      }
-
-      newEaseFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-    } else {
-      // Incorrect response
-      newRepetitions = 0;
-      newInterval = 1;
-    }
-
-    // Clamp ease factor between 1.3 and 2.5
-    newEaseFactor = Math.max(1.3, Math.min(2.5, newEaseFactor));
-
-    return { newInterval, newEaseFactor, newRepetitions };
+  static calculateStability(difficulty: number, stability: number, retrievability: number, grade: number, params: number[]): number {
+    let hardPenalty = grade === 2 ? params[15] : 1;
+    let easyBound = grade === 4 ? params[16] : 1;
+    
+    return stability * (
+      1 +
+      Math.exp(params[8]) *
+      (11 - difficulty) *
+      Math.pow(stability, -params[9]) *
+      (Math.exp((1 - retrievability) * params[10]) - 1) *
+      hardPenalty *
+      easyBound
+    );
   }
 
-  static determineMastery(repetitions: number, interval: number): string {
+  static calculateDifficulty(difficulty: number, grade: number, params: number[]): number {
+    let deltaD = -params[6] * (grade - 3);
+    let meanReversion = params[7] * (params[4] - difficulty);
+    let newDifficulty = difficulty + deltaD + meanReversion;
+    return Math.max(1, Math.min(10, newDifficulty));
+  }
+
+  static calculateRetention(elapsedDays: number, stability: number): number {
+    return Math.pow(1 + this.FACTOR * elapsedDays / stability, -1);
+  }
+
+  static calculateInterval(stability: number, requestRetention: number = 0.9): number {
+    return Math.max(1, Math.round(stability * (Math.pow(requestRetention, 1 / this.FACTOR) - 1) / this.FACTOR));
+  }
+
+  static initCard(grade: number, params: number[] = this.defaultParams): { difficulty: number; stability: number; interval: number } {
+    let difficulty = params[4] - Math.exp(params[5] * (grade - 1)) + 1;
+    difficulty = Math.max(1, Math.min(10, difficulty));
+    
+    let stability = Math.max(0.1, params[grade - 1]);
+    let interval = this.calculateInterval(stability);
+    
+    return { difficulty, stability, interval };
+  }
+
+  static reviewCard(
+    grade: number,
+    elapsedDays: number,
+    difficulty: number,
+    stability: number,
+    params: number[] = this.defaultParams
+  ): { difficulty: number; stability: number; interval: number } {
+    let retrievability = this.calculateRetention(elapsedDays, stability);
+    let newDifficulty = this.calculateDifficulty(difficulty, grade, params);
+    let newStability = this.calculateStability(difficulty, stability, retrievability, grade, params);
+    let newInterval = this.calculateInterval(newStability);
+    
+    return {
+      difficulty: newDifficulty,
+      stability: newStability,
+      interval: newInterval
+    };
+  }
+
+  static determineMastery(repetitions: number, interval: number, difficulty: number): string {
     if (repetitions === 0) return "new";
-    if (repetitions < 3) return "learning";
-    if (interval < 21) return "review";
-    return "mastered";
+    if (repetitions <= 2) return "learning";
+    if (difficulty >= 7) return "difficult";
+    if (interval >= 100) return "mastered";
+    return "review";
   }
 }
 
@@ -391,13 +425,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             userId,
             sentenceCardId: card.id,
             interval: 1,
-            easeFactor: 2.5,
+            difficulty: 5.0,
+            stability: 1.0,
             repetitions: 0,
             lastReviewed: null,
             nextReview: new Date(),
             correctCount: 0,
             incorrectCount: 0,
-            mastery: 'learning'
+            mastery: 'new'
           });
         }
 
@@ -476,28 +511,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "SRS item not found" });
       }
 
-      // Calculate new SRS values
-      const { newInterval, newEaseFactor, newRepetitions } = SRSAlgorithm.calculateNextReview(
-        srsItem.interval,
-        srsItem.easeFactor,
-        srsItem.repetitions,
-        quality
-      );
+      // Calculate elapsed days since last review
+      const elapsedDays = srsItem.lastReviewed ? 
+        Math.max(1, Math.floor((Date.now() - srsItem.lastReviewed.getTime()) / (1000 * 60 * 60 * 24))) : 
+        1;
+
+      // Calculate new FSRS5 values
+      const { difficulty: newDifficulty, stability: newStability, interval: newInterval } = 
+        srsItem.repetitions === 0 ? 
+          FSRS5Algorithm.initCard(quality + 1) : // FSRS expects 1-4 scale
+          FSRS5Algorithm.reviewCard(quality + 1, elapsedDays, srsItem.difficulty, srsItem.stability);
 
       const nextReview = new Date();
       nextReview.setDate(nextReview.getDate() + newInterval);
 
-      const newMastery = SRSAlgorithm.determineMastery(newRepetitions, newInterval);
+      const newRepetitions = srsItem.repetitions + (quality >= 2 ? 1 : 0);
+      const newMastery = FSRS5Algorithm.determineMastery(newRepetitions, newInterval, newDifficulty);
 
       // Update SRS item
       const updatedItem = await storage.updateSrsItem(srsItemId, {
         interval: newInterval,
-        easeFactor: newEaseFactor,
+        difficulty: newDifficulty,
+        stability: newStability,
         repetitions: newRepetitions,
         lastReviewed: new Date(),
         nextReview,
-        correctCount: quality >= 3 ? srsItem.correctCount + 1 : srsItem.correctCount,
-        incorrectCount: quality < 3 ? srsItem.incorrectCount + 1 : srsItem.incorrectCount,
+        correctCount: quality >= 2 ? srsItem.correctCount + 1 : srsItem.correctCount,
+        incorrectCount: quality < 2 ? srsItem.incorrectCount + 1 : srsItem.incorrectCount,
         mastery: newMastery
       });
 
