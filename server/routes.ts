@@ -179,6 +179,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Google OAuth
   setupGoogleAuth(app);
 
+  // Registration route
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, email, password } = req.body;
+
+      if (!username || !email || !password) {
+        return res.status(400).json({ error: "Username, email, and password are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      // Hash the password
+      const hashedPassword = await hashPassword(password);
+
+      // Create new user
+      const newUser = await storage.createUser({
+        username,
+        displayName: username,
+        email,
+        password: hashedPassword,
+        userType: "free",
+        currentBelt: "白帯",
+        currentJLPTLevel: "N5",
+        totalXP: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        lastStudyDate: null,
+        profileImageUrl: null,
+        googleId: null,
+        isEmailVerified: false,
+        emailVerificationToken: null,
+        emailVerificationExpires: null,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        preferences: null,
+        timezone: null,
+        language: "en",
+        enableNotifications: true,
+        enableSounds: true,
+        enableAnimations: true,
+        enableReminders: true
+      });
+
+      res.json({ 
+        message: "Registration successful! You can now log in.",
+        user: { 
+          id: newUser.id, 
+          username: newUser.username, 
+          email: newUser.email 
+        }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
   // Login route
   app.post("/api/login", async (req, res) => {
     try {
