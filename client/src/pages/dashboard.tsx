@@ -26,10 +26,7 @@ function StudyAllButton({ studyOptions }: { studyOptions: any }) {
   const [, setLocation] = useLocation();
   
   const createStudySession = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/study-session", {
-      method: "POST",
-      body: JSON.stringify(data)
-    }),
+    mutationFn: (data: any) => apiRequest("POST", "/api/study-session", data),
     onSuccess: (session) => {
       setLocation(`/study-mode?sessionId=${session.id}&type=all&mode=learn`);
     }
@@ -69,10 +66,7 @@ function ReviewAllButton({ studyOptions }: { studyOptions: any }) {
   const [, setLocation] = useLocation();
   
   const createReviewSession = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/study-session", {
-      method: "POST", 
-      body: JSON.stringify(data)
-    }),
+    mutationFn: (data: any) => apiRequest("POST", "/api/study-session", data),
     onSuccess: (session) => {
       setLocation(`/study-mode?sessionId=${session.id}&type=all&mode=review`);
     }
