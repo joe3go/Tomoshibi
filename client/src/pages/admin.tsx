@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   Plus, 
   Edit, 
@@ -27,12 +28,14 @@ import {
   Eye,
   BarChart3,
   FileText,
-  Settings
+  Settings,
+  Users,
+  Shield,
+  Check,
+  AlertTriangle
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { DataLoadingAnimation } from "@/components/ui/japanese-loading";
-import { AdminGuard } from "@/components/admin-guard";
 
 interface SentenceCard {
   id: number;
@@ -48,6 +51,22 @@ interface SentenceCard {
   audioUrl?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+  displayName: string;
+  email: string | null;
+  userType: string;
+  currentBelt: string;
+  currentJLPTLevel: string;
+  totalXP: number;
+  currentStreak: number;
+  bestStreak: number;
+  lastStudyDate: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface CardFormData {
@@ -83,6 +102,9 @@ const sources = ["manual", "jlpt", "textbook", "media", "conversation"];
 
 function AdminPageContent() {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Card management state
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
   const [selectedTheme, setSelectedTheme] = useState<string>("all");
@@ -94,10 +116,28 @@ function AdminPageContent() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [editingCardId, setEditingCardId] = useState<number | null>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [tempValue, setTempValue] = useState<string>("");
+
+  // User management state
+  const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [selectedUserType, setSelectedUserType] = useState<string>("all");
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [isUserEditDialogOpen, setIsUserEditDialogOpen] = useState(false);
+
+  // Upload state
+  const [uploadStatus, setUploadStatus] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
 
   // Fetch all cards
-  const { data: cards = [], isLoading, error } = useQuery<SentenceCard[]>({
+  const { data: cards = [], isLoading: cardsLoading, error: cardsError } = useQuery<SentenceCard[]>({
     queryKey: ["/api/admin/cards"],
+  });
+
+  // Fetch all users
+  const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
   });
 
   // Create card mutation

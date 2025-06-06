@@ -210,6 +210,7 @@ function Header({ user }: { user: any }) {
     { href: "/learning-practice", label: "Practice", icon: Target },
     { href: "/study-mode", label: "Study", icon: Award },
     { href: "/jlpt-progress", label: "Progress", icon: Trophy },
+    ...(user?.userType === "global_admin" ? [{ href: "/admin", label: "Admin", icon: Settings }] : []),
   ];
 
   return (

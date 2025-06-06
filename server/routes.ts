@@ -1392,6 +1392,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Get all users
+  app.get("/api/admin/users", requireAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      // Remove sensitive data
+      const safeUsers = users.map(user => ({
+        ...user,
+        password: undefined
+      }));
+      res.json(safeUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  // Admin: Update user
+  app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const updates = req.body;
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+
+      const updatedUser = await storage.updateUser(userId, updates);
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Remove sensitive data
+      const safeUser = { ...updatedUser, password: undefined };
+      res.json(safeUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+
+  // Admin: Bulk upload cards via CSV
+  app.post("/api/admin/cards/bulk-upload", requireAdmin, async (req, res) => {
+    try {
+      const { csvData } = req.body;
+
+      if (!csvData) {
+        return res.status(400).json({ error: "CSV data is required" });
+      }
+
+      const lines = csvData.trim().split('\n');
+      const headers = lines[0].split(',').map((h: string) => h.trim());
+      
+      // Expected CSV format: japanese,reading,english,jlptLevel,difficulty,register,theme,source,tags,audioUrl
+      const expectedHeaders = ['japanese', 'reading', 'english', 'jlptLevel', 'difficulty', 'register', 'theme', 'source', 'tags', 'audioUrl'];
+      
+      if (!expectedHeaders.every(header => headers.includes(header))) {
+        return res.status(400).json({ 
+          error: "Invalid CSV format. Expected headers: " + expectedHeaders.join(', ') 
+        });
+      }
+
+      const createdCards = [];
+      const errors = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        try {
+          const values = lines[i].split(',').map((v: string) => v.trim());
+          const cardData: any = {};
+
+          headers.forEach((header, index) => {
+            cardData[header] = values[index] || '';
+          });
+
+          // Process tags
+          cardData.tags = cardData.tags ? cardData.tags.split(';').map((t: string) => t.trim()) : [];
+          
+          // Convert difficulty to number
+          cardData.difficulty = parseInt(cardData.difficulty) || 1;
+          
+          // Set defaults
+          cardData.jlptLevel = cardData.jlptLevel || 'N5';
+          cardData.register = cardData.register || 'casual';
+          cardData.theme = cardData.theme || 'general';
+          cardData.source = cardData.source || 'manual';
+          cardData.vocabularyIds = [];
+          cardData.grammarPatterns = [];
+          cardData.culturalNotes = null;
+
+          if (cardData.japanese && cardData.reading && cardData.english) {
+            const newCard = await storage.createSentenceCard(cardData);
+            createdCards.push(newCard);
+          } else {
+            errors.push(`Row ${i + 1}: Missing required fields (japanese, reading, english)`);
+          }
+        } catch (error) {
+          errors.push(`Row ${i + 1}: ${error.message}`);
+        }
+      }
+
+      res.json({ 
+        success: true, 
+        created: createdCards.length,
+        errors: errors.length,
+        errorDetails: errors
+      });
+    } catch (error) {
+      console.error("Error bulk uploading cards:", error);
+      res.status(500).json({ error: "Failed to upload cards" });
+    }
+  });
+
   // Update user JLPT level
   app.patch("/api/user/jlpt-level", async (req, res) => {
     try {
