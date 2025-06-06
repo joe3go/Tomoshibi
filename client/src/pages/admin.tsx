@@ -145,12 +145,8 @@ function AdminPageContent() {
   // Create card mutation
   const createCardMutation = useMutation({
     mutationFn: async (cardData: Partial<SentenceCard>) => {
-      const response = await apiRequest("/api/admin/cards", {
-        method: "POST",
-        body: JSON.stringify(cardData),
-        headers: { "Content-Type": "application/json" }
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/admin/cards", cardData);
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
@@ -166,12 +162,8 @@ function AdminPageContent() {
   // Update card mutation
   const updateCardMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: Partial<SentenceCard> }) => {
-      const response = await apiRequest(`/api/admin/cards/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify(updates),
-        headers: { "Content-Type": "application/json" }
-      });
-      return response;
+      const response = await apiRequest("PATCH", `/api/admin/cards/${id}`, updates);
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
@@ -189,8 +181,8 @@ function AdminPageContent() {
   // Delete card mutation
   const deleteCardMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest(`/api/admin/cards/${id}`, { method: "DELETE" });
-      return response;
+      const response = await apiRequest("DELETE", `/api/admin/cards/${id}`);
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
@@ -204,12 +196,8 @@ function AdminPageContent() {
   // Update user mutation
   const updateUserMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: Partial<User> }) => {
-      const response = await apiRequest(`/api/admin/users/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify(updates),
-        headers: { "Content-Type": "application/json" }
-      });
-      return response;
+      const response = await apiRequest("PATCH", `/api/admin/users/${id}`, updates);
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
@@ -225,12 +213,8 @@ function AdminPageContent() {
   // CSV upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (csvData: string) => {
-      const response = await apiRequest("/api/admin/cards/bulk-upload", {
-        method: "POST",
-        body: JSON.stringify({ csvData }),
-        headers: { "Content-Type": "application/json" }
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/admin/cards/bulk-upload", { csvData });
+      return await response.json();
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
