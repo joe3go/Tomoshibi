@@ -983,6 +983,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // JLPT Content API Routes
+  app.get("/api/jlpt/:level/:type", async (req, res) => {
+    try {
+      const { level, type } = req.params;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+      
+      let items: any[] = [];
+      
+      switch (type) {
+        case 'vocabulary':
+          items = await storage.getJlptVocabulary({ jlptLevel: level.toUpperCase(), limit, offset });
+          break;
+        case 'kanji':
+          items = await storage.getJlptKanji({ jlptLevel: level.toUpperCase(), limit, offset });
+          break;
+        case 'grammar':
+          items = await storage.getJlptGrammar({ jlptLevel: level.toUpperCase(), limit, offset });
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid content type. Use: vocabulary, kanji, or grammar" });
+      }
+      
+      res.json({
+        items,
+        level: level.toUpperCase(),
+        type,
+        count: items.length,
+        offset,
+        limit
+      });
+    } catch (error) {
+      console.error(`Error fetching JLPT ${req.params.level} ${req.params.type}:`, error);
+      res.status(500).json({ error: "Failed to fetch JLPT content" });
+    }
+  });
+
+  // Search JLPT content
+  app.get("/api/jlpt/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      const type = req.query.type as 'vocabulary' | 'kanji' | 'grammar' | undefined;
+      
+      if (!query) {
+        return res.status(400).json({ error: "Query parameter 'q' is required" });
+      }
+      
+      const results = await storage.searchJlptContent(query, type);
+      
+      res.json({
+        query,
+        type: type || 'all',
+        results,
+        count: results.length
+      });
+    } catch (error) {
+      console.error("Error searching JLPT content:", error);
+      res.status(500).json({ error: "Failed to search JLPT content" });
+    }
+  });
+
+  // Get comprehensive JLPT content for a level
+  app.get("/api/jlpt/:level", async (req, res) => {
+    try {
+      const { level } = req.params;
+      const limit = parseInt(req.query.limit as string) || 20;
+      
+      const [vocabulary, kanji, grammar] = await Promise.all([
+        storage.getJlptVocabulary({ jlptLevel: level.toUpperCase(), limit }),
+        storage.getJlptKanji({ jlptLevel: level.toUpperCase(), limit }),
+        storage.getJlptGrammar({ jlptLevel: level.toUpperCase(), limit })
+      ]);
+      
+      res.json({
+        level: level.toUpperCase(),
+        vocabulary: {
+          items: vocabulary,
+          count: vocabulary.length
+        },
+        kanji: {
+          items: kanji,
+          count: kanji.length
+        },
+        grammar: {
+          items: grammar,
+          count: grammar.length
+        }
+      });
+    } catch (error) {
+      console.error(`Error fetching JLPT ${req.params.level} content:`, error);
+      res.status(500).json({ error: "Failed to fetch JLPT level content" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
