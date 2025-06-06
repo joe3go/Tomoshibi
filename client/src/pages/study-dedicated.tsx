@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Furigana } from "@/components/furigana";
+import { ReviewLoadingAnimation } from "@/components/ui/japanese-loading";
 import {
   AlertDialog,
   AlertDialogAction,

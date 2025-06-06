@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useJLPTLevelCheck } from "@/components/jlpt-level-selector";
+import { DashboardLoadingAnimation, DataLoadingAnimation } from "@/components/ui/japanese-loading";
 import { useState } from "react";
 
 // Study Session Preview Component
@@ -322,16 +323,16 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center">Loading dashboard...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <DashboardLoadingAnimation />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center">Loading dashboard...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <DashboardLoadingAnimation />
       </div>
     );
   }

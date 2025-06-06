@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, BookOpen, Brain, Type, Eye, Plus, Play } from "lucide-react";
 import { Link } from "wouter";
+import { StudyLoadingAnimation } from "@/components/ui/japanese-loading";
 
 interface StudyOptions {
   reviews: {
@@ -70,7 +71,7 @@ export default function StudyModePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <StudyLoadingAnimation />
       </div>
     );
   }
