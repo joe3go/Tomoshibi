@@ -104,7 +104,7 @@ export default function Dashboard() {
 
       {/* Vocabulary Quick Stats */}
       <div className="grid gap-2 grid-cols-2 lg:grid-cols-4">
-        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+        <Card className="p-4 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Total Words</p>
@@ -114,7 +114,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+        <Card className="p-4 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Due Now</p>
@@ -124,7 +124,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+        <Card className="p-4 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Success Rate</p>
@@ -134,7 +134,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+        <Card className="p-4 bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Streak</p>
@@ -196,7 +196,7 @@ export default function Dashboard() {
                 <span className="text-sm">Vocabulary</span>
               </Button>
             </Link>
-            
+
             <Button 
               variant="outline" 
               onClick={() => setShowVocabStats(!showVocabStats)}
@@ -222,13 +222,13 @@ export default function Dashboard() {
       )}
 
       {/* JLPT Progress Section */}
-      <Card className="p-3 bg-card/50 backdrop-blur-sm">
+      <Card className="p-4 bg-card/50 backdrop-blur-sm">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">JLPT Progress</h3>
             <Badge variant="secondary" className="text-xs">{user.currentJLPTLevel || 'N5'}</Badge>
           </div>
-          
+
           <div className="space-y-2">
             {['N5', 'N4', 'N3', 'N2', 'N1'].map((level) => {
               const progress = level === 'N5' ? 85 : level === 'N4' ? 15 : 0;
@@ -246,7 +246,7 @@ export default function Dashboard() {
 
       {/* Recent Activity */}
       {recentSessions && recentSessions.length > 0 && (
-        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+        <Card className="p-4 bg-card/50 backdrop-blur-sm">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold">Recent Activity</h3>
             <div className="space-y-2">
@@ -267,7 +267,7 @@ export default function Dashboard() {
 
       {/* Achievements */}
       {achievements && achievements.length > 0 && (
-        <Card className="p-3 bg-card/50 backdrop-blur-sm">
+        <Card className="p-4 bg-card/50 backdrop-blur-sm">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold">Recent Achievements</h3>
             <div className="flex space-x-2 overflow-x-auto">
