@@ -176,7 +176,7 @@ function Header({ user }: { user: any }) {
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-50">
-      <div className="flex items-center justify-between px-4 h-14">
+      <div className="flex items-center justify-center px-4 h-14 max-w-7xl mx-auto">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="relative">

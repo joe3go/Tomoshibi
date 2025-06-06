@@ -93,14 +93,18 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={45} className="h-3 bg-red-100 dark:bg-red-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
-                  <div className="font-semibold text-orange-600 dark:text-orange-400">12</div>
-                  <div className="text-xs text-muted-foreground">Reviews</div>
-                </div>
-                <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg">
-                  <div className="font-semibold text-green-600 dark:text-green-400">5</div>
-                  <div className="text-xs text-muted-foreground">New</div>
-                </div>
+                <Link href="/study-mode?type=kanji&mode=review">
+                  <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors">
+                    <div className="font-semibold text-orange-600 dark:text-orange-400">12</div>
+                    <div className="text-xs text-muted-foreground">Reviews</div>
+                  </div>
+                </Link>
+                <Link href="/study-mode?type=kanji&mode=learn">
+                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors">
+                    <div className="font-semibold text-green-600 dark:text-green-400">5</div>
+                    <div className="text-xs text-muted-foreground">New</div>
+                  </div>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -129,14 +133,18 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={29} className="h-3 bg-blue-100 dark:bg-blue-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
-                  <div className="font-semibold text-orange-600 dark:text-orange-400">28</div>
-                  <div className="text-xs text-muted-foreground">Reviews</div>
-                </div>
-                <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg">
-                  <div className="font-semibold text-green-600 dark:text-green-400">10</div>
-                  <div className="text-xs text-muted-foreground">New</div>
-                </div>
+                <Link href="/study-mode?type=vocabulary&mode=review">
+                  <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors">
+                    <div className="font-semibold text-orange-600 dark:text-orange-400">28</div>
+                    <div className="text-xs text-muted-foreground">Reviews</div>
+                  </div>
+                </Link>
+                <Link href="/study-mode?type=vocabulary&mode=learn">
+                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors">
+                    <div className="font-semibold text-green-600 dark:text-green-400">10</div>
+                    <div className="text-xs text-muted-foreground">New</div>
+                  </div>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -165,14 +173,18 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={56} className="h-3 bg-green-100 dark:bg-green-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
-                  <div className="font-semibold text-orange-600 dark:text-orange-400">8</div>
-                  <div className="text-xs text-muted-foreground">Reviews</div>
-                </div>
-                <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg">
-                  <div className="font-semibold text-green-600 dark:text-green-400">3</div>
-                  <div className="text-xs text-muted-foreground">New</div>
-                </div>
+                <Link href="/study-mode?type=grammar&mode=review">
+                  <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors">
+                    <div className="font-semibold text-orange-600 dark:text-orange-400">8</div>
+                    <div className="text-xs text-muted-foreground">Reviews</div>
+                  </div>
+                </Link>
+                <Link href="/study-mode?type=grammar&mode=learn">
+                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors">
+                    <div className="font-semibold text-green-600 dark:text-green-400">3</div>
+                    <div className="text-xs text-muted-foreground">New</div>
+                  </div>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -219,63 +231,110 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {/* Learn Section */}
-      <Card className="p-6">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Learn</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <Link href="/vocabulary">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <BookOpen className="h-5 w-5" />
-                <span className="text-sm">Vocabulary</span>
-              </Button>
-            </Link>
+      {/* Progress Visualizations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Study Streak & Daily Progress */}
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-orange-600" />
+              Study Streak
+            </CardTitle>
+            <CardDescription>Your learning consistency</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Current Streak */}
+              <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 rounded-xl">
+                <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">7</div>
+                <div className="text-sm text-muted-foreground">Day Streak</div>
+                <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">🔥 Keep it up!</div>
+              </div>
+              
+              {/* Weekly Progress */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>This Week</span>
+                  <span className="text-muted-foreground">5/7 days</span>
+                </div>
+                <div className="flex gap-1">
+                  {Array.from({ length: 7 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`h-8 flex-1 rounded ${
+                        i < 5
+                          ? 'bg-green-500 dark:bg-green-600'
+                          : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Mon</span>
+                  <span>Tue</span>
+                  <span>Wed</span>
+                  <span>Thu</span>
+                  <span>Fri</span>
+                  <span>Sat</span>
+                  <span>Sun</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-            <Link href="/kanji">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Target className="h-5 w-5" />
-                <span className="text-sm">Kanji</span>
-              </Button>
-            </Link>
-
-            <Link href="/grammar">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <BarChart3 className="h-5 w-5" />
-                <span className="text-sm">Grammar</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </Card>
-
-      {/* Review Section */}
-      <Card className="p-6">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Review</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <Link href="/study-mode">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Play className="h-5 w-5" />
-                <span className="text-sm">Study Session</span>
-              </Button>
-            </Link>
-
-            <Link href="/content-browser">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Award className="h-5 w-5" />
-                <span className="text-sm">Content Browser</span>
-              </Button>
-            </Link>
-
-            <Link href="/jlpt-progress">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Trophy className="h-5 w-5" />
-                <span className="text-sm">Progress</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </Card>
+        {/* Monthly Progress Chart */}
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue-600" />
+              Monthly Progress
+            </CardTitle>
+            <CardDescription>XP earned over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Monthly Stats */}
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                  <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">1,240</div>
+                  <div className="text-xs text-muted-foreground">Total XP</div>
+                </div>
+                <div className="p-3 bg-green-50 dark:bg-green-900/10 rounded-lg">
+                  <div className="text-lg font-semibold text-green-600 dark:text-green-400">85</div>
+                  <div className="text-xs text-muted-foreground">Cards/Day</div>
+                </div>
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+                  <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">92%</div>
+                  <div className="text-xs text-muted-foreground">Accuracy</div>
+                </div>
+              </div>
+              
+              {/* Simple Progress Bars for Recent Days */}
+              <div className="space-y-3">
+                <div className="text-sm font-medium">Recent Activity</div>
+                {['Today', 'Yesterday', '2 days ago', '3 days ago'].map((day, index) => {
+                  const progress = [85, 92, 78, 95][index];
+                  return (
+                    <div key={day} className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span>{day}</span>
+                        <span className="text-muted-foreground">{progress} XP</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* JLPT Progress Section */}
       <Card className="p-4 bg-card/50 backdrop-blur-sm">
