@@ -95,17 +95,17 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={45} className="h-3 bg-red-100 dark:bg-red-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <Link href="/study-mode?type=kanji&mode=review">
-                  <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors">
+                <Link href="/study-mode?type=kanji&mode=review" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center">
                     <div className="font-semibold text-orange-600 dark:text-orange-400">12</div>
                     <div className="text-xs text-muted-foreground">Reviews</div>
-                  </div>
+                  </Button>
                 </Link>
-                <Link href="/study-mode?type=kanji&mode=learn">
-                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors">
+                <Link href="/study-mode?type=kanji&mode=learn" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center">
                     <div className="font-semibold text-green-600 dark:text-green-400">5</div>
                     <div className="text-xs text-muted-foreground">New</div>
-                  </div>
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -135,17 +135,17 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={29} className="h-3 bg-blue-100 dark:bg-blue-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <Link href="/study-mode?type=vocabulary&mode=review">
-                  <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors">
+                <Link href="/study-mode?type=vocabulary&mode=review" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center">
                     <div className="font-semibold text-orange-600 dark:text-orange-400">28</div>
                     <div className="text-xs text-muted-foreground">Reviews</div>
-                  </div>
+                  </Button>
                 </Link>
-                <Link href="/study-mode?type=vocabulary&mode=learn">
-                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors">
+                <Link href="/study-mode?type=vocabulary&mode=learn" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center">
                     <div className="font-semibold text-green-600 dark:text-green-400">10</div>
                     <div className="text-xs text-muted-foreground">New</div>
-                  </div>
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -175,17 +175,17 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={56} className="h-3 bg-green-100 dark:bg-green-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <Link href="/study-mode?type=grammar&mode=review">
-                  <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors">
+                <Link href="/study-mode?type=grammar&mode=review" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center">
                     <div className="font-semibold text-orange-600 dark:text-orange-400">8</div>
                     <div className="text-xs text-muted-foreground">Reviews</div>
-                  </div>
+                  </Button>
                 </Link>
-                <Link href="/study-mode?type=grammar&mode=learn">
-                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/10 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors">
+                <Link href="/study-mode?type=grammar&mode=learn" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center">
                     <div className="font-semibold text-green-600 dark:text-green-400">3</div>
                     <div className="text-xs text-muted-foreground">New</div>
-                  </div>
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -194,44 +194,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Study Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href="/vocabulary">
-          <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer h-full">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto">
-                <BookOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="font-semibold">Vocabulary</h3>
-              <p className="text-sm text-muted-foreground">Study words and meanings</p>
-            </div>
-          </Card>
-        </Link>
-
-        <Link href="/kanji">
-          <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer h-full">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto">
-                <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="font-semibold">Kanji</h3>
-              <p className="text-sm text-muted-foreground">Learn characters and readings</p>
-            </div>
-          </Card>
-        </Link>
-
-        <Link href="/grammar">
-          <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer h-full">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto">
-                <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h3 className="font-semibold">Grammar</h3>
-              <p className="text-sm text-muted-foreground">Master sentence patterns</p>
-            </div>
-          </Card>
-        </Link>
-      </div>
+      
 
       {/* Progress Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
