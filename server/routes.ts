@@ -1374,6 +1374,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Data import endpoint for admins
+  app.post("/api/admin/import-data", async (req, res) => {
+    try {
+      const { CSVImporter } = await import('./csv-importer');
+      const importer = new CSVImporter();
+      
+      // Run the import in the background
+      importer.importJLPTVocabularyFromCSV()
+        .then(() => importer.importJLPTKanjiFromJSON())
+        .then(() => importer.importJLPTGrammarFromJSON())
+        .then(() => importer.close())
+        .catch(error => console.error('Background import failed:', error));
+      
+      res.json({ message: 'Data import started in background', status: 'started' });
+    } catch (error) {
+      console.error('Error starting data import:', error);
+      res.status(500).json({ error: 'Failed to start data import' });
+    }
+  });
+
   // Admin login endpoint
   app.post("/api/admin/login", async (req, res) => {
     try {
