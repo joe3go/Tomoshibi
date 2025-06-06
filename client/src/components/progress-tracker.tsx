@@ -258,7 +258,7 @@ export function ProgressTracker({ user, studyOptions }: ProgressTrackerProps) {
       </Card>
 
       {/* Recent Achievements */}
-      {achievements && achievements.length > 0 && (
+      {achievements && Array.isArray(achievements) && achievements.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">

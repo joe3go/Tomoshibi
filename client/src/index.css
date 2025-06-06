@@ -1,20 +1,335 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Kosugi+Maru&family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Touch feedback for mobile interactions */
-.touch-feedback {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  touch-action: manipulation;
-  user-select: none;
-  transition: transform 0.1s ease, background-color 0.1s ease;
+@layer base {
+  :root {
+    /* Enhanced color palette for better Japanese learning UX */
+    --background: 210 11% 98%; /* #F5F7FA */
+    --foreground: 222.2 84% 4.9%; /* #0F172A */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 222.2 84% 4.9%; /* #0F172A */
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 222.2 84% 4.9%; /* #0F172A */
+    
+    /* Enhanced primary colors for learning motivation */
+    --primary: 221.2 83.2% 53.3%; /* #3B82F6 */
+    --primary-foreground: 210 40% 98%; /* #F8FAFC */
+    
+    /* Learning-specific colors */
+    --kanji-primary: 0 84% 60%; /* #F87171 - Red for Kanji */
+    --vocabulary-primary: 221 83% 53%; /* #3B82F6 - Blue for Vocabulary */
+    --grammar-primary: 142 76% 36%; /* #059669 - Green for Grammar */
+    
+    /* SRS difficulty colors */
+    --srs-again: 0 84% 60%; /* #F87171 */
+    --srs-hard: 25 95% 53%; /* #F97316 */
+    --srs-good: 221 83% 53%; /* #3B82F6 */
+    --srs-easy: 142 76% 36%; /* #059669 */
+    
+    /* Progress and achievement colors */
+    --streak-active: 25 95% 53%; /* #F97316 */
+    --xp-primary: 45 93% 47%; /* #EAB308 */
+    --achievement-gold: 45 93% 47%; /* #EAB308 */
+    
+    --secondary: 210 40% 96%; /* #F1F5F9 */
+    --secondary-foreground: 222.2 84% 4.9%; /* #0F172A */
+    --muted: 210 40% 94%; /* #E2E8F0 */
+    --muted-foreground: 215.4 16.3% 46.9%; /* #64748B */
+    --accent: 210 40% 96%; /* #F1F5F9 */
+    --accent-foreground: 222.2 84% 4.9%; /* #0F172A */
+    --destructive: 0 84.2% 60.2%; /* #EF4444 */
+    --destructive-foreground: 210 40% 98%; /* #F8FAFC */
+    --border: 214.3 31.8% 91.4%; /* #CBD5E1 */
+    --input: 214.3 31.8% 91.4%; /* #CBD5E1 */
+    --ring: 221.2 83.2% 53.3%; /* #3B82F6 */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%; /* #0F172A */
+    --foreground: 210 40% 98%; /* #F8FAFC */
+    --card: 222.2 84% 4.9%; /* #0F172A */
+    --card-foreground: 210 40% 98%; /* #F8FAFC */
+    --popover: 222.2 84% 4.9%; /* #0F172A */
+    --popover-foreground: 210 40% 98%; /* #F8FAFC */
+    --primary: 221.2 83.2% 53.3%; /* #3B82F6 */
+    --primary-foreground: 222.2 84% 4.9%; /* #0F172A */
+    --secondary: 217.2 32.6% 17.5%; /* #1E293B */
+    --secondary-foreground: 210 40% 98%; /* #F8FAFC */
+    --muted: 217.2 32.6% 17.5%; /* #1E293B */
+    --muted-foreground: 215 20.2% 65.1%; /* #94A3B8 */
+    --accent: 217.2 32.6% 17.5%; /* #1E293B */
+    --accent-foreground: 210 40% 98%; /* #F8FAFC */
+    --destructive: 0 62.8% 30.6%; /* #991B1B */
+    --destructive-foreground: 210 40% 98%; /* #F8FAFC */
+    --border: 217.2 32.6% 17.5%; /* #1E293B */
+    --input: 217.2 32.6% 17.5%; /* #1E293B */
+    --ring: 224.3 76.3% 48%; /* #1D4ED8 */
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Quicksand', 'Noto Sans', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Japanese text rendering */
+  .japanese-text {
+    font-family: 'Noto Sans JP', 'Kosugi Maru', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  .kanji-text {
+    font-family: 'Noto Sans JP', 'Hiragino Mincho Pro', 'Yu Mincho', 'MS Mincho', serif;
+    font-weight: 500;
+    font-size: 1.1em;
+  }
+
+  .furigana-text {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.7em;
+    line-height: 1;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Enhanced focus states for accessibility */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 0 0% 0%;
+      --border: 0 0% 20%;
+      --muted-foreground: 0 0% 40%;
+    }
+    
+    .dark {
+      --background: 0 0% 0%;
+      --foreground: 0 0% 100%;
+      --border: 0 0% 80%;
+      --muted-foreground: 0 0% 60%;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
-.touch-feedback:active {
-  transform: scale(0.98);
-  background-color: hsl(var(--muted));
+@layer components {
+  /* Enhanced SRS Learning Card Styles */
+  .srs-card {
+    @apply relative bg-card border border-border rounded-lg shadow-sm transition-all duration-200 hover:shadow-md;
+    min-height: 200px;
+    perspective: 1000px;
+  }
+
+  .srs-card-flipped {
+    transform: rotateY(180deg);
+  }
+
+  .srs-card-content {
+    @apply p-6 h-full flex flex-col justify-center items-center text-center;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }
+
+  .srs-difficulty-again {
+    @apply bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800;
+  }
+
+  .srs-difficulty-hard {
+    @apply bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800;
+  }
+
+  .srs-difficulty-good {
+    @apply bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800;
+  }
+
+  .srs-difficulty-easy {
+    @apply bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800;
+  }
+
+  /* Gamification Progress Animations */
+  .xp-gain-animation {
+    animation: xpPulse 0.6s ease-out;
+  }
+
+  @keyframes xpPulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .streak-flame {
+    animation: flameFlicker 2s ease-in-out infinite;
+  }
+
+  @keyframes flameFlicker {
+    0%, 100% { transform: scale(1) rotate(-1deg); }
+    50% { transform: scale(1.05) rotate(1deg); }
+  }
+
+  /* Learning Progress Indicators */
+  .mastery-beginner {
+    @apply bg-gradient-to-r from-red-500 to-red-600;
+  }
+
+  .mastery-apprentice {
+    @apply bg-gradient-to-r from-orange-500 to-orange-600;
+  }
+
+  .mastery-guru {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600;
+  }
+
+  .mastery-master {
+    @apply bg-gradient-to-r from-green-500 to-green-600;
+  }
+
+  .mastery-enlightened {
+    @apply bg-gradient-to-r from-purple-500 to-purple-600;
+  }
+
+  .mastery-burned {
+    @apply bg-gradient-to-r from-yellow-500 to-yellow-600;
+  }
+
+  /* Enhanced Button Styles */
+  .srs-button {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2 active:scale-95;
+    min-height: 44px; /* Touch target compliance */
+    min-width: 88px;
+  }
+
+  .srs-button-again {
+    @apply bg-red-500 hover:bg-red-600 text-white focus:ring-red-500;
+  }
+
+  .srs-button-hard {
+    @apply bg-orange-500 hover:bg-orange-600 text-white focus:ring-orange-500;
+  }
+
+  .srs-button-good {
+    @apply bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-500;
+  }
+
+  .srs-button-easy {
+    @apply bg-green-500 hover:bg-green-600 text-white focus:ring-green-500;
+  }
+
+  /* Touch feedback for mobile interactions */
+  .touch-feedback {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
+    user-select: none;
+    transition: transform 0.1s ease, background-color 0.1s ease;
+  }
+
+  .touch-feedback:active {
+    transform: scale(0.98);
+    background-color: hsl(var(--muted));
+  }
+
+  /* Enhanced Typography for Japanese Learning */
+  .japanese-display {
+    @apply japanese-text text-2xl md:text-3xl lg:text-4xl leading-relaxed;
+    font-weight: 500;
+  }
+
+  .reading-display {
+    @apply text-lg md:text-xl text-muted-foreground japanese-text;
+  }
+
+  .meaning-display {
+    @apply text-base md:text-lg font-medium;
+  }
+
+  .context-sentence {
+    @apply text-sm md:text-base japanese-text leading-relaxed text-muted-foreground;
+  }
+
+  /* Accessibility Enhancements */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
+    @apply bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium;
+  }
+
+  .high-contrast {
+    filter: contrast(1.5);
+  }
+
+  /* Performance Optimizations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground));
+  }
+
+  /* Loading States */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 25%, 
+      hsl(var(--muted-foreground) / 0.1) 50%, 
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
 }
 
 /* Mobile UI Improvements */

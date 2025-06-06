@@ -13,7 +13,8 @@ import {
   Clock,
   ChevronRight,
   Eye,
-  X
+  X,
+  HelpCircle
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useJLPTLevelCheck } from "@/components/jlpt-level-selector";
 import { DashboardLoadingAnimation, DataLoadingAnimation } from "@/components/ui/japanese-loading";
+import { OnboardingTour, useOnboarding } from "@/components/onboarding-tour";
+import { ProgressTracker } from "@/components/progress-tracker";
+import { BreadcrumbNavigation } from "@/components/breadcrumb-navigation";
 import { useState } from "react";
 
 // Study Session Preview Component
@@ -290,6 +294,7 @@ function ReviewAllButton({ studyOptions }: { studyOptions: any }) {
 
 export default function Dashboard() {
   const { showLevelSelector, setShowLevelSelector } = useJLPTLevelCheck();
+  const { showOnboarding, startOnboarding, completeOnboarding } = useOnboarding();
   
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/user"],
@@ -338,11 +343,41 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-4 space-y-6 max-w-4xl mx-auto">
-      {/* Welcome Header */}
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold">Welcome back, {user.displayName || user.username}!</h1>
-        <p className="text-muted-foreground">Continue your Japanese learning journey</p>
+    <div className="p-4 space-y-6 max-w-6xl mx-auto">
+      {/* Breadcrumb Navigation */}
+      <BreadcrumbNavigation 
+        items={[
+          { label: "Dashboard", current: true }
+        ]} 
+      />
+
+      {/* Welcome Header with Tour Button */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">Welcome back, {(user as any)?.displayName || (user as any)?.username}!</h1>
+          <p className="text-muted-foreground">Continue your Japanese learning journey</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={startOnboarding}
+          className="flex items-center gap-2"
+        >
+          <HelpCircle className="w-4 h-4" />
+          How it Works
+        </Button>
+      </div>
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isOpen={showOnboarding}
+        onClose={completeOnboarding}
+        onComplete={completeOnboarding}
+      />
+
+      {/* Progress Tracker */}
+      <div className="mb-8">
+        <ProgressTracker user={user} studyOptions={studyOptions} />
       </div>
 
       {/* Study All / Review All Actions */}
