@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import { 
   Loader2, 
@@ -11,7 +12,6 @@ import {
   X, 
   Sun, 
   Moon, 
-  Bell, 
   BarChart3, 
   BookOpen, 
   Search,
@@ -20,7 +20,9 @@ import {
   Settings as SettingsIcon,
   User,
   Target,
-  Award
+  Award,
+  ChevronDown,
+  LogOut
 } from "lucide-react";
 import { VersionDisplay } from "@/components/version-display";
 import { MobileWrapper } from "@/components/mobile-wrapper";
@@ -164,13 +166,9 @@ function Header({ user }: { user: any }) {
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
-    { href: "/vocabulary", label: "Vocab", icon: BookOpen },
-    { href: "/kanji", label: "Kanji", icon: BarChart3 },
-    { href: "/grammar", label: "Grammar", icon: Search },
     { href: "/learning-practice", label: "Practice", icon: Target },
     { href: "/study-mode", label: "Study", icon: Award },
     { href: "/jlpt-progress", label: "Progress", icon: Trophy },
-    { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
 
   return (
@@ -211,16 +209,16 @@ function Header({ user }: { user: any }) {
         <div className="flex items-center gap-3">
           {/* User Stats */}
           {user && (
-            <div className="hidden md:flex items-center gap-4 mr-2">
-              <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+            <div className="hidden md:flex items-center gap-3 mr-2">
+              <div className="flex items-center gap-3 px-3 py-1 bg-primary/10 rounded-full">
                 <Badge variant="secondary" className="bg-primary/20 text-primary font-semibold">
                   {user.currentJLPTLevel || 'N5'}
                 </Badge>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-orange-100 dark:bg-orange-900/20 rounded-full">
-                <Award className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                 <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">
                   {user.totalXP || 0} XP
+                </span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  @{user.username}
                 </span>
               </div>
             </div>
@@ -237,9 +235,9 @@ function Header({ user }: { user: any }) {
           </Button>
 
           <ThemeToggle />
-          <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-            <Bell className="h-4 w-4" />
-          </Button>
+          
+          {/* Profile Dropdown */}
+          {user && <ProfileDropdown user={user} />}
         </div>
       </div>
 

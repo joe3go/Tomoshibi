@@ -52,6 +52,11 @@ export interface IStorage {
   getAllLearningPaths(): Promise<LearningPath[]>;
   getUserPathProgress(userId: number): Promise<UserPathProgress[]>;
 
+  // JLPT Content operations
+  getVocabulary(filters?: { limit?: number; jlptLevel?: string }): Promise<any[]>;
+  getKanji(filters?: { limit?: number; jlptLevel?: string }): Promise<any[]>;
+  getGrammar(filters?: { limit?: number; jlptLevel?: string }): Promise<any[]>;
+
   // JLPT content operations
   getJlptVocabulary(filters?: {
     jlptLevel?: string;
@@ -614,6 +619,30 @@ export class MemStorage implements IStorage {
     }
     
     return results;
+  }
+
+  async getVocabulary(filters?: { limit?: number; jlptLevel?: string }): Promise<any[]> {
+    const vocab = await this.getJlptVocabulary(filters);
+    if (filters?.limit) {
+      return vocab.slice(0, filters.limit);
+    }
+    return vocab;
+  }
+
+  async getKanji(filters?: { limit?: number; jlptLevel?: string }): Promise<any[]> {
+    const kanji = await this.getJlptKanji(filters);
+    if (filters?.limit) {
+      return kanji.slice(0, filters.limit);
+    }
+    return kanji;
+  }
+
+  async getGrammar(filters?: { limit?: number; jlptLevel?: string }): Promise<any[]> {
+    const grammar = await this.getJlptGrammar(filters);
+    if (filters?.limit) {
+      return grammar.slice(0, filters.limit);
+    }
+    return grammar;
   }
 }
 
