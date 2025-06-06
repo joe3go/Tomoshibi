@@ -365,9 +365,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       const reviewCounts = {
-        kanji: sentenceCards.filter(card => card?.grammarPoints?.includes('kanji')).length,
-        grammar: sentenceCards.filter(card => card?.grammarPoints && Array.isArray(card.grammarPoints) && card.grammarPoints.length > 0).length,
-        vocabulary: sentenceCards.filter(card => card?.vocabulary && Array.isArray(card.vocabulary) && card.vocabulary.length > 0).length,
+        kanji: (await storage.getReviewQueue(userId, 1000, 'kanji')).length,
+        grammar: (await storage.getReviewQueue(userId, 1000, 'grammar')).length,
+        vocabulary: (await storage.getReviewQueue(userId, 1000, 'vocabulary')).length,
         total: allItems.length
       };
 
@@ -439,47 +439,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         items = await storage.getReviewQueue(userId, 1000);
       }
 
-      let filteredItems = items;
-
-      if (mode && mode !== 'all-reviews') {
-        const sentenceCards = await Promise.all(
-          items.map(item => storage.getSentenceCard(item.sentenceCardId))
-        );
-
-        const filteredIndices: number[] = [];
-
-        sentenceCards.forEach((card, index) => {
-          if (!card) return;
-
-          switch (mode) {
-            case 'kanji-reviews':
-              if (card.grammarPoints?.includes('kanji') || card.japanese.match(/[\u4e00-\u9faf]/)) {
-                filteredIndices.push(index);
-              }
-              break;
-            case 'grammar-reviews':
-              if (card.grammarPoints && card.grammarPoints.length > 0) {
-                filteredIndices.push(index);
-              }
-              break;
-            case 'vocabulary-reviews':
-              if (card.vocabulary && card.vocabulary.length > 0) {
-                filteredIndices.push(index);
-              }
-              break;
-            case 'learn-kanji':
-            case 'learn-grammar':
-            case 'learn-vocabulary':
-              // For learning new content, return a subset for demonstration
-              if (index < 5) filteredIndices.push(index);
-              break;
-          }
-        });
-
-        filteredItems = filteredIndices.map(i => items[i]).slice(0, limit);
-      } else {
-        filteredItems = items.slice(0, limit);
+      // Apply category filtering based on mode
+      let categoryFilter: string | undefined;
+      
+      switch (mode) {
+        case 'kanji-reviews':
+          categoryFilter = 'kanji';
+          break;
+        case 'grammar-reviews':
+          categoryFilter = 'grammar';
+          break;
+        case 'vocabulary-reviews':
+          categoryFilter = 'vocabulary';
+          break;
+        default:
+          categoryFilter = undefined;
       }
+
+      // Get filtered items using storage layer filtering
+      const filteredItems = categoryFilter ? 
+        await storage.getReviewQueue(userId, limit, categoryFilter) : 
+        items.slice(0, limit);
 
       const reviewCards = await Promise.all(filteredItems.map(async (srsItem) => {
         const sentenceCard = await storage.getSentenceCard(srsItem.sentenceCardId);
