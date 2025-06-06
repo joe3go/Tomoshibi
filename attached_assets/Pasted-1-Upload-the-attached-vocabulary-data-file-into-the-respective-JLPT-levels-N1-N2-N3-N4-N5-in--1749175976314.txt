@@ -1,0 +1,17 @@
+1. Upload the attached vocabulary data file into the respective JLPT levels (N1, N2, N3, N4, N5) in `server/jlpt-n5-data.ts` and similar files for the other levels. Ensure that the vocab entries are structured as defined in the `N5Vocabulary` interface.
+
+2. Create a functionality enabling users to select their JLPT level (1, 2, 3, 4, or 5) once at the start and preventing it from being permanently set on the dashboard. This selection should determine the vocabulary, grammar, and kanji displayed on the app’s dashboard and study pages but allow users to learn content from different levels without needing to reselect after the initial choice.
+
+3. Remove the "Add Your Own Vocab" button from `client/src/pages/dashboard.tsx`, ensuring users only access the vocab lists defined in the application's pre-loaded data.
+
+4. Consolidate the existing "Vocabulary", "Kanji", and "Grammar" sections into two new headers: "Learn" and "Review". Move all relevant functionalities from the sidebar in `client/src/pages/dashboard.tsx` into the header component.
+
+5. Update the top right corner of the application to display user profile information in place of the current "Settings" icon. This profile should include a dropdown menu with options for "Profile", "Settings", "Account Settings", and "Logout".
+
+6. Revamp the study page in `client/src/pages/study-mode.tsx` to provide options to study either all daily items or specifically choose between "Kanji", "Vocab", and "Grammar". Ensure that session management works correctly to avoid “session complete” messages prematurely, and resolve any routing issues leading to 404 errors.
+
+7. Update the site logo to resemble a Japanese lantern while maintaining the current color scheme. Consistently apply color themes for icons throughout the app to match the icon theme of the header.
+
+8. Review all aspects of user experience within the application and make necessary adjustments to enhance usability while adhering to the existing design language.
+
+9. Create a new page `content-browser.tsx` which filters and displays a list of all vocabulary, grammar, and kanji grouped by JLPT level. This should display the current SRS level for each item, employing color coding for visual distinction.

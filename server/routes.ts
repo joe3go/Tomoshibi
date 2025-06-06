@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { setupGoogleAuth } from "./googleAuth";
 import session from "express-session";
 import passport from "passport";
+import { loadAllJLPTData, ProcessedVocabularyItem } from './jlpt-data-processor';
 
 declare module 'express-session' {
   interface SessionData {
@@ -116,6 +117,16 @@ async function checkAchievements(userId: number) {
   }
 
   return newAchievements;
+}
+
+// Load JLPT vocabulary data from CSV files
+let jlptVocabularyData: Map<string, ProcessedVocabularyItem[]> | null = null;
+
+function getJLPTData(): Map<string, ProcessedVocabularyItem[]> {
+  if (!jlptVocabularyData) {
+    jlptVocabularyData = loadAllJLPTData();
+  }
+  return jlptVocabularyData;
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -1099,35 +1110,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/vocabulary", async (req, res) => {
     try {
       const level = req.query.level as string;
+      const jlptData = getJLPTData();
       
-      // Sample vocabulary data for demonstration
-      const vocabularyItems = [
-        {
-          id: 1,
-          kanji: "私",
-          kana_reading: "わたし",
-          english_meaning: "I, me",
-          example_sentence_jp: "私は学生です。",
-          example_sentence_en: "I am a student.",
-          jlptLevel: 'N5'
-        },
-        {
-          id: 2,
-          kanji: "本",
-          kana_reading: "ほん",
-          english_meaning: "book",
-          example_sentence_jp: "本を読みます。",
-          example_sentence_en: "I read a book.",
-          jlptLevel: 'N5'
-        }
-      ];
-
-      let filteredItems = vocabularyItems;
+      let vocabularyItems: ProcessedVocabularyItem[] = [];
+      
       if (level && level !== 'all') {
-        filteredItems = vocabularyItems.filter(item => item.jlptLevel === level);
+        const levelData = jlptData.get(level.toUpperCase());
+        if (levelData) {
+          vocabularyItems = levelData.slice(0, 100); // Limit to first 100 items for performance
+        }
+      } else {
+        // Return items from all levels
+        for (const [levelKey, levelData] of jlptData.entries()) {
+          vocabularyItems.push(...levelData.slice(0, 20)); // 20 items per level
+        }
       }
 
-      res.json(filteredItems);
+      // Transform to expected format
+      const formattedItems = vocabularyItems.map(item => ({
+        id: item.id,
+        kanji: item.japanese,
+        kana_reading: item.reading,
+        english_meaning: item.english,
+        example_sentence_jp: `${item.japanese}の例文です。`,
+        example_sentence_en: `Example sentence with ${item.english}.`,
+        jlptLevel: item.jlptLevel,
+        difficulty: item.difficulty,
+        register: item.register,
+        theme: item.theme,
+        tags: item.tags
+      }));
+
+      res.json(formattedItems);
     } catch (error) {
       console.error("Error fetching vocabulary:", error);
       res.status(500).json({ error: "Failed to fetch vocabulary" });
