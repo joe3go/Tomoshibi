@@ -671,9 +671,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         sentenceCardId,
         interval: 1,
-        easeFactor: 2.5,
+        difficulty: 5.0,
+        stability: 1.0,
         repetitions: 0,
-        nextReview: new Date()
+        nextReview: new Date(),
+        mastery: 'new'
       });
 
       res.json(srsItem);

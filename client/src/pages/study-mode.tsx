@@ -90,7 +90,7 @@ export default function StudyModePage() {
   const currentLevelIndex = jlptLevels.indexOf(studyOptions.currentLevel);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -155,38 +155,38 @@ export default function StudyModePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* All Reviews */}
-              <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
+              <Card className="border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50">
                 <CardHeader className="text-center">
-                  <div className="mx-auto w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-2">
+                  <div className="mx-auto w-12 h-12 bg-blue-600 dark:bg-blue-700 rounded-full flex items-center justify-center mb-2">
                     <Play className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-blue-900">All Reviews</CardTitle>
+                  <CardTitle className="text-blue-900 dark:text-blue-100">All Reviews</CardTitle>
                   <CardDescription>Mixed practice</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <div className="text-3xl font-bold text-blue-900 mb-2">
+                  <div className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-2">
                     {studyOptions.reviews.total}
                   </div>
-                  <p className="text-sm text-blue-700 mb-4">items pending</p>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 mb-4">items pending</p>
                   <Link href="/study-dedicated?mode=all-reviews">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Start Reviews
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600">
+                      {studyOptions.reviews.total > 0 ? "Start Reviews" : "No Reviews"}
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
 
               {/* Kanji Reviews */}
-              <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100">
+              <Card className="border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/50">
                 <CardHeader className="text-center">
-                  <div className="mx-auto w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mb-2">
+                  <div className="mx-auto w-12 h-12 bg-purple-600 dark:bg-purple-700 rounded-full flex items-center justify-center mb-2">
                     <Type className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-purple-900">Kanji</CardTitle>
+                  <CardTitle className="text-purple-900 dark:text-purple-100">Kanji</CardTitle>
                   <CardDescription>Character practice</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <div className="text-3xl font-bold text-purple-900 mb-2">
+                  <div className="text-3xl font-bold text-purple-900 dark:text-purple-100 mb-2">
                     {studyOptions.reviews.kanji}
                   </div>
                   <p className="text-sm text-purple-700 mb-4">kanji pending</p>

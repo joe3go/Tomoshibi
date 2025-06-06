@@ -34,7 +34,7 @@ export interface IStorage {
   getSrsItem(id: number): Promise<SrsItem | undefined>;
   createSrsItem(item: InsertSrsItem): Promise<SrsItem>;
   updateSrsItem(id: number, updates: Partial<SrsItem>): Promise<SrsItem | undefined>;
-  getReviewQueue(userId: number, limit?: number): Promise<SrsItem[]>;
+  getReviewQueue(userId: number, limit?: number, categoryFilter?: string): Promise<SrsItem[]>;
   
   // Study session operations
   createStudySession(session: InsertStudySession): Promise<StudySession>;
@@ -399,11 +399,34 @@ export class MemStorage implements IStorage {
     return updatedItem;
   }
 
-  async getReviewQueue(userId: number, limit?: number): Promise<SrsItem[]> {
+  async getReviewQueue(userId: number, limit?: number, categoryFilter?: string): Promise<SrsItem[]> {
     const now = new Date();
     let queue = Array.from(this.srsItems.values())
-      .filter(item => item.userId === userId && item.nextReview <= now)
-      .sort((a, b) => a.nextReview.getTime() - b.nextReview.getTime());
+      .filter(item => item.userId === userId && item.nextReview <= now);
+    
+    // Apply category filtering if specified
+    if (categoryFilter) {
+      queue = queue.filter(item => {
+        const card = this.sentenceCards.get(item.sentenceCardId);
+        if (!card) return false;
+        
+        switch (categoryFilter) {
+          case 'kanji':
+            // Filter for cards that contain kanji characters
+            return /[\u4e00-\u9faf]/.test(card.japanese);
+          case 'grammar':
+            // Filter for cards tagged with grammar patterns
+            return card.grammarPoints && Array.isArray(card.grammarPoints) && card.grammarPoints.length > 0;
+          case 'vocabulary':
+            // Filter for cards focused on vocabulary (have vocabulary array)
+            return card.vocabulary && Array.isArray(card.vocabulary) && card.vocabulary.length > 0;
+          default:
+            return true;
+        }
+      });
+    }
+    
+    queue = queue.sort((a, b) => a.nextReview.getTime() - b.nextReview.getTime());
     
     if (limit) {
       queue = queue.slice(0, limit);
