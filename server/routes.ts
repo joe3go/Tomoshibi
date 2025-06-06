@@ -18,7 +18,7 @@ import {
   insertStudySessionSchema, 
   insertUserAchievementSchema 
 } from "@shared/schema";
-import { comparePasswords } from "./auth";
+import { comparePasswords, hashPassword } from "./auth";
 
 // FSRS5 Algorithm Implementation
 class FSRS5Algorithm {
@@ -203,8 +203,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         displayName: username,
         email,
         password: hashedPassword,
-        userType: "free",
-        currentBelt: "白帯",
+        userType: "free_user",
+        currentBelt: "white",
         currentJLPTLevel: "N5",
         totalXP: 0,
         currentStreak: 0,
@@ -212,17 +212,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastStudyDate: null,
         profileImageUrl: null,
         googleId: null,
-        isEmailVerified: false,
-        emailVerificationToken: null,
-        emailVerificationExpires: null,
-        passwordResetToken: null,
-        passwordResetExpires: null,
-        preferences: null,
-        timezone: null,
-        language: "en",
-        enableNotifications: true,
-        enableSounds: true,
-        enableAnimations: true,
+        studyGoal: null,
+        dailyGoalMinutes: 20,
+        dailyGoalKanji: 5,
+        dailyGoalGrammar: 3,
+        dailyGoalVocabulary: 10,
+        preferredStudyTime: null,
         enableReminders: true
       });
 
