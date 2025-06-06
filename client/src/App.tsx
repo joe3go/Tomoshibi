@@ -159,21 +159,21 @@ function MobileNavigation({ user }: { user: any }) {
   
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/study", label: "Study", icon: BookOpen },
+    { href: "/learning-practice", label: "Practice", icon: Target },
     { href: "/jlpt-progress", label: "Progress", icon: BarChart3 },
     { href: "/achievements", label: "Rewards", icon: Trophy },
     { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border h-12 flex items-center justify-around z-50 md:left-80">
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border h-12 flex items-center justify-around z-50 md:hidden">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = location === item.href;
         
         return (
           <Link key={item.href} href={item.href}>
-            <button className={`flex flex-col items-center space-y-0 p-1 ${
+            <button className={`flex flex-col items-center space-y-0 p-1 min-h-[44px] touch-feedback ${
               isActive ? 'text-primary' : 'text-muted-foreground'
             }`}>
               <Icon className="h-4 w-4" />
@@ -232,6 +232,7 @@ function Sidebar({ user }: { user: any }) {
         <div 
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={() => setIsOpen(false)}
+          onTouchEnd={() => setIsOpen(false)}
         />
       )}
 
@@ -319,7 +320,7 @@ function AppRouter() {
       <MobileHeader user={user} />
       <Sidebar user={user} />
       
-      <div className="pt-11 pb-12 md:pl-80 h-screen overflow-hidden">
+      <div className="pt-11 pb-12 md:pl-80 min-h-screen overflow-y-auto">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/vocabulary" component={Vocabulary} />

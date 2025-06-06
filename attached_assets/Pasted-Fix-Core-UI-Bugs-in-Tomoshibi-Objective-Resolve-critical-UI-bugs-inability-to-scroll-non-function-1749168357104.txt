@@ -1,0 +1,113 @@
+Fix Core UI Bugs in Tomoshibi
+Objective: Resolve critical UI bugs: inability to scroll, non-functional side navigation closing, and duplicated bottom navigation.
+
+Files to Modify:
+
+index.html
+script.js
+(Potentially tailwind.config.js if responsiveness issues persist after index.html fixes)
+Task 1: Enable Scrolling
+Problem: The page has overflow: hidden; preventing natural scrolling.
+
+Action:
+
+Locate index.html.
+Find the <body> tag.
+Remove the overflow-hidden class from the <body> tag.
+Code Change in index.html (&lt;body> tag):
+
+Diff
+
+- <body class="bg-custom-dark text-white font-body relative overflow-hidden">
++ <body class="bg-custom-dark text-white font-body relative">
+Task 2: Fix Side Navigation Closing
+Problem: The side navigation cannot be closed by clicking the overlay, and its transition might not be smooth.
+
+Actions:
+
+Locate script.js.
+Modify the toggleNav function to correctly toggle the transform classes (-translate-x-full and translate-x-0) for the side-nav element, and to toggle the hidden class for the overlay.
+Add an event listener to the overlay element to call toggleNav when clicked.
+Code Changes in script.js:
+
+JavaScript
+
+// ... existing code ...
+
+const toggleSideNavBtn = document.getElementById('toggleSideNav');
+const sideNav = document.getElementById('side-nav');
+const overlay = document.getElementById('overlay');
+
+// Function to toggle nav and overlay visibility
+function toggleNav() {
+    // Toggles the transform classes for smooth sliding
+    sideNav.classList.toggle('-translate-x-full'); // Removes this if present, bringing nav into view
+    sideNav.classList.toggle('translate-x-0');    // Adds this if absent, pushing nav out of view
+    
+    // Toggles the hidden class for the overlay
+    overlay.classList.toggle('hidden');
+}
+
+// Event listener for the hamburger/toggle button
+toggleSideNavBtn.addEventListener('click', toggleNav);
+
+// FIX: Add event listener for overlay click to close the nav
+overlay.addEventListener('click', toggleNav);
+
+// ... rest of your script.js code ...
+Verify index.html for side-nav and overlay classes:
+Ensure your side-nav div has transition-transform duration-300 ease-in-out and starts with -translate-x-full.
+Ensure your overlay div starts with hidden.
+
+Example index.html snippets for side nav/overlay (confirm they match this structure):
+
+HTML
+
+<div id="side-nav" class="fixed top-0 left-0 h-full bg-dark-purple-500 w-64 transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
+    </div>
+
+<div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+Task 3: Remove Duplicated Bottom Navigation
+Problem: The bottom navigation bar is duplicated at the end of the <body>.
+
+Action:
+
+Locate index.html.
+Scroll to the very bottom of the <body> tag (just before the closing </body> tag).
+Identify and DELETE the entire duplicated <nav> element that has class="fixed bottom-0 left-0 right-0 ..." and contains the mobile navigation links.
+Code Change in index.html (DELETE this block):
+
+HTML
+
+<nav class="fixed bottom-0 left-0 right-0 bg-dark-purple-500 p-4 text-center z-30 lg:hidden">
+    <ul class="flex justify-around">
+        <li><a href="#" class="text-white hover:text-custom-pink flex flex-col items-center">
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span class="text-xs">Home</span>
+        </a></li>
+        <li><a href="#" class="text-white hover:text-custom-pink flex flex-col items-center">
+            <i class="fas fa-book text-xl mb-1"></i>
+            <span class="text-xs">Vocab</span>
+        </a></li>
+        <li><a href="#" class="text-white hover:text-custom-pink flex flex-col items-center">
+            <i class="fas fa-pen-nib text-xl mb-1"></i>
+            <span class="text-xs">Grammar</span>
+        </a></li>
+        <li><a href="#" class="text-white hover:text-custom-pink flex flex-col items-center">
+            <i class="fas fa-cog text-xl mb-1"></i>
+            <span class="text-xs">Settings</span>
+        </a></li>
+    </ul>
+</nav>
+
+</body>
+</html>
+Verification Steps (After Running Fixes):
+Run the Replit application.
+Test Scrolling: Try to scroll the page. It should now scroll naturally if content exceeds viewport height.
+Test Side Navigation:
+Click the hamburger icon: Side nav should slide open smoothly.
+Click anywhere on the semi-transparent overlay: Side nav should slide closed smoothly.
+Test Bottom Navigation: The navigation bar should now only appear once at the top (or wherever you intend its primary location to be), and the duplicate at the bottom should be gone.
+Check Browser Console (F12): Ensure there are no new JavaScript errors.
+Hard Refresh (Ctrl+Shift+R or Cmd+Shift+R): Clear browser cache to ensure you're seeing the latest changes.

@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Touch feedback for mobile interactions */
+.touch-feedback {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.touch-feedback:active {
+  transform: scale(0.98);
+  background-color: hsl(var(--muted));
+}
+
 /* Mobile UI Improvements */
 @media (max-width: 640px) {
   body {
