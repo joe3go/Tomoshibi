@@ -166,7 +166,7 @@ export default function Dashboard() {
               </div>
             </div>
           </CardContent>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
         </Card>
 
         {/* Grammar Progress */}
@@ -206,7 +206,7 @@ export default function Dashboard() {
               </div>
             </div>
           </CardContent>
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
         </Card>
       </div>
 
