@@ -227,6 +227,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user JLPT level
+  app.patch("/api/user/jlpt-level", async (req, res) => {
+    try {
+      const { level } = req.body;
+      
+      if (!level || !["N5", "N4", "N3", "N2", "N1"].includes(level)) {
+        return res.status(400).json({ error: "Invalid JLPT level" });
+      }
+
+      const userId = req.session.userId || (req.isAuthenticated() ? (req.user as any)?.id : 1);
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const updatedUser = await storage.updateUser(userId, {
+        currentJLPTLevel: level
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error updating JLPT level:", error);
+      res.status(500).json({ error: "Failed to update JLPT level" });
+    }
+  });
+
   // Get dashboard data
   app.get("/api/dashboard", async (req, res) => {
     try {

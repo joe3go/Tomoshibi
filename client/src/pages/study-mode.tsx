@@ -86,6 +86,29 @@ export default function StudyModePage() {
           </div>
         </div>
 
+        {/* Content Type Selection */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Type className="h-5 w-5" />
+              Content Type
+            </CardTitle>
+            <CardDescription>
+              Choose what type of content you want to study
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs value={selectedContentType} onValueChange={setSelectedContentType}>
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="all">All Content</TabsTrigger>
+                <TabsTrigger value="vocabulary">Vocabulary</TabsTrigger>
+                <TabsTrigger value="kanji">Kanji</TabsTrigger>
+                <TabsTrigger value="grammar">Grammar</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </CardContent>
+        </Card>
+
         <Tabs defaultValue="reviews" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="reviews">Reviews</TabsTrigger>

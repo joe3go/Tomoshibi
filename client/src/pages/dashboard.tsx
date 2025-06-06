@@ -18,6 +18,8 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { JLPTLevelSelector, useJLPTLevelCheck } from "@/components/jlpt-level-selector";
 
 export default function Dashboard() {
+  const { showLevelSelector, setShowLevelSelector } = useJLPTLevelCheck();
+  
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/user"],
     retry: false,
@@ -261,6 +263,13 @@ export default function Dashboard() {
           </div>
         </Card>
       )}
+      {/* JLPT Level Selection Modal */}
+      <JLPTLevelSelector
+        currentLevel={user?.currentJLPTLevel}
+        showModal={showLevelSelector}
+        onClose={() => setShowLevelSelector(false)}
+        onLevelSelect={() => setShowLevelSelector(false)}
+      />
     </div>
   );
 }
