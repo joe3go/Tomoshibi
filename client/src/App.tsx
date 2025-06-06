@@ -172,6 +172,8 @@ function ProfileDropdown({ user }: { user: any }) {
   const [, setLocation] = useLocation();
 
   const handleLogout = async () => {
+    console.log("Initiating logout...");
+    
     try {
       const response = await fetch("/api/logout", {
         method: "POST",
@@ -181,18 +183,29 @@ function ProfileDropdown({ user }: { user: any }) {
         },
       });
 
-      // Always clear cache and redirect, even if logout fails
-      queryClient.clear();
-      queryClient.invalidateQueries();
+      console.log("Logout response:", response.status);
       
-      // Force redirect to landing page
-      window.location.href = "/";
+      if (response.ok) {
+        console.log("Logout successful, clearing cache...");
+      } else {
+        console.log("Logout failed on server, but proceeding with client cleanup");
+      }
     } catch (error) {
-      console.error("Logout failed:", error);
-      // Still redirect even if logout fails
-      queryClient.clear();
-      window.location.href = "/";
+      console.error("Logout request failed:", error);
     }
+    
+    // Always clear cache and redirect regardless of server response
+    console.log("Clearing query cache...");
+    queryClient.clear();
+    queryClient.invalidateQueries();
+    
+    // Clear any local storage items
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    console.log("Redirecting to landing page...");
+    // Force redirect to landing page
+    window.location.href = "/";
   };
 
   return (
