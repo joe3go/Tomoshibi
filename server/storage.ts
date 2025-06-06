@@ -163,20 +163,38 @@ export class MemStorage implements IStorage {
     ];
 
     authenticSentences.forEach((sentence, index) => {
+      // Determine card category based on content
+      let cardType: string;
+      let grammarPoints: string[];
+      
+      if (/[\u4e00-\u9faf]{3,}/.test(sentence.japanese)) {
+        cardType = "kanji"; // Cards with multiple kanji
+        grammarPoints = this.extractGrammarPoints(sentence.japanese);
+      } else if (sentence.japanese.includes("を") || sentence.japanese.includes("に") || sentence.japanese.includes("で") || sentence.japanese.includes("と")) {
+        cardType = "grammar"; // Cards with particles/grammar
+        grammarPoints = this.extractGrammarPoints(sentence.japanese);
+      } else {
+        cardType = "vocabulary"; // Vocabulary-focused cards
+        grammarPoints = [];
+      }
+
       const card: SentenceCard = {
         id: index + 1,
         japanese: sentence.japanese,
-        reading: null, // Will be generated with kuroshiro.js
+        reading: null,
         english: sentence.english,
         audioUrl: null,
         jlptLevel: "N5",
         difficulty: Math.min(Math.max(1, Math.floor(sentence.japanese.length / 4)), 5),
         register: sentence.japanese.includes("です") || sentence.japanese.includes("ます") ? "polite" : "casual",
-        theme: this.determineTheme(sentence.english.toLowerCase()),
+        theme: cardType, // Use cardType as theme for categorization
         source: "authentic_n5",
-        grammarPoints: this.extractGrammarPoints(sentence.japanese),
+        grammarPoints: grammarPoints,
         vocabulary: sentence.vocab,
-        culturalNotes: `Authentic N5 sentence: ${sentence.japanese}`,
+        vocabularyIds: null,
+        kanjiIds: null,
+        grammarIds: null,
+        culturalNotes: `Authentic N5 sentence (${cardType}): ${sentence.japanese}`,
         createdAt: new Date()
       };
       this.sentenceCards.set(card.id, card);
@@ -412,14 +430,14 @@ export class MemStorage implements IStorage {
         
         switch (categoryFilter) {
           case 'kanji':
-            // Filter for cards that contain kanji characters
-            return /[\u4e00-\u9faf]/.test(card.japanese);
+            // Filter for cards categorized as kanji-focused
+            return card.theme === 'kanji';
           case 'grammar':
-            // Filter for cards tagged with grammar patterns
-            return card.grammarPoints && Array.isArray(card.grammarPoints) && card.grammarPoints.length > 0;
+            // Filter for cards categorized as grammar-focused
+            return card.theme === 'grammar';
           case 'vocabulary':
-            // Filter for cards focused on vocabulary (have vocabulary array)
-            return card.vocabulary && Array.isArray(card.vocabulary) && card.vocabulary.length > 0;
+            // Filter for cards categorized as vocabulary-focused
+            return card.theme === 'vocabulary';
           default:
             return true;
         }

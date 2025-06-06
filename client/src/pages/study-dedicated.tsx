@@ -672,37 +672,23 @@ export default function StudyDedicatedPage() {
                     </div>
                   )}
 
-                  {/* Answer Buttons */}
-                  <div className="flex justify-center gap-4 pt-6">
+                  {/* Answer Buttons - Simplified to Correct/Incorrect */}
+                  <div className="flex justify-center gap-6 pt-6">
                     <Button
-                      onClick={() => handleAnswer(1)}
+                      onClick={() => handleAnswer(0)}
                       variant="destructive"
                       size="lg"
-                      className="text-xl px-8 py-4"
+                      className="text-xl px-12 py-6"
                     >
-                      <XCircle className="mr-2 h-5 w-5" />
-                      Again (1)
-                    </Button>
-                    <Button
-                      onClick={() => handleAnswer(2)}
-                      className="bg-orange-500 hover:bg-orange-600 text-white text-xl px-8 py-4"
-                    >
-                      <RotateCcw className="mr-2 h-5 w-5" />
-                      Hard (2)
-                    </Button>
-                    <Button
-                      onClick={() => handleAnswer(3)}
-                      className="bg-green-500 hover:bg-green-600 text-white text-xl px-8 py-4"
-                    >
-                      <CheckCircle className="mr-2 h-5 w-5" />
-                      Good (3)
+                      <XCircle className="mr-3 h-6 w-6" />
+                      Incorrect
                     </Button>
                     <Button
                       onClick={() => handleAnswer(4)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white text-xl px-8 py-4"
+                      className="bg-green-500 hover:bg-green-600 text-white text-xl px-12 py-6"
                     >
-                      <Star className="mr-2 h-5 w-5" />
-                      Easy (4)
+                      <CheckCircle className="mr-3 h-6 w-6" />
+                      Correct
                     </Button>
                   </div>
                 </div>
