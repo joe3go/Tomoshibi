@@ -374,14 +374,14 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={45} className="h-3 bg-red-100 dark:bg-red-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <Link href="/study-mode?type=kanji&mode=review" className="block">
-                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center">
+                <Link href="/study-dedicated?mode=kanji-reviews" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center" onClick={() => window.scrollTo(0, 0)}>
                     <div className="font-semibold text-orange-600 dark:text-orange-400">12</div>
                     <div className="text-xs text-muted-foreground">Reviews</div>
                   </Button>
                 </Link>
-                <Link href="/study-mode?type=kanji&mode=learn" className="block">
-                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center">
+                <Link href="/study-dedicated?mode=learn-kanji" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center" onClick={() => window.scrollTo(0, 0)}>
                     <div className="font-semibold text-green-600 dark:text-green-400">5</div>
                     <div className="text-xs text-muted-foreground">New</div>
                   </Button>
@@ -414,14 +414,14 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={29} className="h-3 bg-blue-100 dark:bg-blue-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <Link href="/study-mode?type=vocabulary&mode=review" className="block">
-                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center">
+                <Link href="/study-dedicated?mode=vocabulary-reviews" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center" onClick={() => window.scrollTo(0, 0)}>
                     <div className="font-semibold text-orange-600 dark:text-orange-400">28</div>
                     <div className="text-xs text-muted-foreground">Reviews</div>
                   </Button>
                 </Link>
-                <Link href="/study-mode?type=vocabulary&mode=learn" className="block">
-                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center">
+                <Link href="/study-dedicated?mode=learn-vocabulary" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center" onClick={() => window.scrollTo(0, 0)}>
                     <div className="font-semibold text-green-600 dark:text-green-400">10</div>
                     <div className="text-xs text-muted-foreground">New</div>
                   </Button>
@@ -454,14 +454,14 @@ export default function Dashboard() {
             <div className="space-y-4">
               <ProgressBar value={56} className="h-3 bg-green-100 dark:bg-green-900/20" />
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <Link href="/study-mode?type=grammar&mode=review" className="block">
-                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center">
+                <Link href="/study-dedicated?mode=grammar-reviews" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors flex flex-col items-center" onClick={() => window.scrollTo(0, 0)}>
                     <div className="font-semibold text-orange-600 dark:text-orange-400">8</div>
                     <div className="text-xs text-muted-foreground">Reviews</div>
                   </Button>
                 </Link>
-                <Link href="/study-mode?type=grammar&mode=learn" className="block">
-                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center">
+                <Link href="/study-dedicated?mode=learn-grammar" className="block">
+                  <Button variant="ghost" className="w-full h-auto p-2 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors flex flex-col items-center" onClick={() => window.scrollTo(0, 0)}>
                     <div className="font-semibold text-green-600 dark:text-green-400">3</div>
                     <div className="text-xs text-muted-foreground">New</div>
                   </Button>

@@ -79,8 +79,8 @@ export default function StudyModePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Unable to load study options</h2>
-          <p className="text-gray-600">Please try refreshing the page</p>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Unable to load study options</h2>
+          <p className="text-muted-foreground">Please try refreshing the page</p>
         </div>
       </div>
     );
@@ -90,7 +90,7 @@ export default function StudyModePage() {
   const currentLevelIndex = jlptLevels.indexOf(studyOptions.currentLevel);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -102,8 +102,8 @@ export default function StudyModePage() {
           </Link>
 
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Study Mode</h1>
-            <p className="text-gray-600">Choose what to study today</p>
+            <h1 className="text-3xl font-bold text-foreground">Study Mode</h1>
+            <p className="text-muted-foreground">Choose what to study today</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -145,10 +145,10 @@ export default function StudyModePage() {
           {/* Reviews Tab */}
           <TabsContent value="reviews" className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+              <h2 className="text-2xl font-semibold text-foreground mb-2">
                 {studyOptions.reviews.total} items ready for review
               </h2>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Keep your knowledge fresh with spaced repetition
               </p>
             </div>
