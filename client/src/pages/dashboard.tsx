@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { 
   BookOpen, 
   BarChart3, 
@@ -9,7 +9,9 @@ import {
   Settings, 
   Trophy,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  Clock,
+  ChevronRight
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,12 +21,103 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useJLPTLevelCheck } from "@/components/jlpt-level-selector";
 
+// Study All Button Component
+function StudyAllButton({ studyOptions }: { studyOptions: any }) {
+  const [, setLocation] = useLocation();
+  
+  const createStudySession = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/study-session", {
+      method: "POST",
+      body: JSON.stringify(data)
+    }),
+    onSuccess: (session) => {
+      setLocation(`/study-mode?sessionId=${session.id}&type=all&mode=learn`);
+    }
+  });
+
+  const totalNew = (studyOptions?.new?.kanji || 0) + 
+                  (studyOptions?.new?.vocabulary || 0) + 
+                  (studyOptions?.new?.grammar || 0);
+
+  const handleStudyAll = () => {
+    if (totalNew > 0) {
+      createStudySession.mutate({
+        sessionType: "study-all",
+        status: "active"
+      });
+    }
+  };
+
+  return (
+    <Button 
+      onClick={handleStudyAll}
+      disabled={totalNew === 0 || createStudySession.isPending}
+      className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg"
+    >
+      <Play className="h-6 w-6 mr-3" />
+      <div className="flex flex-col items-start">
+        <span>Study All New</span>
+        <span className="text-sm opacity-90">{totalNew} items pending</span>
+      </div>
+      <ChevronRight className="h-5 w-5 ml-auto" />
+    </Button>
+  );
+}
+
+// Review All Button Component  
+function ReviewAllButton({ studyOptions }: { studyOptions: any }) {
+  const [, setLocation] = useLocation();
+  
+  const createReviewSession = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/study-session", {
+      method: "POST", 
+      body: JSON.stringify(data)
+    }),
+    onSuccess: (session) => {
+      setLocation(`/study-mode?sessionId=${session.id}&type=all&mode=review`);
+    }
+  });
+
+  const totalReviews = (studyOptions?.reviews?.kanji || 0) + 
+                      (studyOptions?.reviews?.vocabulary || 0) + 
+                      (studyOptions?.reviews?.grammar || 0);
+
+  const handleReviewAll = () => {
+    if (totalReviews > 0) {
+      createReviewSession.mutate({
+        sessionType: "review-all",
+        status: "active"
+      });
+    }
+  };
+
+  return (
+    <Button 
+      onClick={handleReviewAll}
+      disabled={totalReviews === 0 || createReviewSession.isPending}
+      className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg"
+    >
+      <Target className="h-6 w-6 mr-3" />
+      <div className="flex flex-col items-start">
+        <span>Review All</span>
+        <span className="text-sm opacity-90">{totalReviews} items due</span>
+      </div>
+      <ChevronRight className="h-5 w-5 ml-auto" />
+    </Button>
+  );
+}
+
 export default function Dashboard() {
   const { showLevelSelector, setShowLevelSelector } = useJLPTLevelCheck();
   
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/user"],
     retry: false,
+  });
+
+  const { data: studyOptions } = useQuery({
+    queryKey: ["/api/study-options"],
+    enabled: !!user,
   });
 
   const updateLevelMutation = useMutation({
@@ -73,18 +166,8 @@ export default function Dashboard() {
 
       {/* Study All / Review All Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Link href="/study-mode?type=all&mode=learn">
-          <Button className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg">
-            <Play className="h-6 w-6 mr-3" />
-            Study All New
-          </Button>
-        </Link>
-        <Link href="/study-mode?type=all&mode=review">
-          <Button className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg">
-            <Target className="h-6 w-6 mr-3" />
-            Review All
-          </Button>
-        </Link>
+        <StudyAllButton studyOptions={studyOptions || {}} />
+        <ReviewAllButton studyOptions={studyOptions || {}} />
       </div>
 
       {/* Interactive Progress Overview */}
