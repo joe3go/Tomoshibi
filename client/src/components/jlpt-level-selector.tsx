@@ -201,5 +201,22 @@ export function useJLPTLevelCheck() {
 
 // Global JLPT Level Selector for automatic popup
 export function GlobalJLPTLevelSelector() {
-  return null; // Temporarily disabled to fix React hook error
+  const { showLevelSelector, setShowLevelSelector } = useJLPTLevelCheck();
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false,
+  });
+
+  if (!showLevelSelector || !user || user.currentJLPTLevel) {
+    return null;
+  }
+
+  return (
+    <JLPTLevelSelector
+      currentLevel={user?.currentJLPTLevel}
+      showModal={showLevelSelector}
+      onClose={() => setShowLevelSelector(false)}
+      onLevelSelect={() => setShowLevelSelector(false)}
+    />
+  );
 }
