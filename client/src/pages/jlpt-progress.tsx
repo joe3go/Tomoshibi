@@ -61,7 +61,36 @@ export default function JLPTProgress() {
     );
   }
 
-  const currentLevelStats = jlptStats?.find(stat => stat.level === user.currentJLPTLevel);
+  // Mock data for now since the API endpoint doesn't exist yet
+  const mockJlptStats: JLPTStats[] = [
+    {
+      level: 'N5',
+      vocabularyMastered: 680,
+      totalVocabulary: 800,
+      kanjiMastered: 68,
+      totalKanji: 80,
+      grammarMastered: 102,
+      totalGrammar: 120,
+      overallProgress: 85,
+      estimatedStudyTime: 40,
+      nextMilestone: 'Complete N5 Vocabulary'
+    },
+    {
+      level: 'N4',
+      vocabularyMastered: 120,
+      totalVocabulary: 1000,
+      kanjiMastered: 24,
+      totalKanji: 160,
+      grammarMastered: 30,
+      totalGrammar: 200,
+      overallProgress: 15,
+      estimatedStudyTime: 120,
+      nextMilestone: 'Learn 50 more vocabulary words'
+    }
+  ];
+
+  const statsData = Array.isArray(jlptStats) ? jlptStats : mockJlptStats;
+  const currentLevelStats = statsData.find(stat => stat.level === (user.currentJLPTLevel || 'N5'));
 
   return (
     <div className="px-2 py-2 space-y-3 h-full overflow-y-auto">
@@ -151,9 +180,9 @@ export default function JLPTProgress() {
           
           <div className="space-y-2">
             {jlptLevels.map((level) => {
-              const stats = jlptStats?.find(s => s.level === level);
+              const stats = statsData.find(s => s.level === level);
               const progress = stats?.overallProgress || 0;
-              const isCurrentLevel = level === user.currentJLPTLevel;
+              const isCurrentLevel = level === (user.currentJLPTLevel || 'N5');
               
               return (
                 <div key={level} className="flex items-center space-x-3">
