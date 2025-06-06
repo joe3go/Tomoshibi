@@ -50,7 +50,7 @@ export default function AuthPage() {
       } else {
         toast({
           title: "Login failed",
-          description: data.message || "Invalid credentials",
+          description: data.error || data.message || "Invalid credentials. Please check your username and password.",
           variant: "destructive",
         });
       }

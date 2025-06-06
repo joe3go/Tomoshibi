@@ -179,9 +179,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Google OAuth
   setupGoogleAuth(app);
 
-  // Create test user for immediate authentication testing
+  // Create test users for immediate authentication testing
   (async () => {
     try {
+      // Create regular test user
       const testUserExists = await storage.getUserByUsername("testuser");
       if (!testUserExists) {
         const hashedTestPassword = await hashPassword("testpass");
@@ -209,8 +210,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         console.log("Created test user: testuser / testpass");
       }
+
+      // Create admin user
+      const adminUserExists = await storage.getUserByUsername("admin");
+      if (!adminUserExists) {
+        const hashedAdminPassword = await hashPassword("admin123");
+        await storage.createUser({
+          username: "admin",
+          displayName: "Admin User",
+          email: "admin@example.com",
+          password: hashedAdminPassword,
+          userType: "global_admin",
+          currentBelt: "white",
+          currentJLPTLevel: "N5",
+          totalXP: 0,
+          currentStreak: 0,
+          bestStreak: 0,
+          lastStudyDate: null,
+          profileImageUrl: null,
+          googleId: null,
+          studyGoal: null,
+          dailyGoalMinutes: 20,
+          dailyGoalKanji: 5,
+          dailyGoalGrammar: 3,
+          dailyGoalVocabulary: 10,
+          preferredStudyTime: null,
+          enableReminders: true
+        });
+        console.log("Created admin user: admin / admin123");
+      } else {
+        // Update existing admin user with proper password
+        const hashedAdminPassword = await hashPassword("admin123");
+        await storage.updateUser(adminUserExists.id, {
+          password: hashedAdminPassword,
+          userType: "global_admin"
+        });
+        console.log("Updated admin user password: admin / admin123");
+      }
     } catch (error) {
-      console.error("Error creating test user:", error);
+      console.error("Error creating users:", error);
     }
   })();
 

@@ -176,18 +176,22 @@ function ProfileDropdown({ user }: { user: any }) {
       const response = await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      if (response.ok) {
-        // Clear query cache
-        queryClient.clear();
-        // Redirect to home page
-        setLocation("/");
-        // Reload the page to ensure clean state
-        window.location.reload();
-      }
+      // Always clear cache and redirect, even if logout fails
+      queryClient.clear();
+      queryClient.invalidateQueries();
+      
+      // Force redirect to landing page
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout failed:", error);
+      // Still redirect even if logout fails
+      queryClient.clear();
+      window.location.href = "/";
     }
   };
 
