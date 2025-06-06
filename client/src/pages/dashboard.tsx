@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { JLPTLevelSelector, useJLPTLevelCheck } from "@/components/jlpt-level-selector";
 
 export default function Dashboard() {
   const { data: user, isLoading } = useQuery({
@@ -143,11 +144,40 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {/* Quick Study Options */}
+      {/* Learn Section */}
       <Card className="p-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Quick Study</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <h3 className="text-lg font-semibold">Learn</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <Link href="/vocabulary">
+              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
+                <BookOpen className="h-5 w-5" />
+                <span className="text-sm">Vocabulary</span>
+              </Button>
+            </Link>
+
+            <Link href="/kanji">
+              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
+                <Target className="h-5 w-5" />
+                <span className="text-sm">Kanji</span>
+              </Button>
+            </Link>
+
+            <Link href="/grammar">
+              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
+                <BarChart3 className="h-5 w-5" />
+                <span className="text-sm">Grammar</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </Card>
+
+      {/* Review Section */}
+      <Card className="p-6">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Review</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <Link href="/study-mode">
               <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
                 <Play className="h-5 w-5" />
@@ -155,24 +185,17 @@ export default function Dashboard() {
               </Button>
             </Link>
 
-            <Link href="/learning-practice">
+            <Link href="/content-browser">
               <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Target className="h-5 w-5" />
-                <span className="text-sm">Practice Cards</span>
+                <Award className="h-5 w-5" />
+                <span className="text-sm">Content Browser</span>
               </Button>
             </Link>
 
             <Link href="/jlpt-progress">
               <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Award className="h-5 w-5" />
-                <span className="text-sm">JLPT Progress</span>
-              </Button>
-            </Link>
-
-            <Link href="/settings">
-              <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center space-y-1">
-                <Settings className="h-5 w-5" />
-                <span className="text-sm">Settings</span>
+                <Trophy className="h-5 w-5" />
+                <span className="text-sm">Progress</span>
               </Button>
             </Link>
           </div>
