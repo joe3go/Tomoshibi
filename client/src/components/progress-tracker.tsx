@@ -1,312 +1,286 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Activity, Target, Clock } from "lucide-react";
-import { useLanguageMode, useLanguageContent } from "@/App";
-
-interface ProgressData {
-  wanikaniData?: {
-    level: number;
-    subjects: {
-      kanji: number;
-      vocabulary: number;
-      radicals: number;
-      total: number;
-    };
-    reviewsAvailable: number;
-    lessonsAvailable: number;
-    accuracy: number;
-    srsDistribution: Record<number, number>;
-    levelProgression: any[];
-    lastSynced: string;
-  };
-  bunproData?: {
-    grammar_points_learned: number;
-    reviews_completed: number;
-    srs_average: number;
-    accuracy: number;
-    reviews_available: number;
-    study_queue_length: number;
-    grammar_by_level: Record<string, number>;
-    streak: number;
-    lastSynced: string;
-  };
-}
+import { 
+  Calendar,
+  Target,
+  Award,
+  TrendingUp,
+  Clock,
+  Flame,
+  Star,
+  BookOpen,
+  ChevronRight,
+  BarChart3,
+  Trophy
+} from "lucide-react";
+import { format, isToday, differenceInDays } from "date-fns";
 
 interface ProgressTrackerProps {
-  progress?: ProgressData;
-  hasApiKeys: boolean;
-  onSync: () => void;
-  isLoading?: boolean;
+  user: any;
+  studyOptions: any;
 }
 
-export default function ProgressTracker({ progress, hasApiKeys, onSync, isLoading }: ProgressTrackerProps) {
-  const { languageMode } = useLanguageMode();
-  const content = useLanguageContent(languageMode);
-  const wanikani = progress?.wanikaniData;
-  const bunpro = progress?.bunproData;
+export function ProgressTracker({ user, studyOptions }: ProgressTrackerProps) {
+  const { data: studySessions } = useQuery({
+    queryKey: ["/api/study-sessions/recent"],
+  });
 
-  // Calculate progress rates and trends
-  const calculateTrend = (current: number, target: number) => {
-    const percentage = (current / target) * 100;
-    if (percentage >= 90) return { icon: TrendingUp, color: "text-matcha", label: "Excellent" };
-    if (percentage >= 70) return { icon: Activity, color: "text-bamboo", label: "Good" };
-    return { icon: TrendingDown, color: "text-muted-foreground", label: "Needs Focus" };
-  };
+  const { data: achievements } = useQuery({
+    queryKey: ["/api/achievements/user"],
+  });
 
-  const formatLastSync = (timestamp?: string) => {
-    if (!timestamp) return "Never";
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  // Calculate streak
+  const calculateStreak = () => {
+    if (!studySessions || !Array.isArray(studySessions) || studySessions.length === 0) return 0;
     
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${Math.floor(diffHours / 24)}d ago`;
+    let streak = 0;
+    const today = new Date();
+    
+    // Check if studied today
+    const hasStudiedToday = studySessions.some((session: any) => 
+      isToday(new Date(session.startedAt))
+    );
+    
+    if (hasStudiedToday) streak = 1;
+    
+    // Count consecutive days
+    for (let i = 1; i < 30; i++) {
+      const targetDate = new Date();
+      targetDate.setDate(today.getDate() - i);
+      
+      const hasStudiedOnDate = studySessions.some((session: any) => {
+        const sessionDate = new Date(session.startedAt);
+        return sessionDate.toDateString() === targetDate.toDateString();
+      });
+      
+      if (hasStudiedOnDate) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
   };
+
+  // Calculate learning statistics
+  const stats = {
+    currentStreak: calculateStreak(),
+    totalCards: (studyOptions?.reviews?.vocabulary || 0) + 
+                (studyOptions?.reviews?.kanji || 0) + 
+                (studyOptions?.reviews?.grammar || 0),
+    dueCards: studyOptions?.reviews?.total || 0,
+    completedToday: Array.isArray(studySessions) ? studySessions.filter((session: any) => 
+      isToday(new Date(session.startedAt))
+    ).length : 0,
+    totalXP: user?.totalXP || 0,
+    currentLevel: user?.currentJLPTLevel || "N5"
+  };
+
+  // Calculate progress to next level
+  const getLevelProgress = () => {
+    const levels = ["N5", "N4", "N3", "N2", "N1"];
+    const currentIndex = levels.indexOf(stats.currentLevel);
+    const xpThresholds = [0, 1000, 2500, 5000, 10000, 20000];
+    
+    if (currentIndex === -1 || currentIndex >= levels.length - 1) {
+      return { current: stats.totalXP, target: xpThresholds[xpThresholds.length - 1], percentage: 100 };
+    }
+    
+    const currentThreshold = xpThresholds[currentIndex];
+    const nextThreshold = xpThresholds[currentIndex + 1];
+    const progress = stats.totalXP - currentThreshold;
+    const total = nextThreshold - currentThreshold;
+    
+    return {
+      current: progress,
+      target: total,
+      percentage: Math.min((progress / total) * 100, 100)
+    };
+  };
+
+  const levelProgress = getLevelProgress();
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="japanese-heading text-2xl font-bold">
-          {languageMode === 'en' ? content.progress :
-           languageMode === 'jp' ? '進歩追跡' :
-           '進歩<ruby>しんぽ</ruby>追跡<ruby>ついせき</ruby>'} - {content.progress}
-        </h2>
-        <Button 
-          onClick={onSync} 
-          disabled={!hasApiKeys || isLoading}
-          className="matcha-gradient text-white"
-        >
-          {isLoading ? 
-            (languageMode === 'en' ? "Syncing..." : 
-             languageMode === 'jp' ? "同期中..." : 
-             "同期<ruby>どうき</ruby>中<ruby>ちゅう</ruby>...") :
-            content.syncData}
-        </Button>
-      </div>
-
-      {!hasApiKeys && (
-        <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/20">
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Current Streak */}
+        <Card className="relative overflow-hidden">
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
-              <Target className="w-4 h-4" />
-              <span className="text-sm">
-                Configure WaniKani and Bunpro API keys in Settings to track authentic progress data
-              </span>
+            <div className="flex items-center justify-between mb-2">
+              <Flame className="w-5 h-5 text-orange-500" />
+              <Badge variant={stats.currentStreak > 0 ? "default" : "secondary"}>
+                {stats.currentStreak > 7 ? "🔥" : stats.currentStreak > 3 ? "⚡" : "📚"}
+              </Badge>
+            </div>
+            <div className="space-y-1">
+              <p className="text-2xl font-bold">{stats.currentStreak}</p>
+              <p className="text-xs text-muted-foreground">Day Streak</p>
             </div>
           </CardContent>
         </Card>
-      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* WaniKani Progress */}
-        <Card className="japanese-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="japanese-heading flex items-center gap-2">
-                <span className="text-2xl">漢</span>
-                WaniKani Progress
-              </CardTitle>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-3 h-3" />
-                {formatLastSync(wanikani?.lastSynced)}
-              </div>
+        {/* Due Cards */}
+        <Card className="relative overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Clock className="w-5 h-5 text-blue-500" />
+              <Badge variant={stats.dueCards > 0 ? "destructive" : "outline"}>
+                {stats.dueCards > 0 ? "Due" : "Clear"}
+              </Badge>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {wanikani ? (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 rounded-lg bg-washi">
-                    <div className="text-2xl font-bold text-primary japanese-text">
-                      {wanikani.level}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Current Level</div>
-                  </div>
-                  <div className="text-center p-3 rounded-lg bg-washi">
-                    <div className="text-2xl font-bold text-matcha japanese-text">
-                      {wanikani.accuracy}%
-                    </div>
-                    <div className="text-xs text-muted-foreground">Accuracy</div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Kanji Learned</span>
-                      <span className="japanese-text">{wanikani.subjects.kanji}</span>
-                    </div>
-                    <Progress value={(wanikani.subjects.kanji / 2000) * 100} className="h-2" />
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Vocabulary</span>
-                      <span className="japanese-text">{wanikani.subjects.vocabulary}</span>
-                    </div>
-                    <Progress value={(wanikani.subjects.vocabulary / 6000) * 100} className="h-2" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Radicals</span>
-                      <span className="japanese-text">{wanikani.subjects.radicals}</span>
-                    </div>
-                    <Progress value={(wanikani.subjects.radicals / 480) * 100} className="h-2" />
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-primary japanese-text">
-                      {wanikani.reviewsAvailable}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Reviews</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-bamboo japanese-text">
-                      {wanikani.lessonsAvailable}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Lessons</div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Target className="w-8 h-8 mx-auto mb-2" />
-                <p className="text-sm">Connect WaniKani to track kanji and vocabulary progress</p>
-              </div>
-            )}
+            <div className="space-y-1">
+              <p className="text-2xl font-bold">{stats.dueCards}</p>
+              <p className="text-xs text-muted-foreground">Cards Due</p>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Bunpro Progress */}
-        <Card className="japanese-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="japanese-heading flex items-center gap-2">
-                <span className="text-2xl">文</span>
-                Bunpro Progress
-              </CardTitle>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-3 h-3" />
-                {formatLastSync(bunpro?.lastSynced)}
-              </div>
+        {/* Total XP */}
+        <Card className="relative overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Star className="w-5 h-5 text-yellow-500" />
+              <Badge variant="secondary">{stats.currentLevel}</Badge>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {bunpro ? (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 rounded-lg bg-washi">
-                    <div className="text-2xl font-bold text-primary japanese-text">
-                      {bunpro.grammar_points_learned}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Grammar Points</div>
-                  </div>
-                  <div className="text-center p-3 rounded-lg bg-washi">
-                    <div className="text-2xl font-bold text-matcha japanese-text">
-                      {bunpro.accuracy}%
-                    </div>
-                    <div className="text-xs text-muted-foreground">Accuracy</div>
-                  </div>
-                </div>
+            <div className="space-y-1">
+              <p className="text-2xl font-bold">{stats.totalXP.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">Total XP</p>
+            </div>
+          </CardContent>
+        </Card>
 
-                <div className="space-y-3">
-                  {Object.entries(bunpro.grammar_by_level || {}).map(([level, count]) => {
-                    const maxPoints = { N5: 120, N4: 120, N3: 180, N2: 200, N1: 180 }[level] || 100;
-                    return (
-                      <div key={level}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>{level} Grammar</span>
-                          <span className="japanese-text">{count}/{maxPoints}</span>
-                        </div>
-                        <Progress value={(count / maxPoints) * 100} className="h-2" />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-primary japanese-text">
-                      {bunpro.reviews_available}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Reviews</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-bamboo japanese-text">
-                      {bunpro.streak}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Day Streak</div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Target className="w-8 h-8 mx-auto mb-2" />
-                <p className="text-sm">Connect Bunpro to track grammar progress</p>
-              </div>
-            )}
+        {/* Today's Sessions */}
+        <Card className="relative overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Target className="w-5 h-5 text-green-500" />
+              <Badge variant={stats.completedToday > 0 ? "default" : "outline"}>
+                Today
+              </Badge>
+            </div>
+            <div className="space-y-1">
+              <p className="text-2xl font-bold">{stats.completedToday}</p>
+              <p className="text-xs text-muted-foreground">Sessions</p>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Combined Progress Overview */}
-      {(wanikani || bunpro) && (
-        <Card className="japanese-card">
-          <CardHeader>
-            <CardTitle className="japanese-heading">Overall Progress Trends</CardTitle>
+      {/* Level Progress */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Award className="w-4 h-4" />
+              JLPT Progress
+            </CardTitle>
+            <Badge variant="outline">{stats.currentLevel}</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Level {stats.currentLevel}</span>
+              <span>{Math.round(levelProgress.percentage)}%</span>
+            </div>
+            <Progress value={levelProgress.percentage} className="h-2" />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{levelProgress.current.toLocaleString()} XP</span>
+              <span>{levelProgress.target.toLocaleString()} XP to next level</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Learning Categories */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Learning Progress
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Vocabulary */}
+          <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">語</span>
+              </div>
+              <div>
+                <p className="font-medium text-sm">Vocabulary</p>
+                <p className="text-xs text-muted-foreground">
+                  {studyOptions?.reviews?.vocabulary || 0} cards in review
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </div>
+
+          {/* Kanji */}
+          <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">漢</span>
+              </div>
+              <div>
+                <p className="font-medium text-sm">Kanji</p>
+                <p className="text-xs text-muted-foreground">
+                  {studyOptions?.reviews?.kanji || 0} cards in review
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </div>
+
+          {/* Grammar */}
+          <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">文</span>
+              </div>
+              <div>
+                <p className="font-medium text-sm">Grammar</p>
+                <p className="text-xs text-muted-foreground">
+                  {studyOptions?.reviews?.grammar || 0} cards in review
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Achievements */}
+      {achievements && achievements.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Trophy className="w-4 h-4" />
+              Recent Achievements
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {wanikani && (
-                <div className="text-center p-4 rounded-lg bg-washi">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <TrendingUp className="w-4 h-4 text-matcha" />
-                    <span className="text-sm font-medium">Kanji Mastery</span>
+            <div className="space-y-2">
+              {achievements.slice(0, 3).map((achievement: any) => (
+                <div key={achievement.id} className="flex items-center gap-3 p-2 bg-yellow-50 rounded-lg">
+                  <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                    <Award className="w-4 h-4 text-white" />
                   </div>
-                  <div className="text-2xl font-bold japanese-text">
-                    {Math.round((wanikani.subjects.kanji / 2000) * 100)}%
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{achievement.achievement.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(achievement.unlockedAt), 'MMM d, yyyy')}
+                    </p>
                   </div>
-                  <Badge variant="outline" className="mt-1">
-                    Level {wanikani.level}
-                  </Badge>
                 </div>
-              )}
-
-              {bunpro && (
-                <div className="text-center p-4 rounded-lg bg-washi">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Activity className="w-4 h-4 text-bamboo" />
-                    <span className="text-sm font-medium">Grammar Points</span>
-                  </div>
-                  <div className="text-2xl font-bold japanese-text">
-                    {bunpro.grammar_points_learned}
-                  </div>
-                  <Badge variant="outline" className="mt-1">
-                    {bunpro.srs_average.toFixed(1)} SRS Avg
-                  </Badge>
-                </div>
-              )}
-
-              {wanikani && bunpro && (
-                <div className="text-center p-4 rounded-lg bg-washi">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">Combined Accuracy</span>
-                  </div>
-                  <div className="text-2xl font-bold japanese-text">
-                    {Math.round((wanikani.accuracy + bunpro.accuracy) / 2)}%
-                  </div>
-                  <Badge variant="outline" className="mt-1">
-                    Overall Performance
-                  </Badge>
-                </div>
-              )}
+              ))}
             </div>
           </CardContent>
         </Card>
