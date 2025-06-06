@@ -208,14 +208,14 @@ function Header({ user }: { user: any }) {
   return (
     <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-50">
       <div className="flex items-center justify-between px-4 h-14 max-w-7xl mx-auto">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 min-w-0 flex-1">
           <div className="relative">
-            <LanternLogo size={32} className="text-primary drop-shadow-sm" />
+            <LanternLogo size={36} className="text-primary drop-shadow-sm" />
             <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full blur-sm -z-10"></div>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-primary tracking-wide">Tomoshibi</h1>
-            <p className="text-xs text-muted-foreground -mt-1">Japanese Learning</p>
+            <h1 className="text-2xl font-bold text-primary tracking-wider">Tomoshibi</h1>
+            <p className="text-xs text-muted-foreground -mt-1 tracking-wide">Japanese Learning</p>
           </div>
         </div>
         
