@@ -1,51 +1,54 @@
-import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
+import { Link } from "wouter";
+import { 
+  BookOpen, 
+  BarChart3, 
+  Target, 
+  Play, 
+  Award, 
+  Settings, 
+  Trophy
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Target, Trophy, Award, Zap, Play, BarChart3, Settings } from "lucide-react";
-import { Link } from "wouter";
-import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 
 export default function Dashboard() {
-  const { toast } = useToast();
-
-  const { data: user } = useQuery<any>({
+  const { data: user, isLoading } = useQuery({
     queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    retry: false,
   });
 
-  const { data: stats } = useQuery<any>({
-    queryKey: ["/api/dashboard/stats"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
-  });
-
-  const { data: recentSessions } = useQuery<any[]>({
-    queryKey: ["/api/dashboard/recent-sessions"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
-  });
-
-  const { data: achievements } = useQuery<any[]>({
-    queryKey: ["/api/dashboard/achievements"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
-  });
-
-  // JLPT Level Selection Mutation
   const updateLevelMutation = useMutation({
     mutationFn: async (level: string) => {
-      await apiRequest("PUT", "/api/user/jlpt-level", { jlptLevel: level });
+      const response = await apiRequest("PATCH", "/api/user/jlpt-level", { level });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({
-        title: "JLPT Level Updated",
-        description: "Your study content will now focus on this level",
-      });
     },
   });
+
+  const { data: recentSessions } = useQuery({
+    queryKey: ["/api/study-sessions/recent"],
+    retry: false,
+  });
+
+  const { data: achievements } = useQuery({
+    queryKey: ["/api/achievements/user"],
+    retry: false,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">Loading dashboard...</div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -190,7 +193,7 @@ export default function Dashboard() {
               return (
                 <div key={level} className="flex items-center space-x-3">
                   <span className="text-xs font-mono w-6">{level}</span>
-                  <Progress value={progress} className="flex-1 h-2" />
+                  <ProgressBar value={progress} className="flex-1 h-2" />
                   <span className="text-xs text-muted-foreground w-8">{progress}%</span>
                 </div>
               );

@@ -1077,6 +1077,133 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user JLPT level
+  app.patch("/api/user/jlpt-level", async (req, res) => {
+    try {
+      const { level } = req.body;
+      const userId = req.session.userId!;
+      
+      if (!['N1', 'N2', 'N3', 'N4', 'N5'].includes(level)) {
+        return res.status(400).json({ error: "Invalid JLPT level" });
+      }
+
+      const updatedUser = await storage.updateUser(userId, { currentJLPTLevel: level });
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating JLPT level:", error);
+      res.status(500).json({ error: "Failed to update JLPT level" });
+    }
+  });
+
+  // Get vocabulary items
+  app.get("/api/vocabulary", async (req, res) => {
+    try {
+      const level = req.query.level as string;
+      
+      // Transform N5 vocabulary data to match expected format
+      const vocabularyItems = n5Vocabulary.map((item, index) => ({
+        id: index + 1,
+        kanji: item.kanji,
+        kana_reading: item.kana_reading,
+        english_meaning: item.english_meaning,
+        example_sentence_jp: item.example_sentence_jp,
+        example_sentence_en: item.example_sentence_en,
+        jlptLevel: 'N5'
+      }));
+
+      let filteredItems = vocabularyItems;
+      if (level && level !== 'all') {
+        filteredItems = vocabularyItems.filter(item => item.jlptLevel === level);
+      }
+
+      res.json(filteredItems);
+    } catch (error) {
+      console.error("Error fetching vocabulary:", error);
+      res.status(500).json({ error: "Failed to fetch vocabulary" });
+    }
+  });
+
+  // Get kanji items
+  app.get("/api/kanji", async (req, res) => {
+    try {
+      const level = req.query.level as string;
+      
+      // Transform N5 kanji data to match expected format
+      const kanjiItems = n5Kanji.map((item, index) => ({
+        id: index + 1,
+        kanji: item.kanji,
+        onyomi: item.onyomi,
+        kunyomi: item.kunyomi,
+        english_meaning: item.english_meaning,
+        stroke_count: item.stroke_count,
+        example_vocab: item.example_vocab,
+        jlptLevel: 'N5'
+      }));
+
+      let filteredItems = kanjiItems;
+      if (level && level !== 'all') {
+        filteredItems = kanjiItems.filter(item => item.jlptLevel === level);
+      }
+
+      res.json(filteredItems);
+    } catch (error) {
+      console.error("Error fetching kanji:", error);
+      res.status(500).json({ error: "Failed to fetch kanji" });
+    }
+  });
+
+  // Get grammar items
+  app.get("/api/grammar", async (req, res) => {
+    try {
+      const level = req.query.level as string;
+      
+      // Transform N5 grammar data to match expected format
+      const grammarItems = n5Grammar.map((item, index) => ({
+        id: index + 1,
+        grammar_point: item.grammar_point,
+        meaning_en: item.meaning_en,
+        structure_notes: item.structure_notes,
+        example_sentence_jp: item.example_sentence_jp,
+        example_sentence_en: item.example_sentence_en,
+        jlptLevel: 'N5'
+      }));
+
+      let filteredItems = grammarItems;
+      if (level && level !== 'all') {
+        filteredItems = grammarItems.filter(item => item.jlptLevel === level);
+      }
+
+      res.json(filteredItems);
+    } catch (error) {
+      console.error("Error fetching grammar:", error);
+      res.status(500).json({ error: "Failed to fetch grammar" });
+    }
+  });
+
+  // Get recent study sessions
+  app.get("/api/study-sessions/recent", async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const sessions = await storage.getUserStudySessions(userId, 5);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching recent sessions:", error);
+      res.status(500).json({ error: "Failed to fetch recent sessions" });
+    }
+  });
+
+  // Get user achievements
+  app.get("/api/achievements/user", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const achievements = await storage.getUserAchievements(userId);
+      res.json(achievements);
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      res.status(500).json({ error: "Failed to fetch achievements" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
