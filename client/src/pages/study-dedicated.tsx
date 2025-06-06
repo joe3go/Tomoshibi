@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+
+// Scroll to top when component mounts
+const useScrollToTop = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+};
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +73,8 @@ interface StudySession {
 }
 
 export default function StudyDedicatedPage() {
+  useScrollToTop(); // Scroll to top on component mount
+  
   const [, setLocation] = useLocation();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -310,6 +319,7 @@ export default function StudyDedicatedPage() {
       setCurrentCardIndex(prev => prev + 1);
       setShowAnswer(false);
       setShowReading(false);
+      window.scrollTo(0, 0); // Scroll to top for next card
     } else {
       // Session complete
       completeSessionMutation.mutate();
