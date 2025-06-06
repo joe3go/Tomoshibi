@@ -81,7 +81,7 @@ const registers = ["formal", "casual", "polite", "literary", "colloquial"];
 const themes = ["general", "business", "travel", "food", "technology", "culture", "daily life", "education"];
 const sources = ["manual", "jlpt", "textbook", "media", "conversation"];
 
-export default function AdminPage() {
+function AdminPageContent() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
@@ -787,5 +787,13 @@ export default function AdminPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <AdminGuard>
+      <AdminPageContent />
+    </AdminGuard>
   );
 }
