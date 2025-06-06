@@ -51,6 +51,24 @@ export interface IStorage {
   // Learning path operations
   getAllLearningPaths(): Promise<LearningPath[]>;
   getUserPathProgress(userId: number): Promise<UserPathProgress[]>;
+
+  // JLPT content operations
+  getJlptVocabulary(filters?: {
+    jlptLevel?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any[]>;
+  getJlptKanji(filters?: {
+    jlptLevel?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any[]>;
+  getJlptGrammar(filters?: {
+    jlptLevel?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any[]>;
+  searchJlptContent(query: string, type?: 'vocabulary' | 'kanji' | 'grammar'): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -479,6 +497,123 @@ export class MemStorage implements IStorage {
   async getUserPathProgress(userId: number): Promise<UserPathProgress[]> {
     return Array.from(this.userPathProgress.values())
       .filter(progress => progress.userId === userId);
+  }
+
+  // JLPT content operations
+  async getJlptVocabulary(filters?: {
+    jlptLevel?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any[]> {
+    let vocabulary = [...n5Vocabulary];
+    
+    if (filters?.jlptLevel) {
+      vocabulary = vocabulary.filter(v => v.jlpt_level === filters.jlptLevel);
+    }
+    
+    const offset = filters?.offset || 0;
+    const limit = filters?.limit || vocabulary.length;
+    
+    return vocabulary.slice(offset, offset + limit).map(v => ({
+      id: v.id || v.kanji,
+      kanji: v.kanji,
+      kanaReading: v.kana_reading,
+      englishMeaning: [v.english_meaning],
+      jlptLevel: 'N5',
+      exampleSentenceJp: v.example_sentence_jp,
+      exampleSentenceEn: v.example_sentence_en,
+      audioUrl: v.audio_url,
+      type: 'vocabulary'
+    }));
+  }
+
+  async getJlptKanji(filters?: {
+    jlptLevel?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any[]> {
+    let kanji = [...n5Kanji];
+    
+    if (filters?.jlptLevel) {
+      kanji = kanji.filter(k => k.jlpt_level === filters.jlptLevel);
+    }
+    
+    const offset = filters?.offset || 0;
+    const limit = filters?.limit || kanji.length;
+    
+    return kanji.slice(offset, offset + limit).map(k => ({
+      id: k.kanji,
+      kanji: k.kanji,
+      onyomi: k.onyomi,
+      kunyomi: k.kunyomi,
+      englishMeaning: [k.english_meaning],
+      jlptLevel: 'N5',
+      strokeCount: k.stroke_count,
+      exampleVocab: k.example_vocab,
+      strokeOrderDiagram: k.stroke_order_diagram,
+      type: 'kanji'
+    }));
+  }
+
+  async getJlptGrammar(filters?: {
+    jlptLevel?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any[]> {
+    let grammar = [...n5Grammar];
+    
+    if (filters?.jlptLevel) {
+      grammar = grammar.filter(g => g.jlpt_level === filters.jlptLevel);
+    }
+    
+    const offset = filters?.offset || 0;
+    const limit = filters?.limit || grammar.length;
+    
+    return grammar.slice(offset, offset + limit).map(g => ({
+      id: g.grammar_point,
+      grammarPoint: g.grammar_point,
+      meaningEn: g.meaning_en,
+      structureNotes: g.structure_notes,
+      jlptLevel: 'N5',
+      exampleSentenceJp: g.example_sentence_jp,
+      exampleSentenceEn: g.example_sentence_en,
+      type: 'grammar'
+    }));
+  }
+
+  async searchJlptContent(query: string, type?: 'vocabulary' | 'kanji' | 'grammar'): Promise<any[]> {
+    const results: any[] = [];
+    const lowerQuery = query.toLowerCase();
+    
+    if (!type || type === 'vocabulary') {
+      const vocabResults = await this.getJlptVocabulary();
+      results.push(...vocabResults.filter(v => 
+        v.kanji.includes(query) ||
+        v.kanaReading.includes(query) ||
+        v.englishMeaning.some((m: string) => m.toLowerCase().includes(lowerQuery))
+      ));
+    }
+    
+    if (!type || type === 'kanji') {
+      const kanjiResults = await this.getJlptKanji();
+      results.push(...kanjiResults.filter(k => 
+        k.kanji.includes(query) ||
+        k.onyomi?.includes(query) ||
+        k.kunyomi?.includes(query) ||
+        k.englishMeaning.some((m: string) => m.toLowerCase().includes(lowerQuery))
+      ));
+    }
+    
+    if (!type || type === 'grammar') {
+      const grammarResults = await this.getJlptGrammar();
+      results.push(...grammarResults.filter(g => 
+        g.grammarPoint.includes(query) ||
+        g.meaningEn.toLowerCase().includes(lowerQuery) ||
+        g.structureNotes?.toLowerCase().includes(lowerQuery)
+      ));
+    }
+    
+    return results;
   }
 }
 

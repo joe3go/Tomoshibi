@@ -34,7 +34,57 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow()
 });
 
-// Sentence cards - core content of the app
+// JLPT Vocabulary table
+export const jlptVocabulary = pgTable("jlpt_vocabulary", {
+  id: serial("id").primaryKey(),
+  kanji: text("kanji").notNull(),
+  kanaReading: text("kana_reading").notNull(),
+  englishMeaning: jsonb("english_meaning").notNull(), // Array of meanings
+  jlptLevel: varchar("jlpt_level", { length: 2 }).notNull(), // N1, N2, N3, N4, N5
+  partOfSpeech: varchar("part_of_speech", { length: 50 }),
+  exampleSentenceJp: text("example_sentence_jp"),
+  exampleSentenceEn: text("example_sentence_en"),
+  audioUrl: varchar("audio_url", { length: 500 }),
+  frequency: integer("frequency"), // Usage frequency ranking
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// JLPT Kanji table
+export const jlptKanji = pgTable("jlpt_kanji", {
+  id: serial("id").primaryKey(),
+  kanji: varchar("kanji", { length: 1 }).notNull().unique(),
+  onyomi: text("onyomi"), // On'yomi readings
+  kunyomi: text("kunyomi"), // Kun'yomi readings
+  englishMeaning: jsonb("english_meaning").notNull(), // Array of meanings
+  jlptLevel: varchar("jlpt_level", { length: 2 }).notNull(),
+  strokeCount: integer("stroke_count"),
+  exampleVocab: jsonb("example_vocab"), // Array of example vocabulary
+  strokeOrderDiagram: varchar("stroke_order_diagram", { length: 500 }),
+  radicals: text("radicals"),
+  frequency: integer("frequency"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// JLPT Grammar table
+export const jlptGrammar = pgTable("jlpt_grammar", {
+  id: serial("id").primaryKey(),
+  grammarPoint: text("grammar_point").notNull(),
+  meaningEn: text("meaning_en").notNull(),
+  structureNotes: text("structure_notes"),
+  jlptLevel: varchar("jlpt_level", { length: 2 }).notNull(),
+  exampleSentenceJp: text("example_sentence_jp"),
+  exampleSentenceEn: text("example_sentence_en"),
+  formationPattern: text("formation_pattern"),
+  usageNotes: text("usage_notes"),
+  relatedGrammar: jsonb("related_grammar"), // Array of related grammar points
+  difficulty: integer("difficulty"), // 1-10 scale
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Sentence cards - enhanced with JLPT relationships
 export const sentenceCards = pgTable("sentence_cards", {
   id: serial("id").primaryKey(),
   japanese: text("japanese").notNull(),
@@ -48,6 +98,11 @@ export const sentenceCards = pgTable("sentence_cards", {
   register: varchar("register", { length: 20 }).notNull(), // casual, polite, anime, etc.
   theme: varchar("theme", { length: 50 }), // "anime", "daily_life", "business", etc.
   source: varchar("source", { length: 100 }), // "My Hero Academia", "textbook", etc.
+  
+  // JLPT content relationships
+  vocabularyIds: jsonb("vocabulary_ids"), // Array of vocabulary IDs
+  kanjiIds: jsonb("kanji_ids"), // Array of kanji IDs
+  grammarIds: jsonb("grammar_ids"), // Array of grammar IDs
   
   // Grammar breakdown
   grammarPoints: jsonb("grammar_points"), // array of grammar concepts
@@ -233,6 +288,25 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
   unlockedAt: true 
 });
 
+// JLPT insert schemas
+export const insertJlptVocabularySchema = createInsertSchema(jlptVocabulary).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
+export const insertJlptKanjiSchema = createInsertSchema(jlptKanji).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
+export const insertJlptGrammarSchema = createInsertSchema(jlptGrammar).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -242,6 +316,16 @@ export type InsertSentenceCard = z.infer<typeof insertSentenceCardSchema>;
 
 export type SrsItem = typeof srsItems.$inferSelect;
 export type InsertSrsItem = z.infer<typeof insertSrsItemSchema>;
+
+// JLPT Types
+export type JlptVocabulary = typeof jlptVocabulary.$inferSelect;
+export type InsertJlptVocabulary = z.infer<typeof insertJlptVocabularySchema>;
+
+export type JlptKanji = typeof jlptKanji.$inferSelect;
+export type InsertJlptKanji = z.infer<typeof insertJlptKanjiSchema>;
+
+export type JlptGrammar = typeof jlptGrammar.$inferSelect;
+export type InsertJlptGrammar = z.infer<typeof insertJlptGrammarSchema>;
 
 export type StudySession = typeof studySessions.$inferSelect;
 export type InsertStudySession = z.infer<typeof insertStudySessionSchema>;

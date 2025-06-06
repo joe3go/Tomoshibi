@@ -1,0 +1,610 @@
+Okay, here is the complete, comprehensive prompt that integrates everything we've discussed for setting up your full-stack Tomoshibi JLPT learning site on Replit.
+
+Please follow each step carefully, paying close attention to file paths and code replacements.
+
+Master Prompt: Building Your Full-Stack Tomoshibi JLPT Learning App on Replit
+
+Goal: Transform your Tomoshibi frontend into a full-stack application. This involves setting up a Node.js/Express backend, connecting to MongoDB Atlas, ingesting the elzup/jlpt-word-list data, and updating your frontend to fetch this data from your new API.
+
+Assumptions:
+
+You have your current Tomoshibi frontend files (index.html, script.js, your CSS files/folder, Tailwind output) ready.
+You have downloaded the elzup/jlpt-word-list repository (or its contents) and are ready to place its words, kanji, and grammar folders into your Replit project.
+Part 1: Replit Project & Initial Backend Setup
+Create a New Replit Project:
+
+Go to Replit.com.
+Click the "+ Create Repl" button.
+Select the "Node.js" template.
+Give your Repl a descriptive name (e.g., Tomoshibi-Fullstack-JLPT).
+Click "Create Repl".
+Migrate Your Existing Frontend Files:
+
+Once the new Node.js Repl loads, you'll see files like index.js, package.json, etc.
+In the Replit file tree (left panel), create a new folder named client.
+Copy all your existing frontend files (index.html, script.js, your CSS files/folder, Tailwind output) from your old Tomoshibi Repl into this new client folder.
+Important: If your index.html references script.js or CSS files directly (e.g., <script src="script.js"></script>), make sure the paths are correct relative to where index.html will be served (e.g., <script src="/script.js"></script> or <link rel="stylesheet" href="/style.css">).
+Install Express.js:
+
+Open the Replit Shell (the terminal at the bottom).
+Run the command: npm install express
+Set Up Your Backend Server (index.js):
+
+Open the index.js file in the root of your Repl.
+Replace its entire content with the following code. This sets up a basic Express server to serve your frontend files and will later host your API.
+JavaScript
+
+// index.js (Your main backend server file)
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000; // Replit often uses port 3000
+
+// Middleware to parse JSON bodies from incoming requests
+app.use(express.json());
+
+// Serve static files (your frontend HTML, JS, CSS) from the 'client' directory
+app.use(express.static(path.join(__dirname, 'client')));
+// Serve the 'data' folder specifically if it's within client/public/data
+app.use('/public/data', express.static(path.join(__dirname, 'client', 'public', 'data')));
+
+// Basic API test route
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from the backend API!' });
+});
+
+// Catch-all route: For any other request, serve your main HTML file
+// This is important for single-page application (SPA) routing, even for vanilla JS
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'index.html'));
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log('Check the Replit "Webview" tab or open the URL to see your app.');
+  console.log('Test the API: Navigate to /api/hello in your webview.');
+});
+Run the Repl: Click the "Run" button.
+Verify: Check the "Webview" tab. You should see your Tomoshibi frontend. Try navigating to your-repl-name.replit.dev/api/hello (replace your-repl-name with your actual Replit URL) to see the JSON response.
+Part 2: MongoDB Atlas Setup (External & Replit Secrets)
+This part is done outside of Replit first, then integrated.
+
+Create a Free MongoDB Atlas Account:
+
+Go to cloud.mongodb.com.
+Sign up and create a new Shared Cluster (M0 Free Tier).
+Important Steps in Atlas:
+Network Access: In your cluster's "Network Access" settings, add an IP address entry for 0.0.0.0/0 (Allow Access from Anywhere). This is critical for Replit to connect. (For production, you'd use stricter IP whitelisting.)
+Database User: In "Database Access," create a new database user (e.g., tomoshibi_user) with a strong password. Remember these credentials.
+Get Connection String: Go to your cluster's "Connect" section, choose "Connect your application," select "Node.js Driver," and copy the connection string. It will look like: mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/?retryWrites=true&w=majority
+Add MongoDB URI to Replit Secrets:
+
+In your Replit project, click the "Secrets" icon (padlock) on the left sidebar.
+Click "New Secret".
+For Key, type: MONGO_URI
+For Value, paste your MongoDB Atlas connection string. Make sure to replace <username> and <password> in the string with the actual database username and password you created in Atlas.
+Click "Add new secret".
+Part 3: Integrate Database into Backend
+Install Mongoose:
+
+In the Replit Shell, run: npm install mongoose
+Update index.js for Database Connection:
+
+Modify your index.js again to include Mongoose and connect to your database.
+JavaScript
+
+// index.js (Updated for MongoDB connection)
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose'); // <-- NEW: Mongoose for MongoDB
+require('dotenv').config(); // Replit handles .env, but good for local dev
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// --- Database Connection ---
+const MONGODB_URI = process.env.MONGO_URI; // Retrieved from Replit Secrets
+
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('MongoDB Connected Successfully!'))
+  .catch(err => console.error('MongoDB connection error:', err));
+// --- End Database Connection ---
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'client')));
+app.use('/public/data', express.static(path.join(__dirname, 'client', 'public', 'data')));
+
+// Basic API test route (already exists)
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from the backend API!' });
+});
+
+// Catch-all route (already exists)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'index.html'));
+});
+
+// Start the server (already exists)
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+Run the Repl: Click "Run".
+Verify: Check the Replit Console. You should now see "MongoDB Connected Successfully!"
+Define Your Data Model (Mongoose Schema):
+
+Create a new folder in your project root: server.
+Inside server, create another folder: models.
+Inside server/models/, create a new file named JlptItem.js.
+Paste the following code into server/models/JlptItem.js. This schema defines how your JLPT data will be structured in MongoDB.
+JavaScript
+
+// server/models/JlptItem.js
+const mongoose = require('mongoose');
+
+const jlptItemSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true }, // Unique ID for each item
+  jlpt_level: { type: String, required: true, enum: ['N1', 'N2', 'N3', 'N4', 'N5'] },
+  type: { type: String, required: true, enum: ['vocabulary', 'kanji', 'grammar'] },
+
+  // Fields for Vocabulary
+  kanji: String, // Can be shared with Kanji type
+  kana_reading: String,
+  english_meaning: [String], // Array for multiple meanings
+  example_sentence_jp: String,
+  example_sentence_en: String,
+  audio_url: String,
+
+  // Fields for Kanji (additional to kanji shared field)
+  onyomi: String,
+  kunyomi: String,
+  stroke_count: Number,
+  example_vocab: [String], // Array of example vocabulary
+  stroke_order_diagram: String,
+
+  // Fields for Grammar
+  grammar_point: String,
+  meaning_en: String,
+  structure_notes: String,
+});
+
+module.exports = mongoose.model('JlptItem', jlptItemSchema);
+Create Your First JLPT API Route:
+
+Update your main server file (index.js) once more. This adds an endpoint that fetches JLPT data from your MongoDB database.
+JavaScript
+
+// index.js (Updated for JLPT API routes)
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// --- Database Connection (already exists) ---
+const MONGODB_URI = process.env.MONGO_URI;
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('MongoDB Connected Successfully!'))
+  .catch(err => console.error('MongoDB connection error:', err));
+// --- End Database Connection ---
+
+const JlptItem = require('./server/models/JlptItem'); // <-- NEW: Import your model
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'client')));
+app.use('/public/data', express.static(path.join(__dirname, 'client', 'public', 'data')));
+
+// Basic API test route (already exists)
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from the backend API!' });
+});
+
+// --- NEW: JLPT Content API Route ---
+// Example: /api/jlpt/N5/vocabulary
+// Example: /api/jlpt/N3/grammar
+app.get('/api/jlpt/:level/:type', async (req, res) => {
+  const { level, type } = req.params; // Extract level and type from URL
+
+  try {
+    // Query the database for items matching the JLPT level and type
+    const items = await JlptItem.find({
+      jlpt_level: level.toUpperCase(), // Ensure uppercase (e.g., "N5")
+      type: type.toLowerCase()       // Ensure lowercase (e.g., "vocabulary")
+    });
+    res.json(items); // Send the found items as a JSON array
+  } catch (err) {
+    console.error(`Error fetching JLPT ${level} ${type} items:`, err);
+    res.status(500).json({ message: 'Error fetching JLPT items from database' });
+  }
+});
+// --- END NEW JLPT Content API Route ---
+
+// Catch-all route (already exists)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'index.html'));
+});
+
+// Start the server (already exists)
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+Run the Repl: Click "Run".
+Test: Navigate to your-repl-name.replit.dev/api/jlpt/N5/vocabulary. It will currently return an empty array [] because your database is still empty. This is expected.
+Part 4: Prepare and Seed Your JLPT Data into the Database
+This is the step where you bring in the elzup/jlpt-word-list data and import it into MongoDB.
+
+Place Your Downloaded elzup/jlpt-word-list Data:
+
+In your Replit project, create a new folder in the root directory (same level as client and server), named temp_raw_data.
+Copy the words, kanji, and grammar folders (containing all their N*.json files) directly from your unzipped elzup/jlpt-word-list download into this temp_raw_data folder in your Replit project.
+Create the Data Transformer Script (server/data_transformer.js):
+
+In your server/ folder, create a new file named server/data_transformer.js.
+Paste the following code into server/data_transformer.js. This script will read the raw JSON files, reformat them, and consolidate them into a single client/public/data/jlpt_data.json file that matches your database schema.
+JavaScript
+
+// server/data_transformer.js
+const fs = require('fs');
+const path = require('path');
+
+async function transformAndConsolidateData() {
+    const inputBaseDir = path.join(__dirname, '..', 'temp_raw_data'); // Path to your downloaded data
+    const outputFilePath = path.join(__dirname, '..', 'client', 'public', 'data', 'jlpt_data.json'); // Output path
+
+    const consolidatedData = {
+        N5: { vocabulary: [], kanji: [], grammar: [] },
+        N4: { vocabulary: [], kanji: [], grammar: [] },
+        N3: { vocabulary: [], kanji: [], grammar: [] },
+        N2: { vocabulary: [], kanji: [], grammar: [] },
+        N1: { vocabulary: [], kanji: [], grammar: [] }
+    };
+
+    const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+
+    // --- Process Vocabulary (words) ---
+    console.log('Processing Vocabulary...');
+    for (const level of levels) {
+        const filePath = path.join(inputBaseDir, 'words', `${level}.json`);
+        if (fs.existsSync(filePath)) {
+            const rawData = fs.readFileSync(filePath, 'utf8');
+            const words = JSON.parse(rawData);
+            words.forEach(item => {
+                consolidatedData[level].vocabulary.push({
+                    id: item.id,
+                    jlpt_level: level,
+                    type: 'vocabulary',
+                    kanji: item.word, // Map 'word' to 'kanji'
+                    kana_reading: item.kana, // Map 'kana' to 'kana_reading'
+                    english_meaning: item.meaning ? [item.meaning] : [], // Ensure array
+                    // Add other fields from your schema if they exist in source or you want to add defaults
+                });
+            });
+            console.log(`  ${level} vocabulary: ${words.length} items processed.`);
+        } else {
+            console.warn(`  Warning: ${filePath} not found. Skipping ${level} vocabulary.`);
+        }
+    }
+
+    // --- Process Kanji ---
+    console.log('Processing Kanji...');
+    for (const level of levels) {
+        const filePath = path.join(inputBaseDir, 'kanji', `${level}.json`);
+        if (fs.existsSync(filePath)) {
+            const rawData = fs.readFileSync(filePath, 'utf8');
+            const kanjiList = JSON.parse(rawData);
+            kanjiList.forEach(item => {
+                consolidatedData[level].kanji.push({
+                    id: item.id,
+                    jlpt_level: level,
+                    type: 'kanji',
+                    kanji: item.kanji,
+                    english_meaning: item.meanings || [], // Ensure array
+                    onyomi: item.readings_on ? item.readings_on.join(', ') : '', // Join array to string
+                    kunyomi: item.readings_kun ? item.readings_kun.join(', ') : '', // Join array to string
+                    // Add other fields like stroke_count or example_vocab if you plan to populate them
+                });
+            });
+            console.log(`  ${level} kanji: ${kanjiList.length} items processed.`);
+        } else {
+            console.warn(`  Warning: ${filePath} not found. Skipping ${level} kanji.`);
+        }
+    }
+
+    // --- Process Grammar ---
+    console.log('Processing Grammar...');
+    for (const level of levels) {
+        const filePath = path.join(inputBaseDir, 'grammar', `${level}.json`);
+        if (fs.existsSync(filePath)) {
+            const rawData = fs.readFileSync(filePath, 'utf8');
+            const grammarList = JSON.parse(rawData);
+            grammarList.forEach(item => {
+                consolidatedData[level].grammar.push({
+                    id: item.id,
+                    jlpt_level: level,
+                    type: 'grammar',
+                    grammar_point: item.grammar_point,
+                    meaning_en: item.meaning, // Map 'meaning' to 'meaning_en'
+                    structure_notes: item.structure // Map 'structure' to 'structure_notes'
+                    // Add other fields
+                });
+            });
+            console.log(`  ${level} grammar: ${grammarList.length} items processed.`);
+        } else {
+            console.warn(`  Warning: ${filePath} not found. Skipping ${level} grammar.`);
+        }
+    }
+
+    // Create the client/public/data directory if it doesn't exist
+    const outputDir = path.dirname(outputFilePath);
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    // Write the consolidated data to the output file
+    fs.writeFileSync(outputFilePath, JSON.stringify(consolidatedData, null, 2), 'utf8');
+    console.log(`\nConsolidated data successfully written to: ${outputFilePath}`);
+}
+
+transformAndConsolidateData();
+Run the Data Transformer Script:
+
+IMPORTANT: Ensure your main server (index.js) is stopped in Replit before running this.
+In the Replit Shell, run: node server/data_transformer.js
+Watch the console output. You should see messages about processing each level/type, and then a final confirmation about the jlpt_data.json file being written.
+Verify: Check your file tree. You should now have a client/public/data/jlpt_data.json file. Open it to inspect its structure and content.
+Create the Database Seeder Script (server/seed.js):
+
+In your server/ folder, create a new file named server/seed.js.
+Paste the following code into server/seed.js. This script reads your newly created jlpt_data.json and inserts the data into MongoDB.
+JavaScript
+
+// server/seed.js
+const mongoose = require('mongoose');
+const JlptItem = require('./models/JlptItem'); // Your Mongoose model
+const fs = require('fs'); // Node.js File System module
+const path = require('path'); // Node.js Path module
+require('dotenv').config(); // For accessing MONGO_URI secret
+
+const MONGODB_URI = process.env.MONGO_URI;
+
+async function seedDatabase() {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log('MongoDB Connected for seeding!');
+
+    // --- OPTIONAL: Clear existing data before seeding ---
+    // Uncomment the line below if you want to clear the collection every time you run the seeder
+    // This is useful during development to ensure fresh data, but be cautious in production!
+    // await JlptItem.deleteMany({});
+    // console.log('Existing JLPT items cleared.');
+    // ---------------------------------------------------
+
+    // Construct the full path to your jlpt_data.json file
+    const dataFilePath = path.join(__dirname, '..', 'client', 'public', 'data', 'jlpt_data.json');
+    console.log(`Attempting to read data from: ${dataFilePath}`);
+
+    // Read the full JLPT data JSON file
+    const rawData = fs.readFileSync(dataFilePath, 'utf8');
+    const jlptData = JSON.parse(rawData);
+
+    const itemsToInsert = [];
+    // Iterate through each JLPT level (N5, N4, etc.)
+    for (const level in jlptData) {
+      // Iterate through each content type (vocabulary, kanji, grammar) within the level
+      for (const type in jlptData[level]) {
+        jlptData[level][type].forEach((item, index) => {
+          // Ensure 'id', 'jlpt_level', and 'type' fields are set for each item
+          // This is crucial for querying later and for unique indexing
+          itemsToInsert.push({
+            ...item,
+            id: item.id || `<span class="math-inline">\{level\}\_</span>{type}_${Math.random().toString(36).substr(2, 9)}`, // Fallback ID if data has none
+            jlpt_level: level,
+            type: type,
+          });
+        });
+      }
+    }
+
+    // Insert all prepared items into the database
+    const insertedCount = await JlptItem.insertMany(itemsToInsert);
+    console.log(`Successfully inserted ${insertedCount.length} JLPT items.`);
+
+  } catch (err) {
+    console.error('Database seeding error:', err);
+  } finally {
+    // Disconnect from MongoDB after seeding
+    await mongoose.disconnect();
+    console.log('MongoDB disconnected from seeder.');
+  }
+}
+
+seedDatabase();
+Run the Seeding Script:
+
+IMPORTANT: Ensure your main server (index.js) is stopped in Replit.
+In the Replit Shell, run: node server/seed.js
+Monitor the output. It should connect to MongoDB, insert the items from your new jlpt_data.json, and then disconnect. This may take a moment depending on the size of your data.
+After the seeder finishes, you can restart your main server (index.js) by clicking "Run".
+Part 5: Update Frontend to Use API
+Finally, modify your frontend JavaScript to fetch data from your new backend API instead of local static files.
+
+Update client/script.js:
+
+Open client/script.js.
+Replace your existing loadJlptData function (or whatever function loads your JLPT content) with the following structure. You'll need to adapt the displayVocabularyItems, displayKanjiItems, and displayGrammarItems functions to match your existing display logic for cards/lists.
+JavaScript
+
+// client/script.js (Updated to fetch from your new API)
+
+// --- Function to fetch JLPT data from your backend API ---
+async function loadJlptContent(level, type) {
+    const contentDisplayArea = document.getElementById('contentDisplayArea'); // Get your main display area
+    if (!contentDisplayArea) {
+        console.error('Content display area not found in HTML.');
+        return;
+    }
+    contentDisplayArea.innerHTML = `<p class="text-white text-lg">Loading JLPT ${level} ${type}...</p>`; // Loading message
+
+    try {
+        // Construct the API endpoint dynamically
+        const response = await fetch(`/api/jlpt/<span class="math-inline">\{level\}/</span>{type}`);
+        if (!response.ok) {
+            // Handle HTTP errors from the API (e.g., 404, 500)
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const items = await response.json(); // Parse the JSON response
+
+        console.log(`JLPT ${level} ${type} loaded:`, items);
+
+        // Call the appropriate display function based on the 'type'
+        if (type === 'vocabulary') {
+            displayVocabularyItems(items, level);
+        } else if (type === 'kanji') {
+            displayKanjiItems(items, level);
+        } else if (type === 'grammar') {
+            displayGrammarItems(items, level);
+        }
+
+    } catch (error) {
+        console.error(`Failed to load JLPT ${level} ${type} data:`, error);
+        contentDisplayArea.innerHTML = `
+            <p class="text-red-500 text-lg">Error loading JLPT ${level} ${type} content.</p>
+            <p class="text-gray-400 text-sm">Please ensure your backend server is running and the database is seeded.</p>
+        `;
+    }
+}
+
+// --- Your existing display functions, now accepting the fetched items ---
+// You'll need to adapt these to iterate over the 'items' array
+// Ensure the HTML structure matches your existing card design.
+// Make sure your JlptItem.js schema and the data transformer produce the fields these functions expect.
+function displayVocabularyItems(vocabItems, level) {
+    const displayArea = document.getElementById('contentDisplayArea');
+    displayArea.innerHTML = `<h2 class="text-3xl text-custom-pink mb-6">JLPT <span class="math-inline">\{level\} Vocabulary \(</span>{vocabItems.length} words)</h2>`;
+
+    if (vocabItems.length === 0) {
+        displayArea.innerHTML += `<p class="text-white">No vocabulary found for JLPT ${level}.</p>`;
+        return;
+    }
+
+    vocabItems.forEach(item => {
+        displayArea.innerHTML += `
+            <div class="bg-dark-purple-700 p-4 rounded-lg shadow-lg mb-4 border border-dark-purple-500">
+                <p class="text-custom-pink text-2xl font-bold mb-1"><span class="math-inline">\{item\.kanji \|\| item\.kana\_reading\} <span class\="text\-white text\-lg"\>\(</span>{item.kana_reading})</span></p>
+                <p class="text-gray-200 text-lg">${Array.isArray(item.english_meaning) ? item.english_meaning.join(', ') : item.english_meaning}</p>
+                ${item.example_sentence_jp ? `<p class="text-gray-400 italic mt-2 text-base">JP: ${item.example_sentence_jp}</p>` : ''}
+                ${item.example_sentence_en ? `<p class="text-gray-400 italic text-base">EN: ${item.example_sentence_en}</p>` : ''}
+                ${item.audio_url ? `<button class="text-custom-pink mt-2">Play Audio</button>` : ''}
+            </div>
+        `;
+    });
+}
+
+function displayKanjiItems(kanjiItems, level) {
+    const displayArea = document.getElementById('contentDisplayArea');
+    displayArea.innerHTML = `<h2 class="text-3xl text-custom-pink mb-6">JLPT <span class="math-inline">\{level\} Kanji \(</span>{kanjiItems.length} characters)</h2>`;
+
+    if (kanjiItems.length === 0) {
+        displayArea.innerHTML += `<p class="text-white">No Kanji found for JLPT ${level}.</p>`;
+        return;
+    }
+
+    kanjiItems.forEach(item => {
+        displayArea.innerHTML += `
+            <div class="bg-dark-purple-700 p-4 rounded-lg shadow-lg mb-4 border border-dark-purple-500">
+                <p class="text-custom-pink text-4xl font-bold">${item.kanji}</p>
+                <p class="text-white text-lg">Onyomi: ${item.onyomi || 'N/A'}</p>
+                <p class="text-white text-lg">Kunyomi: ${item.kunyomi || 'N/A'}</p>
+                <p class="text-gray-200 text-lg">Meaning: ${Array.isArray(item.english_meaning) ? item.english_meaning.join(', ') : item.english_meaning || 'N/A'}</p>
+                ${item.stroke_count ? `<p class="text-gray-400 text-sm">Strokes: ${item.stroke_count}</p>` : ''}
+                ${item.example_vocab && item.example_vocab.length > 0 ? `<p class="text-gray-400 italic mt-2 text-sm">Examples: ${item.example_vocab.join(', ')}</p>` : ''}
+                ${item.stroke_order_diagram ? `<img src="${item.stroke_order_diagram}" alt="Stroke Order" class="mt-2 w-24 h-24">` : ''}
+            </div>
+        `;
+    });
+}
+
+function displayGrammarItems(grammarItems, level) {
+    const displayArea = document.getElementById('contentDisplayArea');
+    displayArea.innerHTML = `<h2 class="text-3xl text-custom-pink mb-6">JLPT <span class="math-inline">\{level\} Grammar \(</span>{grammarItems.length} points)</h2>`;
+
+    if (grammarItems.length === 0) {
+        displayArea.innerHTML += `<p class="text-white">No grammar points found for JLPT ${level}.</p>`;
+        return;
+    }
+
+    grammarItems.forEach(item => {
+        displayArea.innerHTML += `
+            <div class="bg-dark-purple-700 p-4 rounded-lg shadow-lg mb-4 border border-dark-purple-500">
+                <p class="text-custom-pink text-xl font-bold">${item.grammar_point}</p>
+                <p class="text-white text-lg">Meaning: ${item.meaning_en}</p>
+                <p class="text-gray-200 text-base mt-1">Structure: ${item.structure_notes}</p>
+                ${item.example_sentence_jp ? `<p class="text-gray-400 italic mt-2 text-base">JP: ${item.example_sentence_jp}</p>` : ''}
+                ${item.example_sentence_en ? `<p class="text-gray-400 italic text-base">EN: ${item.example_sentence_en}</p>` : ''}
+                ${item.audio_url ? `<button class="text-custom-pink mt-2">Play Audio</button>` : ''}
+            </div>
+        `;
+    });
+}
+
+// --- Event Listeners for UI interaction ---
+// Ensure your index.html has elements with these IDs (e.g., navigation links/buttons)
+document.getElementById('viewVocabBtn')?.addEventListener('click', () => {
+    const userJlptLevel = localStorage.getItem('userJlptLevel') || 'N5';
+    loadJlptContent(userJlptLevel, 'vocabulary');
+});
+
+document.getElementById('viewKanjiBtn')?.addEventListener('click', () => {
+    const userJlptLevel = localStorage.getItem('userJlptLevel') || 'N5';
+    loadJlptContent(userJlptLevel, 'kanji');
+});
+
+document.getElementById('viewGrammarBtn')?.addEventListener('click', () => {
+    const userJlptLevel = localStorage.getItem('userJlptLevel') || 'N5';
+    loadJlptContent(userJlptLevel, 'grammar');
+});
+
+// --- Initial Load on Page Load ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Example: If you have a dropdown for JLPT level selection:
+    const jlptLevelSelect = document.getElementById('jlptLevelSelect'); // Assuming an ID for your dropdown
+    if (jlptLevelSelect) {
+        const savedLevel = localStorage.getItem('userJlptLevel') || 'N5';
+        jlptLevelSelect.value = savedLevel; // Set dropdown to saved level
+        jlptLevelSelect.addEventListener('change', (event) => {
+            const newLevel = event.target.value;
+            localStorage.setItem('userJlptLevel', newLevel);
+            // Reload content based on new level and current view type (e.g., vocabulary)
+            // You might want to store the active view type in localStorage too
+            loadJlptContent(newLevel, 'vocabulary'); // Default to vocab when level changes
+        });
+    }
+
+    // Load N5 vocabulary by default when the page first loads
+    const initialJlptLevel = localStorage.getItem('userJlptLevel') || 'N5';
+    loadJlptContent(initialJlptLevel, 'vocabulary');
+});
+Crucial HTML Element: Ensure your client/index.html has a main content display area where dynamic content will be injected. For example:
+HTML
+
+<main id="contentDisplayArea" class="p-6">
+    </main>
+UI Navigation: Ensure your header/dashboard in client/index.html includes buttons/links with the IDs: viewVocabBtn, viewKanjiBtn, viewGrammarBtn. Also, if you want a level selection, make sure you have a <select> element with the ID jlptLevelSelect (e.g., in your nav or header):
+HTML
+
+<select id="jlptLevelSelect" class="bg-gray-800 text-white p-2 rounded-md">
+    <option value="N5">JLPT N5</option>
+    <option value="N4">JLPT N4</option>
+    <option value="N3">JLPT N3</option>
+    <option value="N2">JLPT N2</option>
+    <option value="N1">JLPT N1</option>
+</select>
+Final Verification:
+
+Ensure your index.js server is running (click "Run" in Replit).
+Open your Replit Webview.
+Your frontend should load. Use your navigation buttons/dropdown to switch between JLPT levels and content types.
+You should now see the comprehensive data fetched from your own backend API, which in turn is pulling it from your MongoDB database!
+This is the entire process. Take your time, follow each step, and use the Replit console for debugging. Good luck!
