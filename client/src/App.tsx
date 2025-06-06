@@ -154,52 +154,89 @@ export function useLanguageContent(mode: LanguageMode) {
   return content[mode];
 }
 
-function MobileNavigation({ user }: { user: any }) {
+
+
+function Header({ user }: { user: any }) {
   const [location] = useLocation();
+  const [showMobileNav, setShowMobileNav] = useState(false);
   
   const navItems = [
     { href: "/", label: "Home", icon: Home },
+    { href: "/vocabulary", label: "Vocab", icon: BookOpen },
     { href: "/learning-practice", label: "Practice", icon: Target },
-    { href: "/jlpt-progress", label: "Progress", icon: BarChart3 },
-    { href: "/achievements", label: "Rewards", icon: Trophy },
     { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border h-12 flex items-center justify-around z-50 md:hidden">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = location === item.href;
+    <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-50 md:left-80">
+      <div className="flex items-center justify-between px-4 h-14">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold text-primary">Tomoshibi</h1>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.href;
+              
+              return (
+                <Link key={item.href} href={item.href}>
+                  <button className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                    isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                  }`}>
+                    <Icon className="h-4 w-4" />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </button>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
         
-        return (
-          <Link key={item.href} href={item.href}>
-            <button className={`flex flex-col items-center space-y-0 p-1 min-h-[44px] touch-feedback ${
-              isActive ? 'text-primary' : 'text-muted-foreground'
-            }`}>
-              <Icon className="h-4 w-4" />
-              <span className="text-xs">{item.label}</span>
-            </button>
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-function MobileHeader({ user }: { user: any }) {
-  return (
-    <div className="fixed top-0 left-0 right-0 bg-background border-b border-border h-11 flex items-center justify-between px-4 z-50 md:left-80">
-      <div className="flex items-center gap-2">
-        <h1 className="text-lg font-bold text-primary">Tomoshibi</h1>
+        <div className="flex items-center gap-2">
+          {/* Mobile Menu Toggle */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="p-2 md:hidden"
+            onClick={() => setShowMobileNav(!showMobileNav)}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+          
+          <ThemeToggle />
+          <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+            <Bell className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-        <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-          <Bell className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+      {/* Mobile Navigation Dropdown */}
+      {showMobileNav && (
+        <div className="md:hidden bg-background border-t border-border">
+          <nav className="flex flex-col p-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.href;
+              
+              return (
+                <Link key={item.href} href={item.href}>
+                  <button 
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors w-full text-left ${
+                      isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                    }`}
+                    onClick={() => setShowMobileNav(false)}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </button>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }
 
@@ -317,10 +354,10 @@ function AppRouter() {
 
   return (
     <MobileWrapper>
-      <MobileHeader user={user} />
+      <Header user={user} />
       <Sidebar user={user} />
       
-      <div className="pt-11 pb-12 md:pl-80 min-h-screen overflow-y-auto">
+      <div className="pt-14 md:pl-80 min-h-screen overflow-y-auto">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/vocabulary" component={Vocabulary} />
@@ -339,8 +376,6 @@ function AppRouter() {
           <Route component={NotFound} />
         </Switch>
       </div>
-      
-      <MobileNavigation user={user} />
     </MobileWrapper>
   );
 }
