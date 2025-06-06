@@ -181,9 +181,13 @@ export function useJLPTLevelCheck() {
 
   useEffect(() => {
     const hasSelected = localStorage.getItem("jlptLevelSelected");
-    if (!hasSelected) {
-      setShowLevelSelector(true);
-    }
+    const timer = setTimeout(() => {
+      if (!hasSelected) {
+        setShowLevelSelector(true);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return {

@@ -178,9 +178,15 @@ function Header({ user }: { user: any }) {
     <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-50">
       <div className="flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <LanternLogo size={28} className="text-primary" />
-            <h1 className="text-xl font-bold text-primary">Tomoshibi</h1>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <LanternLogo size={32} className="text-primary drop-shadow-sm" />
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full blur-sm -z-10"></div>
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold text-primary tracking-wide">Tomoshibi</h1>
+              <p className="text-xs text-muted-foreground -mt-1">Japanese Learning</p>
+            </div>
           </div>
           
           {/* Desktop Navigation */}
@@ -203,7 +209,24 @@ function Header({ user }: { user: any }) {
           </nav>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* User Stats */}
+          {user && (
+            <div className="hidden md:flex items-center gap-4 mr-2">
+              <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+                <Badge variant="secondary" className="bg-primary/20 text-primary font-semibold">
+                  {user.currentJLPTLevel || 'N5'}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1 bg-orange-100 dark:bg-orange-900/20 rounded-full">
+                <Award className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">
+                  {user.totalXP || 0} XP
+                </span>
+              </div>
+            </div>
+          )}
+          
           {/* Mobile Menu Toggle */}
           <Button 
             variant="ghost" 
