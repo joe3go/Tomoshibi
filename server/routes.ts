@@ -1317,13 +1317,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Create new sentence card
-  app.post("/api/admin/cards", async (req, res) => {
+  app.post("/api/admin/cards", requireAdmin, async (req, res) => {
     try {
-      const sessionData = req.session as any;
-      if (!sessionData?.userId) {
-        return res.status(401).json({ error: 'Not authenticated' });
-      }
-
       const { japanese, reading, english, jlptLevel, difficulty, register, theme, source, tags, audioUrl } = req.body;
 
       if (!japanese || !reading || !english) {
@@ -1340,7 +1335,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         theme: theme || 'general',
         source: source || 'manual',
         tags: tags || [],
-        audioUrl: audioUrl || null
+        audioUrl: audioUrl || null,
+        vocabularyIds: [],
+        grammarPatterns: [],
+        culturalNotes: null
       };
 
       const newCard = await storage.createSentenceCard(cardData);
@@ -1352,13 +1350,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Update sentence card
-  app.patch("/api/admin/cards/:id", async (req, res) => {
+  app.patch("/api/admin/cards/:id", requireAdmin, async (req, res) => {
     try {
-      const sessionData = req.session as any;
-      if (!sessionData?.userId) {
-        return res.status(401).json({ error: 'Not authenticated' });
-      }
-
       const cardId = parseInt(req.params.id);
       const updates = req.body;
 
@@ -1379,13 +1372,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Delete sentence card
-  app.delete("/api/admin/cards/:id", async (req, res) => {
+  app.delete("/api/admin/cards/:id", requireAdmin, async (req, res) => {
     try {
-      const sessionData = req.session as any;
-      if (!sessionData?.userId) {
-        return res.status(401).json({ error: 'Not authenticated' });
-      }
-
       const cardId = parseInt(req.params.id);
 
       if (isNaN(cardId)) {

@@ -32,6 +32,7 @@ import {
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { DataLoadingAnimation } from "@/components/ui/japanese-loading";
+import { AdminGuard } from "@/components/admin-guard";
 
 interface SentenceCard {
   id: number;

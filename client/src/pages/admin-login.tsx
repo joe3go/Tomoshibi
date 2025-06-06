@@ -1,18 +1,15 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useLocation } from "wouter";
-import { Shield, Lock, Eye, EyeOff } from "lucide-react";
+import { Shield, Eye, EyeOff, Lock, User } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 
 export default function AdminLoginPage() {
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,98 +17,104 @@ export default function AdminLoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      const response = await apiRequest("POST", "/api/admin/login", credentials);
-      return response.json();
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        body: JSON.stringify(credentials),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Login failed");
+      }
+      
+      return await response.json();
     },
     onSuccess: (data) => {
       if (data.userType === "global_admin") {
-        toast({
-          title: "Admin Access Granted",
-          description: "Welcome to the administration panel.",
-        });
         setLocation("/admin");
       } else {
-        setError("Access denied. Admin privileges required.");
+        setError("Access denied. Administrator privileges required.");
       }
     },
     onError: (error: any) => {
-      const message = error.message || "Invalid admin credentials";
-      setError(message);
-      toast({
-        title: "Login Failed",
-        description: message,
-        variant: "destructive",
-      });
-    }
+      setError(error.message || "Login failed. Please check your credentials.");
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
-    if (!username || !password) {
-      setError("Please enter both username and password");
+    if (!username.trim() || !password.trim()) {
+      setError("Username and password are required.");
       return;
     }
 
-    loginMutation.mutate({ username, password });
+    loginMutation.mutate({ username: username.trim(), password });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
             <Shield className="w-8 h-8 text-white" />
           </div>
-          <div>
-            <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
-            <CardDescription>
-              Administrator login required to access management panel
-            </CardDescription>
-          </div>
+          <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
+          <p className="text-muted-foreground">
+            Sign in to access the Tomoshibi administration panel
+          </p>
         </CardHeader>
-        
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Admin Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter admin username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={loginMutation.isPending}
-                autoComplete="username"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Admin Password</Label>
+              <label htmlFor="username" className="text-sm font-medium">
+                Username
+              </label>
               <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter admin username"
+                  className="pl-10"
+                  disabled={loginMutation.isPending}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter admin password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter admin password"
+                  className="pl-10 pr-10"
                   disabled={loginMutation.isPending}
-                  autoComplete="current-password"
-                  className="pr-10"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={loginMutation.isPending}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="w-4 h-4" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="w-4 h-4" />
                   )}
                 </Button>
               </div>
@@ -119,29 +122,26 @@ export default function AdminLoginPage() {
 
             {error && (
               <Alert variant="destructive">
-                <Lock className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
-            <Button 
-              type="submit" 
-              className="w-full bg-red-600 hover:bg-red-700"
+            <Button
+              type="submit"
+              className="w-full"
               disabled={loginMutation.isPending}
             >
-              {loginMutation.isPending ? "Authenticating..." : "Access Admin Panel"}
+              {loginMutation.isPending ? "Signing in..." : "Sign In"}
             </Button>
-
-            <div className="text-center">
-              <Button 
-                variant="link" 
-                className="text-sm text-muted-foreground"
-                onClick={() => setLocation("/")}
-              >
-                Return to Dashboard
-              </Button>
-            </div>
           </form>
+
+          <div className="mt-6 text-center">
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>Demo Credentials:</p>
+              <p><strong>Username:</strong> admin</p>
+              <p><strong>Password:</strong> admin123</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
