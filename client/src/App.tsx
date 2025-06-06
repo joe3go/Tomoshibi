@@ -1,7 +1,3 @@
-The code is modified to remove the JLPT level selector from the dashboard, add it as a popup if no level is selected, include it in settings, and ensure study modes use the selected level.
-```
-
-```replit_final_file
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Route, Switch, Link, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
@@ -162,8 +158,6 @@ export function useLanguageContent(mode: LanguageMode) {
   return content[mode];
 }
 
-
-
 function Header({ user }: { user: any }) {
   const [location] = useLocation();
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -277,8 +271,6 @@ function Header({ user }: { user: any }) {
     </header>
   );
 }
-
-
 
 function AppRouter() {
   const { data: user, isLoading } = useQuery<any>({
