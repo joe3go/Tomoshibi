@@ -222,9 +222,6 @@ function Header({ user }: { user: any }) {
             <h1 className="text-2xl font-bold text-primary tracking-wider m-0">
               Tomoshibi
             </h1>
-            <p className="text-xs text-muted-foreground mt-0 tracking-wide">
-              Japanese Learning
-            </p>
           </div>
         </div>
 
