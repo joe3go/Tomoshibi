@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { promises as fs } from 'fs';
 import path from 'path';
 import { storage } from "./storage";
+import { DatabaseStorage } from "./database-storage";
 import { setupGoogleAuth } from "./googleAuth";
 import session from "express-session";
 import passport from "passport";
