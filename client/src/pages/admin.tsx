@@ -99,6 +99,8 @@ const jlptLevels = ["N5", "N4", "N3", "N2", "N1"];
 const registers = ["formal", "casual", "polite", "literary", "colloquial"];
 const themes = ["general", "business", "travel", "food", "technology", "culture", "daily life", "education"];
 const sources = ["manual", "jlpt", "textbook", "media", "conversation"];
+const userTypes = ["free", "premium", "admin"];
+const belts = ["白帯", "黄帯", "緑帯", "青帯", "茶帯", "黒帯"];
 
 function AdminPageContent() {
   const { toast } = useToast();
@@ -143,85 +145,107 @@ function AdminPageContent() {
   // Create card mutation
   const createCardMutation = useMutation({
     mutationFn: async (cardData: Partial<SentenceCard>) => {
-      const response = await fetch("/api/admin/cards", {
+      const response = await apiRequest("/api/admin/cards", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cardData),
+        headers: { "Content-Type": "application/json" }
       });
-      if (!response.ok) throw new Error("Failed to create card");
-      return response.json();
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
       setIsAddDialogOpen(false);
       setFormData(initialFormData);
-      toast({
-        title: "Success",
-        description: "Card created successfully",
-      });
+      toast({ title: "Success", description: "Card created successfully" });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create card",
-        variant: "destructive",
-      });
-    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
   });
 
   // Update card mutation
   const updateCardMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<SentenceCard> }) => {
-      const response = await fetch(`/api/admin/cards/${id}`, {
+    mutationFn: async ({ id, updates }: { id: number; updates: Partial<SentenceCard> }) => {
+      const response = await apiRequest(`/api/admin/cards/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(updates),
+        headers: { "Content-Type": "application/json" }
       });
-      if (!response.ok) throw new Error("Failed to update card");
-      return response.json();
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
       setIsEditDialogOpen(false);
       setEditingCard(null);
-      setFormData(initialFormData);
-      toast({
-        title: "Success",
-        description: "Card updated successfully",
-      });
+      setEditingCardId(null);
+      setEditingField(null);
+      toast({ title: "Success", description: "Card updated successfully" });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update card",
-        variant: "destructive",
-      });
-    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
   });
 
   // Delete card mutation
   const deleteCardMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/admin/cards/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete card");
-      return response.json();
+      const response = await apiRequest(`/api/admin/cards/${id}`, { method: "DELETE" });
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
-      toast({
-        title: "Success",
-        description: "Card deleted successfully",
+      toast({ title: "Success", description: "Card deleted successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  });
+
+  // Update user mutation
+  const updateUserMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: number; updates: Partial<User> }) => {
+      const response = await apiRequest(`/api/admin/users/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(updates),
+        headers: { "Content-Type": "application/json" }
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setIsUserEditDialogOpen(false);
+      setEditingUser(null);
+      toast({ title: "Success", description: "User updated successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  });
+
+  // CSV upload mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (csvData: string) => {
+      const response = await apiRequest("/api/admin/cards/bulk-upload", {
+        method: "POST",
+        body: JSON.stringify({ csvData }),
+        headers: { "Content-Type": "application/json" }
+      });
+      return response;
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/cards"] });
+      setUploadStatus(`Upload complete! Created ${data.created} cards. ${data.errors} errors.`);
+      setIsUploading(false);
+      toast({ 
+        title: "Upload Complete", 
+        description: `Created ${data.created} cards with ${data.errors} errors` 
       });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete card",
-        variant: "destructive",
-      });
-    },
+    onError: (error: Error) => {
+      setUploadStatus(`Upload failed: ${error.message}`);
+      setIsUploading(false);
+      toast({ title: "Upload Failed", description: error.message, variant: "destructive" });
+    }
   });
 
   // Filtered and sorted cards
@@ -229,8 +253,8 @@ function AdminPageContent() {
     return cards
       .filter(card => {
         const matchesSearch = card.japanese.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             card.english.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             card.reading.toLowerCase().includes(searchTerm.toLowerCase());
+                            card.english.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            card.reading.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesLevel = selectedLevel === "all" || card.jlptLevel === selectedLevel;
         const matchesTheme = selectedTheme === "all" || card.theme === selectedTheme;
         const matchesRegister = selectedRegister === "all" || card.register === selectedRegister;
@@ -241,6 +265,15 @@ function AdminPageContent() {
         const aVal = a[sortBy as keyof SentenceCard];
         const bVal = b[sortBy as keyof SentenceCard];
         
+        if (aVal === undefined || bVal === undefined) return 0;
+        
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return sortOrder === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        }
+        if (typeof aVal === "number" && typeof bVal === "number") {
+          return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+        }
+        
         if (sortOrder === "asc") {
           return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
         } else {
@@ -248,6 +281,18 @@ function AdminPageContent() {
         }
       });
   }, [cards, searchTerm, selectedLevel, selectedTheme, selectedRegister, sortBy, sortOrder]);
+
+  // Filtered users
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const matchesSearch = user.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                          user.displayName.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                          (user.email && user.email.toLowerCase().includes(userSearchTerm.toLowerCase()));
+      const matchesType = selectedUserType === "all" || user.userType === selectedUserType;
+      
+      return matchesSearch && matchesType;
+    });
+  }, [users, userSearchTerm, selectedUserType]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -282,32 +327,95 @@ function AdminPageContent() {
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this card?")) {
-      deleteCardMutation.mutate(id);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const cardData = {
-      ...formData,
-      tags: formData.tags.split(",").map(tag => tag.trim()).filter(Boolean),
-      audioUrl: formData.audioUrl || undefined
-    };
-
     if (editingCard) {
-      updateCardMutation.mutate({ id: editingCard.id, data: cardData });
+      // Update existing card
+      const cardData = {
+        ...formData,
+        tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
+        difficulty: Number(formData.difficulty)
+      };
+      updateCardMutation.mutate({ id: editingCard.id, updates: cardData });
     } else {
+      // Create new card
+      const cardData = {
+        ...formData,
+        tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
+        difficulty: Number(formData.difficulty)
+      };
       createCardMutation.mutate(cardData);
     }
   };
 
+  // Inline editing functions
+  const handleInlineEdit = (cardId: number, field: string, value: string | number) => {
+    const card = cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    const updates: any = { [field]: value };
+    if (field === 'difficulty') {
+      updates[field] = Number(value);
+    }
+
+    updateCardMutation.mutate({ id: cardId, updates });
+  };
+
+  const startEdit = (cardId: number, field: string, currentValue: string | number) => {
+    setEditingCardId(cardId);
+    setEditingField(field);
+    setTempValue(String(currentValue));
+  };
+
+  const saveEdit = () => {
+    if (editingCardId && editingField) {
+      handleInlineEdit(editingCardId, editingField, tempValue);
+      setEditingCardId(null);
+      setEditingField(null);
+      setTempValue("");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingCardId(null);
+    setEditingField(null);
+    setTempValue("");
+  };
+
+  // CSV upload handler
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const csvData = e.target?.result as string;
+      setIsUploading(true);
+      setUploadStatus("Uploading...");
+      uploadMutation.mutate(csvData);
+    };
+    reader.readAsText(file);
+  };
+
+  // User management functions
+  const handleUserEdit = (user: User) => {
+    setEditingUser(user);
+    setIsUserEditDialogOpen(true);
+  };
+
+  const handleUserUpdate = (updates: Partial<User>) => {
+    if (editingUser) {
+      updateUserMutation.mutate({ id: editingUser.id, updates });
+    }
+  };
+
+  const isLoading = cardsLoading || usersLoading;
+  const error = cardsError || usersError;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <DataLoadingAnimation />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -317,10 +425,11 @@ function AdminPageContent() {
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <h2 className="text-xl font-semibold">Error Loading Admin Panel</h2>
+            <div className="text-center">
+              <AlertTriangle className="mx-auto h-12 w-12 text-destructive mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Error Loading Data</h3>
               <p className="text-muted-foreground">
-                Failed to load admin data. Please check your authentication.
+                Failed to load admin data. Please refresh the page.
               </p>
             </div>
           </CardContent>
@@ -330,250 +439,638 @@ function AdminPageContent() {
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <p className="text-muted-foreground">Manage sentence cards and system content</p>
+          <p className="text-muted-foreground">Manage cards, users, and content</p>
         </div>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Card
-        </Button>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Shield className="h-3 w-3" />
+            Admin Access
+          </Badge>
+        </div>
       </div>
 
-      <Tabs defaultValue="cards" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="cards">Sentence Cards</TabsTrigger>
-          <TabsTrigger value="reports">Reports & Analytics</TabsTrigger>
+      <Tabs defaultValue="cards" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="cards" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Cards
+          </TabsTrigger>
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Users
+          </TabsTrigger>
+          <TabsTrigger value="upload" className="flex items-center gap-2">
+            <Upload className="h-4 w-4" />
+            CSV Upload
+          </TabsTrigger>
+          <TabsTrigger value="stats" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Statistics
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="cards" className="space-y-4">
-          {/* Filters */}
+        {/* Cards Management Tab */}
+        <TabsContent value="cards" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="w-5 h-5" />
-                Filters & Search
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Sentence Cards</CardTitle>
+                  <CardDescription>
+                    Manage and edit sentence cards with inline editing
+                  </CardDescription>
+                </div>
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Card
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Add New Card</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="japanese">Japanese</Label>
+                          <Input
+                            id="japanese"
+                            value={formData.japanese}
+                            onChange={(e) => setFormData({ ...formData, japanese: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="reading">Reading</Label>
+                          <Input
+                            id="reading"
+                            value={formData.reading}
+                            onChange={(e) => setFormData({ ...formData, reading: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="english">English</Label>
+                        <Textarea
+                          id="english"
+                          value={formData.english}
+                          onChange={(e) => setFormData({ ...formData, english: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="jlptLevel">JLPT Level</Label>
+                          <Select value={formData.jlptLevel} onValueChange={(value) => setFormData({ ...formData, jlptLevel: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {jlptLevels.map(level => (
+                                <SelectItem key={level} value={level}>{level}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="difficulty">Difficulty</Label>
+                          <Input
+                            id="difficulty"
+                            type="number"
+                            min="1"
+                            max="10"
+                            value={formData.difficulty}
+                            onChange={(e) => setFormData({ ...formData, difficulty: Number(e.target.value) })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="register">Register</Label>
+                          <Select value={formData.register} onValueChange={(value) => setFormData({ ...formData, register: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {registers.map(register => (
+                                <SelectItem key={register} value={register}>{register}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="theme">Theme</Label>
+                          <Select value={formData.theme} onValueChange={(value) => setFormData({ ...formData, theme: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {themes.map(theme => (
+                                <SelectItem key={theme} value={theme}>{theme}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="source">Source</Label>
+                          <Select value={formData.source} onValueChange={(value) => setFormData({ ...formData, source: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {sources.map(source => (
+                                <SelectItem key={source} value={source}>{source}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="tags">Tags (comma-separated)</Label>
+                        <Input
+                          id="tags"
+                          value={formData.tags}
+                          onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                          placeholder="tag1, tag2, tag3"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="audioUrl">Audio URL (optional)</Label>
+                        <Input
+                          id="audioUrl"
+                          value={formData.audioUrl}
+                          onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit" disabled={createCardMutation.isPending}>
+                          {createCardMutation.isPending ? "Creating..." : "Create Card"}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-4 items-end">
-                <div className="flex-1">
+              {/* Search and Filter Controls */}
+              <div className="flex flex-wrap gap-4 items-end">
+                <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="search">Search</Label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="search"
-                      placeholder="Search Japanese, English, or reading..."
+                      placeholder="Search cards..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="pl-8"
                     />
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                >
-                  Advanced Filters
-                </Button>
-              </div>
-
-              {showAdvancedFilters && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t">
-                  <div>
-                    <Label>JLPT Level</Label>
-                    <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Levels</SelectItem>
-                        {jlptLevels.map(level => (
-                          <SelectItem key={level} value={level}>{level}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Theme</Label>
-                    <Select value={selectedTheme} onValueChange={setSelectedTheme}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Themes</SelectItem>
-                        {themes.map(theme => (
-                          <SelectItem key={theme} value={theme}>{theme}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Register</Label>
-                    <Select value={selectedRegister} onValueChange={setSelectedRegister}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Registers</SelectItem>
-                        {registers.map(register => (
-                          <SelectItem key={register} value={register}>{register}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Sort By</Label>
+                <div>
+                  <Label>JLPT Level</Label>
+                  <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Levels</SelectItem>
+                      {jlptLevels.map(level => (
+                        <SelectItem key={level} value={level}>{level}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Theme</Label>
+                  <Select value={selectedTheme} onValueChange={setSelectedTheme}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Themes</SelectItem>
+                      {themes.map(theme => (
+                        <SelectItem key={theme} value={theme}>{theme}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Sort By</Label>
+                  <div className="flex gap-2">
                     <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-[120px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="id">ID</SelectItem>
                         <SelectItem value="japanese">Japanese</SelectItem>
-                        <SelectItem value="difficulty">Difficulty</SelectItem>
                         <SelectItem value="jlptLevel">JLPT Level</SelectItem>
+                        <SelectItem value="difficulty">Difficulty</SelectItem>
+                        <SelectItem value="theme">Theme</SelectItem>
                       </SelectContent>
                     </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                    >
+                      <ArrowUpDown className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
 
-          {/* Cards Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Sentence Cards ({filteredCards.length})</CardTitle>
-              <CardDescription>
-                Manage and edit sentence cards in the system
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[600px]">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Japanese</TableHead>
-                      <TableHead>Reading</TableHead>
-                      <TableHead>English</TableHead>
-                      <TableHead>Level</TableHead>
-                      <TableHead>Difficulty</TableHead>
-                      <TableHead>Theme</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCards.map((card) => (
-                      <TableRow key={card.id}>
-                        <TableCell>{card.id}</TableCell>
-                        <TableCell className="font-japanese">{card.japanese}</TableCell>
-                        <TableCell className="text-muted-foreground">{card.reading}</TableCell>
-                        <TableCell>{card.english}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{card.jlptLevel}</Badge>
-                        </TableCell>
-                        <TableCell>{card.difficulty}</TableCell>
-                        <TableCell>{card.theme}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEdit(card)}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(card.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+              {/* Cards Table */}
+              <div className="border rounded-lg">
+                <ScrollArea className="h-[600px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Japanese</TableHead>
+                        <TableHead>Reading</TableHead>
+                        <TableHead>English</TableHead>
+                        <TableHead>JLPT</TableHead>
+                        <TableHead>Difficulty</TableHead>
+                        <TableHead>Theme</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCards.map((card) => (
+                        <TableRow key={card.id}>
+                          <TableCell>{card.id}</TableCell>
+                          <TableCell>
+                            {editingCardId === card.id && editingField === "japanese" ? (
+                              <div className="flex gap-1">
+                                <Input
+                                  value={tempValue}
+                                  onChange={(e) => setTempValue(e.target.value)}
+                                  className="h-8"
+                                />
+                                <Button size="sm" variant="ghost" onClick={saveEdit}>
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div 
+                                className="cursor-pointer hover:bg-muted/50 rounded px-2 py-1"
+                                onClick={() => startEdit(card.id, "japanese", card.japanese)}
+                              >
+                                {card.japanese}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {editingCardId === card.id && editingField === "reading" ? (
+                              <div className="flex gap-1">
+                                <Input
+                                  value={tempValue}
+                                  onChange={(e) => setTempValue(e.target.value)}
+                                  className="h-8"
+                                />
+                                <Button size="sm" variant="ghost" onClick={saveEdit}>
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div 
+                                className="cursor-pointer hover:bg-muted/50 rounded px-2 py-1"
+                                onClick={() => startEdit(card.id, "reading", card.reading)}
+                              >
+                                {card.reading}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {editingCardId === card.id && editingField === "english" ? (
+                              <div className="flex gap-1">
+                                <Input
+                                  value={tempValue}
+                                  onChange={(e) => setTempValue(e.target.value)}
+                                  className="h-8"
+                                />
+                                <Button size="sm" variant="ghost" onClick={saveEdit}>
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div 
+                                className="cursor-pointer hover:bg-muted/50 rounded px-2 py-1 max-w-[200px] truncate"
+                                onClick={() => startEdit(card.id, "english", card.english)}
+                                title={card.english}
+                              >
+                                {card.english}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{card.jlptLevel}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            {editingCardId === card.id && editingField === "difficulty" ? (
+                              <div className="flex gap-1">
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  max="10"
+                                  value={tempValue}
+                                  onChange={(e) => setTempValue(e.target.value)}
+                                  className="h-8 w-16"
+                                />
+                                <Button size="sm" variant="ghost" onClick={saveEdit}>
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div 
+                                className="cursor-pointer hover:bg-muted/50 rounded px-2 py-1 w-fit"
+                                onClick={() => startEdit(card.id, "difficulty", card.difficulty)}
+                              >
+                                {card.difficulty}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">{card.theme}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleEdit(card)}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteCardMutation.mutate(card.id)}
+                                disabled={deleteCardMutation.isPending}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </div>
+
+              <div className="text-sm text-muted-foreground">
+                Showing {filteredCards.length} of {cards.length} cards
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="reports" className="space-y-4">
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Users Management Tab */}
+        <TabsContent value="users" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>User Management</CardTitle>
+                  <CardDescription>
+                    View and manage user accounts
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* User Search and Filter */}
+              <div className="flex gap-4 items-end">
+                <div className="flex-1">
+                  <Label htmlFor="userSearch">Search Users</Label>
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="userSearch"
+                      placeholder="Search by username, email, or display name..."
+                      value={userSearchTerm}
+                      onChange={(e) => setUserSearchTerm(e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>User Type</Label>
+                  <Select value={selectedUserType} onValueChange={setSelectedUserType}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      {userTypes.map(type => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Users Table */}
+              <div className="border rounded-lg">
+                <ScrollArea className="h-[600px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Username</TableHead>
+                        <TableHead>Display Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Belt</TableHead>
+                        <TableHead>JLPT Level</TableHead>
+                        <TableHead>XP</TableHead>
+                        <TableHead>Streak</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredUsers.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell>{user.id}</TableCell>
+                          <TableCell className="font-medium">{user.username}</TableCell>
+                          <TableCell>{user.displayName}</TableCell>
+                          <TableCell>{user.email || "N/A"}</TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant={user.userType === "admin" ? "default" : user.userType === "premium" ? "secondary" : "outline"}
+                            >
+                              {user.userType}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{user.currentBelt}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{user.currentJLPTLevel}</Badge>
+                          </TableCell>
+                          <TableCell>{user.totalXP}</TableCell>
+                          <TableCell>{user.currentStreak}</TableCell>
+                          <TableCell>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleUserEdit(user)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </div>
+
+              <div className="text-sm text-muted-foreground">
+                Showing {filteredUsers.length} of {users.length} users
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* CSV Upload Tab */}
+        <TabsContent value="upload" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Bulk Card Upload</CardTitle>
+              <CardDescription>
+                Upload multiple cards via CSV file
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  CSV Format: japanese,reading,english,jlptLevel,difficulty,register,theme,source,tags,audioUrl
+                  <br />
+                  Tags should be separated by semicolons (;)
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="csvFile">Select CSV File</Label>
+                  <Input
+                    ref={fileInputRef}
+                    id="csvFile"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    disabled={isUploading}
+                  />
+                </div>
+
+                {uploadStatus && (
+                  <Alert>
+                    <AlertDescription>{uploadStatus}</AlertDescription>
+                  </Alert>
+                )}
+
+                {isUploading && (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    <span>Uploading cards...</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6">
+                <h4 className="font-medium mb-2">Sample CSV Format:</h4>
+                <div className="bg-muted p-4 rounded-lg text-sm font-mono overflow-x-auto">
+                  japanese,reading,english,jlptLevel,difficulty,register,theme,source,tags,audioUrl<br />
+                  こんにちは,こんにちは,Hello,N5,1,casual,general,manual,greeting;basic,<br />
+                  ありがとう,ありがとう,Thank you,N5,1,polite,general,manual,gratitude;polite,
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Statistics Tab */}
+        <TabsContent value="stats" className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Cards</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.total}</div>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Average Difficulty</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{users.length}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg Difficulty</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.avgDifficulty.toFixed(1)}</div>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Most Common Theme</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Admin Users</CardTitle>
+                <Shield className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg font-bold">
-                  {Object.entries(stats.byTheme).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Most Common Level</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg font-bold">
-                  {Object.entries(stats.byLevel).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}
+                <div className="text-2xl font-bold">
+                  {users.filter(u => u.userType === "admin").length}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Cards by JLPT Level</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {jlptLevels.map(level => {
-                    const count = stats.byLevel[level] || 0;
-                    return (
-                      <div key={level} className="flex items-center gap-3">
-                        <div className="w-12 text-sm font-medium">{level}</div>
-                        <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary rounded-full"
-                            style={{ 
-                              width: `${stats.total > 0 ? (count / stats.total) * 100 : 0}%` 
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground w-12 text-right">
-                          {count}
-                        </span>
+                <div className="space-y-2">
+                  {Object.entries(stats.byLevel).map(([level, count]) => (
+                    <div key={level} className="flex justify-between items-center">
+                      <span>{level}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-primary h-2 rounded-full" style={{ width: `${(count / stats.total) * 100}px` }}></div>
+                        <span className="text-sm">{count}</span>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -583,28 +1080,16 @@ function AdminPageContent() {
                 <CardTitle>Cards by Theme</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {Object.entries(stats.byTheme)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 8)
-                    .map(([theme, count]) => (
-                      <div key={theme} className="flex items-center gap-3">
-                        <div className="w-20 text-sm font-medium truncate" title={theme}>
-                          {theme}
-                        </div>
-                        <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-secondary rounded"
-                            style={{ 
-                              width: `${stats.total > 0 ? (count / stats.total) * 100 : 0}%` 
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground w-12 text-right">
-                          {count}
-                        </span>
+                <div className="space-y-2">
+                  {Object.entries(stats.byTheme).slice(0, 8).map(([theme, count]) => (
+                    <div key={theme} className="flex justify-between items-center">
+                      <span className="capitalize">{theme}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-secondary h-2 rounded-full" style={{ width: `${(count / stats.total) * 100}px` }}></div>
+                        <span className="text-sm">{count}</span>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -612,60 +1097,46 @@ function AdminPageContent() {
         </TabsContent>
       </Tabs>
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={isAddDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsAddDialogOpen(false);
-          setIsEditDialogOpen(false);
-          setEditingCard(null);
-          setFormData(initialFormData);
-        }
-      }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      {/* Edit Card Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingCard ? "Edit Sentence Card" : "Add New Sentence Card"}
-            </DialogTitle>
+            <DialogTitle>Edit Card</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="japanese">Japanese *</Label>
+                <Label htmlFor="edit-japanese">Japanese</Label>
                 <Input
-                  id="japanese"
+                  id="edit-japanese"
                   value={formData.japanese}
                   onChange={(e) => setFormData({ ...formData, japanese: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="reading">Reading *</Label>
+                <Label htmlFor="edit-reading">Reading</Label>
                 <Input
-                  id="reading"
+                  id="edit-reading"
                   value={formData.reading}
                   onChange={(e) => setFormData({ ...formData, reading: e.target.value })}
                   required
                 />
               </div>
             </div>
-            
             <div>
-              <Label htmlFor="english">English Translation *</Label>
+              <Label htmlFor="edit-english">English</Label>
               <Textarea
-                id="english"
+                id="edit-english"
                 value={formData.english}
                 onChange={(e) => setFormData({ ...formData, english: e.target.value })}
                 required
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="jlptLevel">JLPT Level</Label>
-                <Select
-                  value={formData.jlptLevel}
-                  onValueChange={(value) => setFormData({ ...formData, jlptLevel: value })}
-                >
+                <Label htmlFor="edit-jlptLevel">JLPT Level</Label>
+                <Select value={formData.jlptLevel} onValueChange={(value) => setFormData({ ...formData, jlptLevel: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -677,22 +1148,19 @@ function AdminPageContent() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="difficulty">Difficulty (1-5)</Label>
+                <Label htmlFor="edit-difficulty">Difficulty</Label>
                 <Input
-                  id="difficulty"
+                  id="edit-difficulty"
                   type="number"
                   min="1"
-                  max="5"
+                  max="10"
                   value={formData.difficulty}
-                  onChange={(e) => setFormData({ ...formData, difficulty: parseInt(e.target.value) || 1 })}
+                  onChange={(e) => setFormData({ ...formData, difficulty: Number(e.target.value) })}
                 />
               </div>
               <div>
-                <Label htmlFor="register">Register</Label>
-                <Select
-                  value={formData.register}
-                  onValueChange={(value) => setFormData({ ...formData, register: value })}
-                >
+                <Label htmlFor="edit-register">Register</Label>
+                <Select value={formData.register} onValueChange={(value) => setFormData({ ...formData, register: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -704,14 +1172,10 @@ function AdminPageContent() {
                 </Select>
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="theme">Theme</Label>
-                <Select
-                  value={formData.theme}
-                  onValueChange={(value) => setFormData({ ...formData, theme: value })}
-                >
+                <Label htmlFor="edit-theme">Theme</Label>
+                <Select value={formData.theme} onValueChange={(value) => setFormData({ ...formData, theme: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -723,11 +1187,8 @@ function AdminPageContent() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="source">Source</Label>
-                <Select
-                  value={formData.source}
-                  onValueChange={(value) => setFormData({ ...formData, source: value })}
-                >
+                <Label htmlFor="edit-source">Source</Label>
+                <Select value={formData.source} onValueChange={(value) => setFormData({ ...formData, source: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -739,53 +1200,114 @@ function AdminPageContent() {
                 </Select>
               </div>
             </div>
-
             <div>
-              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Label htmlFor="edit-tags">Tags (comma-separated)</Label>
               <Input
-                id="tags"
+                id="edit-tags"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                placeholder="verb, past-tense, common"
+                placeholder="tag1, tag2, tag3"
               />
             </div>
-
             <div>
-              <Label htmlFor="audioUrl">Audio URL (optional)</Label>
+              <Label htmlFor="edit-audioUrl">Audio URL (optional)</Label>
               <Input
-                id="audioUrl"
-                type="url"
+                id="edit-audioUrl"
                 value={formData.audioUrl}
                 onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
-                placeholder="https://example.com/audio.mp3"
               />
             </div>
-
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setIsAddDialogOpen(false);
-                  setIsEditDialogOpen(false);
-                  setEditingCard(null);
-                  setFormData(initialFormData);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={createCardMutation.isPending || updateCardMutation.isPending}
-              >
-                {createCardMutation.isPending || updateCardMutation.isPending
-                  ? "Saving..."
-                  : editingCard
-                  ? "Update Card"
-                  : "Create Card"}
+              <Button type="submit" disabled={updateCardMutation.isPending}>
+                {updateCardMutation.isPending ? "Updating..." : "Update Card"}
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isUserEditDialogOpen} onOpenChange={setIsUserEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+          </DialogHeader>
+          {editingUser && (
+            <div className="space-y-4">
+              <div>
+                <Label>Username</Label>
+                <Input value={editingUser.username} disabled />
+              </div>
+              <div>
+                <Label>Display Name</Label>
+                <Input 
+                  value={editingUser.displayName}
+                  onChange={(e) => setEditingUser({ ...editingUser, displayName: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>User Type</Label>
+                <Select 
+                  value={editingUser.userType} 
+                  onValueChange={(value) => setEditingUser({ ...editingUser, userType: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {userTypes.map(type => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Current Belt</Label>
+                <Select 
+                  value={editingUser.currentBelt} 
+                  onValueChange={(value) => setEditingUser({ ...editingUser, currentBelt: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {belts.map(belt => (
+                      <SelectItem key={belt} value={belt}>{belt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>JLPT Level</Label>
+                <Select 
+                  value={editingUser.currentJLPTLevel} 
+                  onValueChange={(value) => setEditingUser({ ...editingUser, currentJLPTLevel: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {jlptLevels.map(level => (
+                      <SelectItem key={level} value={level}>{level}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button 
+                  onClick={() => handleUserUpdate({
+                    displayName: editingUser.displayName,
+                    userType: editingUser.userType,
+                    currentBelt: editingUser.currentBelt,
+                    currentJLPTLevel: editingUser.currentJLPTLevel
+                  })}
+                  disabled={updateUserMutation.isPending}
+                >
+                  {updateUserMutation.isPending ? "Updating..." : "Update User"}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
@@ -793,9 +1315,5 @@ function AdminPageContent() {
 }
 
 export default function AdminPage() {
-  return (
-    <AdminGuard>
-      <AdminPageContent />
-    </AdminGuard>
-  );
+  return <AdminPageContent />;
 }
