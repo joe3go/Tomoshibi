@@ -1236,6 +1236,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Get all sentence cards
+  app.get("/api/admin/cards", async (req, res) => {
+    try {
+      const sessionData = req.session as any;
+      if (!sessionData?.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const cards = await storage.getSentenceCards();
+      res.json(cards);
+    } catch (error) {
+      console.error("Error fetching cards:", error);
+      res.status(500).json({ error: "Failed to fetch cards" });
+    }
+  });
+
+  // Admin: Create new sentence card
+  app.post("/api/admin/cards", async (req, res) => {
+    try {
+      const sessionData = req.session as any;
+      if (!sessionData?.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const { japanese, reading, english, jlptLevel, difficulty, register, theme, source, tags, audioUrl } = req.body;
+
+      if (!japanese || !reading || !english) {
+        return res.status(400).json({ error: "Japanese, reading, and English are required" });
+      }
+
+      const cardData = {
+        japanese,
+        reading,
+        english,
+        jlptLevel: jlptLevel || 'N5',
+        difficulty: difficulty || 1,
+        register: register || 'casual',
+        theme: theme || 'general',
+        source: source || 'manual',
+        tags: tags || [],
+        audioUrl: audioUrl || null
+      };
+
+      const newCard = await storage.createSentenceCard(cardData);
+      res.json(newCard);
+    } catch (error) {
+      console.error("Error creating card:", error);
+      res.status(500).json({ error: "Failed to create card" });
+    }
+  });
+
+  // Admin: Update sentence card
+  app.patch("/api/admin/cards/:id", async (req, res) => {
+    try {
+      const sessionData = req.session as any;
+      if (!sessionData?.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const cardId = parseInt(req.params.id);
+      const updates = req.body;
+
+      if (isNaN(cardId)) {
+        return res.status(400).json({ error: "Invalid card ID" });
+      }
+
+      const updatedCard = await storage.updateSentenceCard(cardId, updates);
+      if (!updatedCard) {
+        return res.status(404).json({ error: "Card not found" });
+      }
+
+      res.json(updatedCard);
+    } catch (error) {
+      console.error("Error updating card:", error);
+      res.status(500).json({ error: "Failed to update card" });
+    }
+  });
+
+  // Admin: Delete sentence card
+  app.delete("/api/admin/cards/:id", async (req, res) => {
+    try {
+      const sessionData = req.session as any;
+      if (!sessionData?.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const cardId = parseInt(req.params.id);
+
+      if (isNaN(cardId)) {
+        return res.status(400).json({ error: "Invalid card ID" });
+      }
+
+      const deleted = await storage.deleteSentenceCard(cardId);
+      if (!deleted) {
+        return res.status(404).json({ error: "Card not found" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting card:", error);
+      res.status(500).json({ error: "Failed to delete card" });
+    }
+  });
+
   // Update user JLPT level
   app.patch("/api/user/jlpt-level", async (req, res) => {
     try {

@@ -28,6 +28,8 @@ export interface IStorage {
   }): Promise<SentenceCard[]>;
   getSentenceCard(id: number): Promise<SentenceCard | undefined>;
   createSentenceCard(card: InsertSentenceCard): Promise<SentenceCard>;
+  updateSentenceCard(id: number, updates: Partial<SentenceCard>): Promise<SentenceCard | undefined>;
+  deleteSentenceCard(id: number): Promise<boolean>;
 
   // SRS operations
   getUserSrsItems(userId: number): Promise<SrsItem[]>;

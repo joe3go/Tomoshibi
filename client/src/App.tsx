@@ -55,6 +55,7 @@ import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
+import AdminPage from "@/pages/admin";
 import { GlobalJLPTLevelSelector } from "@/components/jlpt-level-selector";
 
 // Theme context
@@ -361,6 +362,7 @@ function AppRouter() {
           <Route path="/social" component={Social} />
           <Route path="/achievements" component={Achievements} />
           <Route path="/settings" component={Settings} />
+          <Route path="/admin" component={AdminPage} />
           <Route path="/auth" component={AuthPage} />
           <Route component={NotFound} />
         </Switch>
