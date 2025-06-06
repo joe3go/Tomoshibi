@@ -90,7 +90,7 @@ export default function Dashboard() {
       {/* Interactive Progress Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {/* Kanji Progress */}
-        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-red-200 dark:hover:border-red-800">
+        <Card className="relative overflow-hidden border-2">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -126,11 +126,11 @@ export default function Dashboard() {
               </div>
             </div>
           </CardContent>
-          <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
         </Card>
 
         {/* Vocabulary Progress */}
-        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-blue-200 dark:hover:border-blue-800">
+        <Card className="relative overflow-hidden border-2">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Grammar Progress */}
-        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-green-200 dark:hover:border-green-800">
+        <Card className="relative overflow-hidden border-2">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
