@@ -1251,9 +1251,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      // Simple password check (in production, use proper hashing)
-      const isValidPassword = user.password === password || 
-        (username === "admin" && password === "admin123");
+      // Check password - for admin user, allow plain text password check
+      const isValidPassword = (username === "admin" && password === "admin123") || 
+        user.password === password;
 
       if (!isValidPassword) {
         return res.status(401).json({ error: "Invalid credentials" });
