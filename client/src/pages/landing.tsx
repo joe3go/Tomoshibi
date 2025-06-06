@@ -6,6 +6,7 @@ import studySceneImage from "@assets/generation-0a824337-7cc6-4f0a-8c9b-c8daca3f
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 import { 
   Play, 
   Brain, 
@@ -23,6 +24,21 @@ export default function Landing() {
   const { languageMode } = useLanguageMode();
   const content = useLanguageContent(languageMode);
   const { toast } = useToast();
+
+  // Force light theme on landing page
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
+    
+    // Clean up when component unmounts
+    return () => {
+      // Restore the saved theme from localStorage
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      root.classList.remove('light', 'dark');
+      root.classList.add(savedTheme);
+    };
+  }, []);
 
   const demoLoginMutation = useMutation({
     mutationFn: async () => {
