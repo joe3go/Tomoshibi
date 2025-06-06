@@ -169,6 +169,27 @@ export function useLanguageContent(mode: LanguageMode) {
 
 function ProfileDropdown({ user }: { user: any }) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [, setLocation] = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        // Clear query cache
+        queryClient.clear();
+        // Redirect to home page
+        setLocation("/");
+        // Reload the page to ensure clean state
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <DropdownMenu open={showDropdown} onOpenChange={setShowDropdown}>
@@ -192,7 +213,10 @@ function ProfileDropdown({ user }: { user: any }) {
             Settings
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2 text-red-600 dark:text-red-400">
+        <DropdownMenuItem 
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-red-600 dark:text-red-400 cursor-pointer"
+        >
           <LogOut className="h-4 w-4" />
           Logout
         </DropdownMenuItem>
