@@ -31,6 +31,8 @@ import { useState, useEffect, createContext, useContext } from "react";
 import Dashboard from "@/pages/dashboard";
 import Study from "@/pages/study";
 import Vocabulary from "@/pages/vocabulary";
+import KanjiPage from "@/pages/kanji";
+import GrammarPage from "@/pages/grammar";
 import LearningPractice from "@/pages/learning-practice";
 import JLPTProgress from "@/pages/jlpt-progress";
 import StudyPage from "@/pages/study";

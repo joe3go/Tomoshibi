@@ -1,24 +1,16 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "@/lib/queryClient";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { VocabStats } from "@/components/vocab-stats";
-import { ReviewMode } from "@/components/review-mode";
-import { FloatingAddButton, AddWordModal } from "@/components/add-word-modal";
-import { VocabWord } from "@/types/vocab";
-import { VocabStorage } from "@/lib/vocab-storage";
-import { BookOpen, Target, Trophy, Award, Zap, Play, Plus, BarChart3, Shuffle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BookOpen, Target, Trophy, Award, Zap, Play, BarChart3, Settings } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
-  const [words, setWords] = useState<VocabWord[]>([]);
-  const [showReviewMode, setShowReviewMode] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showVocabStats, setShowVocabStats] = useState(false);
   const { toast } = useToast();
 
   const { data: user } = useQuery<any>({
@@ -41,42 +33,7 @@ export default function Dashboard() {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  useEffect(() => {
-    loadVocabWords();
-  }, []);
 
-  const loadVocabWords = () => {
-    const loadedWords = VocabStorage.getVocabWords();
-    setWords(loadedWords);
-  };
-
-  const handleWordAdded = (newWord: VocabWord) => {
-    setWords(prev => [...prev, newWord]);
-  };
-
-  const handleLoadDemo = () => {
-    const demoWords = VocabStorage.loadDemoWords();
-    setWords(prev => [...prev, ...demoWords]);
-    toast({
-      title: "Demo words loaded",
-      description: `Added ${demoWords.length} sample words to explore the features.`,
-    });
-  };
-
-  const startReview = () => {
-    const wordsToReview = VocabStorage.getWordsDueForReview();
-    if (wordsToReview.length === 0) {
-      toast({
-        title: "No words to review",
-        description: "All your words are up to date! Great job!",
-      });
-      return;
-    }
-    setShowReviewMode(true);
-  };
-
-  const currentStats = VocabStorage.calculateCurrentStats();
-  const wordsToReview = VocabStorage.getWordsDueForReview();
 
   if (showReviewMode) {
     return <ReviewMode onExit={() => setShowReviewMode(false)} />;
@@ -281,15 +238,7 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Floating Add Button */}
-      {words.length > 0 && <FloatingAddButton onClick={() => setShowAddModal(true)} />}
 
-      {/* Add Word Modal */}
-      <AddWordModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onWordAdded={handleWordAdded}
-      />
     </div>
   );
 }
