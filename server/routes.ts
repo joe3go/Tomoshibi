@@ -179,6 +179,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Google OAuth
   setupGoogleAuth(app);
 
+  // Create test user for immediate authentication testing
+  (async () => {
+    try {
+      const testUserExists = await storage.getUserByUsername("testuser");
+      if (!testUserExists) {
+        const hashedTestPassword = await hashPassword("testpass");
+        await storage.createUser({
+          username: "testuser",
+          displayName: "Test User",
+          email: "test@example.com",
+          password: hashedTestPassword,
+          userType: "free_user",
+          currentBelt: "white",
+          currentJLPTLevel: "N5",
+          totalXP: 0,
+          currentStreak: 0,
+          bestStreak: 0,
+          lastStudyDate: null,
+          profileImageUrl: null,
+          googleId: null,
+          studyGoal: null,
+          dailyGoalMinutes: 20,
+          dailyGoalKanji: 5,
+          dailyGoalGrammar: 3,
+          dailyGoalVocabulary: 10,
+          preferredStudyTime: null,
+          enableReminders: true
+        });
+        console.log("Created test user: testuser / testpass");
+      }
+    } catch (error) {
+      console.error("Error creating test user:", error);
+    }
+  })();
+
   // Registration route
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -239,26 +274,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/login", async (req, res) => {
     try {
       const { username, password } = req.body;
+      console.log("Login attempt for username:", username);
 
       if (!username || !password) {
+        console.log("Missing username or password");
         return res.status(400).json({ error: "Username and password required" });
       }
 
       const user = await storage.getUserByUsername(username);
-      if (!user || !user.password) {
+      console.log("User found:", !!user, "Has password:", !!user?.password);
+      
+      if (!user) {
+        console.log("User not found");
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
+      if (!user.password) {
+        console.log("User has no password set");
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      console.log("Stored password format:", user.password?.substring(0, 20) + "...");
       const isValidPassword = await comparePasswords(password, user.password);
+      console.log("Password validation result:", isValidPassword);
+
       if (!isValidPassword) {
+        console.log("Password validation failed");
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
       // Set user in session
       req.session.userId = user.id;
+      console.log("Session set for user ID:", user.id);
 
       // Return user without password
       const { password: _, ...userWithoutPassword } = user;
+      console.log("Login successful for user:", username);
       res.json(userWithoutPassword);
     } catch (error) {
       console.error("Login error:", error);
