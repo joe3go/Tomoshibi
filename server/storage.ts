@@ -383,6 +383,19 @@ export class MemStorage implements IStorage {
     return card;
   }
 
+  async updateSentenceCard(id: number, updates: Partial<SentenceCard>): Promise<SentenceCard | undefined> {
+    const card = this.sentenceCards.get(id);
+    if (!card) return undefined;
+    
+    const updatedCard = { ...card, ...updates };
+    this.sentenceCards.set(id, updatedCard);
+    return updatedCard;
+  }
+
+  async deleteSentenceCard(id: number): Promise<boolean> {
+    return this.sentenceCards.delete(id);
+  }
+
   // SRS operations
   async getUserSrsItems(userId: number): Promise<SrsItem[]> {
     return Array.from(this.srsItems.values()).filter(item => item.userId === userId);
