@@ -26,6 +26,7 @@ import { VersionDisplay } from "@/components/version-display";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { getQueryFn, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, createContext, useContext } from "react";
+import { LanternLogo } from "@/components/lantern-logo";
 
 // Pages
 import Dashboard from "@/pages/dashboard";
