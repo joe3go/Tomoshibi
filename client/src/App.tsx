@@ -160,6 +160,40 @@ export function useLanguageContent(mode: LanguageMode) {
   return content[mode];
 }
 
+function ProfileDropdown({ user }: { user: any }) {
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  return (
+    <DropdownMenu open={showDropdown} onOpenChange={setShowDropdown}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded-full">
+          {user.profileImageUrl ? (
+            <img 
+              src={user.profileImageUrl} 
+              alt="Profile" 
+              className="h-6 w-6 rounded-full object-cover"
+            />
+          ) : (
+            <LanternLogo size={20} className="text-primary" />
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem asChild>
+          <Link href="/settings" className="flex items-center gap-2 w-full">
+            <SettingsIcon className="h-4 w-4" />
+            Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="flex items-center gap-2 text-red-600 dark:text-red-400">
+          <LogOut className="h-4 w-4" />
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function Header({ user }: { user: any }) {
   const [location] = useLocation();
   const [showMobileNav, setShowMobileNav] = useState(false);

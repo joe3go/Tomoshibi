@@ -35,6 +35,11 @@ interface StudyOptions {
 export default function StudyModePage() {
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
   const [selectedContentType, setSelectedContentType] = useState<string>("all");
+  
+  // Check URL parameters for direct study/review
+  const urlParams = new URLSearchParams(window.location.search);
+  const typeParam = urlParams.get('type');
+  const modeParam = urlParams.get('mode');
 
   const { data: studyOptions, isLoading } = useQuery<StudyOptions>({
     queryKey: ["/api/study-options"],

@@ -71,6 +71,22 @@ export default function Dashboard() {
         <p className="text-muted-foreground">Continue your Japanese learning journey</p>
       </div>
 
+      {/* Study All / Review All Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Link href="/study-mode?type=all&mode=learn">
+          <Button className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg">
+            <Play className="h-6 w-6 mr-3" />
+            Study All New
+          </Button>
+        </Link>
+        <Link href="/study-mode?type=all&mode=review">
+          <Button className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg">
+            <Target className="h-6 w-6 mr-3" />
+            Review All
+          </Button>
+        </Link>
+      </div>
+
       {/* Interactive Progress Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {/* Kanji Progress */}
