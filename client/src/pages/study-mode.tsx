@@ -40,6 +40,28 @@ export default function StudyModePage() {
     queryKey: ["/api/study-options"],
   });
 
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false,
+  });
+
+  const userJLPTLevel = user?.currentJLPTLevel || 'N5';
+
+  const { data: vocabulary } = useQuery({
+    queryKey: ["/api/vocabulary?level=" + userJLPTLevel],
+    retry: false,
+  });
+
+  const { data: kanji } = useQuery({
+    queryKey: ["/api/kanji?level=" + userJLPTLevel],
+    retry: false,
+  });
+
+  const { data: grammar } = useQuery({
+    queryKey: ["/api/grammar?level=" + userJLPTLevel],
+    retry: false,
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -73,12 +95,12 @@ export default function StudyModePage() {
               Back to Dashboard
             </Button>
           </Link>
-          
+
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900">Study Mode</h1>
             <p className="text-gray-600">Choose what to study today</p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-lg px-3 py-1">
               {studyOptions.currentLevel}
@@ -361,7 +383,7 @@ export default function StudyModePage() {
                     </Badge>
                   </div>
                 </div>
-                
+
                 <div className="text-center mt-4">
                   <Link href="/settings">
                     <Button variant="outline" size="sm">
@@ -389,7 +411,7 @@ export default function StudyModePage() {
                     </div>
                     <p className="text-sm text-purple-700">available to learn</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">JLPT Progress:</p>
                     <div className="flex justify-center space-x-1">
@@ -408,7 +430,7 @@ export default function StudyModePage() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <Link href="/study-dedicated?mode=learn-kanji">
                     <Button 
                       className="w-full bg-purple-600 hover:bg-purple-700"
@@ -437,7 +459,7 @@ export default function StudyModePage() {
                     </div>
                     <p className="text-sm text-green-700">patterns to learn</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">JLPT Progress:</p>
                     <div className="flex justify-center space-x-1">
@@ -456,7 +478,7 @@ export default function StudyModePage() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <Link href="/study-dedicated?mode=learn-grammar">
                     <Button 
                       className="w-full bg-green-600 hover:bg-green-700"
@@ -485,7 +507,7 @@ export default function StudyModePage() {
                     </div>
                     <p className="text-sm text-orange-700">words to learn</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">JLPT Progress:</p>
                     <div className="flex justify-center space-x-1">
@@ -504,7 +526,7 @@ export default function StudyModePage() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <Link href="/study-dedicated?mode=learn-vocabulary">
                     <Button 
                       className="w-full bg-orange-600 hover:bg-orange-700"
@@ -531,7 +553,7 @@ export default function StudyModePage() {
                   {jlptLevels.map((level, index) => {
                     const isUnlocked = index <= currentLevelIndex;
                     const isCurrent = level === studyOptions.currentLevel;
-                    
+
                     return (
                       <div 
                         key={level}

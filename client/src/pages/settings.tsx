@@ -12,6 +12,7 @@ import { queryClient } from "@/lib/queryClient";
 import { ChevronLeft, Target, Bell, User, Calendar, Trophy, Save } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { JLPTLevelSelector } from "@/components/jlpt-level-selector";
 
 interface UserSettings {
   id: number;
@@ -335,6 +336,21 @@ export default function SettingsPage() {
                   <Badge variant="outline" className="text-lg px-3 py-1">
                     JLPT {settings.currentJLPTLevel}
                   </Badge>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">JLPT Level Settings</h3>
+                  <p className="text-sm text-gray-600">
+                    Change your target JLPT level. This will affect what content is shown throughout the app.
+                  </p>
+                  <JLPTLevelSelector
+                    currentLevel={settings.currentJLPTLevel}
+                    onLevelSelect={() => {
+                      queryClient.invalidateQueries({ queryKey: ["/api/user/settings"] });
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>

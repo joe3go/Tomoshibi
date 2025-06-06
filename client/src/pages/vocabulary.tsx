@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,22 @@ export default function VocabularyPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all");
 
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false,
+  });
+
+  const userJLPTLevel = user?.currentJLPTLevel || 'N5';
+
+  // Set default filter to user's JLPT level
+  useEffect(() => {
+    if (userJLPTLevel && selectedLevel === "all") {
+      setSelectedLevel(userJLPTLevel);
+    }
+  }, [userJLPTLevel]);
+
   const { data: vocabularyItems = [], isLoading } = useQuery<VocabularyItem[]>({
-    queryKey: ["/api/vocabulary", selectedLevel],
+    queryKey: ["/api/vocabulary?level=" + (selectedLevel === "all" ? userJLPTLevel : selectedLevel)],
     retry: false,
   });
 

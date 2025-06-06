@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { JLPTLevelSelector, useJLPTLevelCheck } from "@/components/jlpt-level-selector";
+import { useJLPTLevelCheck } from "@/components/jlpt-level-selector";
 
 export default function Dashboard() {
   const { showLevelSelector, setShowLevelSelector } = useJLPTLevelCheck();
@@ -360,13 +360,7 @@ export default function Dashboard() {
           </div>
         </Card>
       )}
-      {/* JLPT Level Selection Modal */}
-      <JLPTLevelSelector
-        currentLevel={user?.currentJLPTLevel}
-        showModal={showLevelSelector}
-        onClose={() => setShowLevelSelector(false)}
-        onLevelSelect={() => setShowLevelSelector(false)}
-      />
+      
     </div>
   );
 }

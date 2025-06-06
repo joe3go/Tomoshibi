@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -179,19 +179,44 @@ export function JLPTLevelSelector({
 export function useJLPTLevelCheck() {
   const [showLevelSelector, setShowLevelSelector] = useState(false);
 
-  useEffect(() => {
-    const hasSelected = localStorage.getItem("jlptLevelSelected");
-    const timer = setTimeout(() => {
-      if (!hasSelected) {
-        setShowLevelSelector(true);
-      }
-    }, 1000);
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false,
+  });
 
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(() => {
+    if (user && !user.currentJLPTLevel) {
+      const timer = setTimeout(() => {
+        setShowLevelSelector(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   return {
     showLevelSelector,
     setShowLevelSelector
   };
+}
+
+// Global JLPT Level Selector for automatic popup
+export function GlobalJLPTLevelSelector() {
+  const { showLevelSelector, setShowLevelSelector } = useJLPTLevelCheck();
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+    retry: false,
+  });
+
+  if (!showLevelSelector || !user || user.currentJLPTLevel) {
+    return null;
+  }
+
+  return (
+    <JLPTLevelSelector
+      currentLevel={user?.currentJLPTLevel}
+      showModal={showLevelSelector}
+      onClose={() => setShowLevelSelector(false)}
+      onLevelSelect={() => setShowLevelSelector(false)}
+    />
+  );
 }

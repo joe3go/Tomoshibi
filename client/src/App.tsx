@@ -1,3 +1,7 @@
+The code is modified to remove the JLPT level selector from the dashboard, add it as a popup if no level is selected, include it in settings, and ensure study modes use the selected level.
+```
+
+```replit_final_file
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Route, Switch, Link, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
@@ -48,6 +52,7 @@ import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
+import { GlobalJLPTLevelSelector } from "@/components/jlpt-level-selector";
 
 // Theme context
 const ThemeContext = createContext<{
@@ -153,7 +158,7 @@ export function useLanguageContent(mode: LanguageMode) {
       settings: "設定",
     },
   };
-  
+
   return content[mode];
 }
 
@@ -162,7 +167,7 @@ export function useLanguageContent(mode: LanguageMode) {
 function Header({ user }: { user: any }) {
   const [location] = useLocation();
   const [showMobileNav, setShowMobileNav] = useState(false);
-  
+
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/vocabulary", label: "Vocab", icon: BookOpen },
@@ -188,13 +193,13 @@ function Header({ user }: { user: any }) {
               <p className="text-xs text-muted-foreground -mt-1">Japanese Learning</p>
             </div>
           </div>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href;
-              
+
               return (
                 <Link key={item.href} href={item.href}>
                   <button className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
@@ -208,7 +213,7 @@ function Header({ user }: { user: any }) {
             })}
           </nav>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* User Stats */}
           {user && (
@@ -226,7 +231,7 @@ function Header({ user }: { user: any }) {
               </div>
             </div>
           )}
-          
+
           {/* Mobile Menu Toggle */}
           <Button 
             variant="ghost" 
@@ -236,14 +241,14 @@ function Header({ user }: { user: any }) {
           >
             <Menu className="h-4 w-4" />
           </Button>
-          
+
           <ThemeToggle />
           <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
             <Bell className="h-4 w-4" />
           </Button>
         </div>
       </div>
-      
+
       {/* Mobile Navigation Dropdown */}
       {showMobileNav && (
         <div className="md:hidden bg-background border-t border-border">
@@ -251,7 +256,7 @@ function Header({ user }: { user: any }) {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.href;
-              
+
               return (
                 <Link key={item.href} href={item.href}>
                   <button 
@@ -302,7 +307,7 @@ function AppRouter() {
   return (
     <MobileWrapper>
       <Header user={user} />
-      
+
       <div className="pt-14 min-h-screen overflow-y-auto">
         <Switch>
           <Route path="/" component={Dashboard} />
@@ -356,6 +361,7 @@ function App() {
             <Toaster />
             <AppRouter />
             <VersionDisplay />
+            <GlobalJLPTLevelSelector />
           </div>
         </LanguageContext.Provider>
       </ThemeProvider>
