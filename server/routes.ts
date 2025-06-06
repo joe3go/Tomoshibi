@@ -1081,7 +1081,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/user/jlpt-level", async (req, res) => {
     try {
       const { level } = req.body;
-      const userId = req.session.userId!;
+      const userId = 1; // Default to demo user for now
       
       if (!['N1', 'N2', 'N3', 'N4', 'N5'].includes(level)) {
         return res.status(400).json({ error: "Invalid JLPT level" });
@@ -1100,16 +1100,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const level = req.query.level as string;
       
-      // Transform N5 vocabulary data to match expected format
-      const vocabularyItems = n5Vocabulary.map((item, index) => ({
-        id: index + 1,
-        kanji: item.kanji,
-        kana_reading: item.kana_reading,
-        english_meaning: item.english_meaning,
-        example_sentence_jp: item.example_sentence_jp,
-        example_sentence_en: item.example_sentence_en,
-        jlptLevel: 'N5'
-      }));
+      // Sample vocabulary data for demonstration
+      const vocabularyItems = [
+        {
+          id: 1,
+          kanji: "私",
+          kana_reading: "わたし",
+          english_meaning: "I, me",
+          example_sentence_jp: "私は学生です。",
+          example_sentence_en: "I am a student.",
+          jlptLevel: 'N5'
+        },
+        {
+          id: 2,
+          kanji: "本",
+          kana_reading: "ほん",
+          english_meaning: "book",
+          example_sentence_jp: "本を読みます。",
+          example_sentence_en: "I read a book.",
+          jlptLevel: 'N5'
+        }
+      ];
 
       let filteredItems = vocabularyItems;
       if (level && level !== 'all') {
@@ -1128,17 +1139,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const level = req.query.level as string;
       
-      // Transform N5 kanji data to match expected format
-      const kanjiItems = n5Kanji.map((item, index) => ({
-        id: index + 1,
-        kanji: item.kanji,
-        onyomi: item.onyomi,
-        kunyomi: item.kunyomi,
-        english_meaning: item.english_meaning,
-        stroke_count: item.stroke_count,
-        example_vocab: item.example_vocab,
-        jlptLevel: 'N5'
-      }));
+      // Sample kanji data for demonstration
+      const kanjiItems = [
+        {
+          id: 1,
+          kanji: "人",
+          onyomi: "ジン、ニン",
+          kunyomi: "ひと",
+          english_meaning: "person",
+          stroke_count: 2,
+          example_vocab: ["人間", "大人"],
+          jlptLevel: 'N5'
+        },
+        {
+          id: 2,
+          kanji: "日",
+          onyomi: "ニチ、ジツ",
+          kunyomi: "ひ、か",
+          english_meaning: "day, sun",
+          stroke_count: 4,
+          example_vocab: ["今日", "毎日"],
+          jlptLevel: 'N5'
+        }
+      ];
 
       let filteredItems = kanjiItems;
       if (level && level !== 'all') {
@@ -1157,16 +1180,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const level = req.query.level as string;
       
-      // Transform N5 grammar data to match expected format
-      const grammarItems = n5Grammar.map((item, index) => ({
-        id: index + 1,
-        grammar_point: item.grammar_point,
-        meaning_en: item.meaning_en,
-        structure_notes: item.structure_notes,
-        example_sentence_jp: item.example_sentence_jp,
-        example_sentence_en: item.example_sentence_en,
-        jlptLevel: 'N5'
-      }));
+      // Sample grammar data for demonstration
+      const grammarItems = [
+        {
+          id: 1,
+          grammar_point: "です/である",
+          meaning_en: "to be (polite/formal)",
+          structure_notes: "Noun + です (polite) / Noun + である (formal written)",
+          example_sentence_jp: "私は学生です。",
+          example_sentence_en: "I am a student.",
+          jlptLevel: 'N5'
+        },
+        {
+          id: 2,
+          grammar_point: "〜ます",
+          meaning_en: "polite verb ending",
+          structure_notes: "Verb stem + ます",
+          example_sentence_jp: "本を読みます。",
+          example_sentence_en: "I read a book.",
+          jlptLevel: 'N5'
+        }
+      ];
 
       let filteredItems = grammarItems;
       if (level && level !== 'all') {
@@ -1183,7 +1217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent study sessions
   app.get("/api/study-sessions/recent", async (req, res) => {
     try {
-      const userId = req.session.userId!;
+      const userId = 1; // Default to demo user for now
       const sessions = await storage.getUserStudySessions(userId, 5);
       res.json(sessions);
     } catch (error) {
@@ -1193,9 +1227,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user achievements
-  app.get("/api/achievements/user", requireAuth, async (req, res) => {
+  app.get("/api/achievements/user", async (req, res) => {
     try {
-      const userId = req.session.userId!;
+      const userId = 1; // Default to demo user for now
       const achievements = await storage.getUserAchievements(userId);
       res.json(achievements);
     } catch (error) {
