@@ -207,3 +207,37 @@ export function DataLoadingAnimation() {
     />
   );
 }
+
+// Additional specialized loading components
+export function VocabularyLoadingAnimation() {
+  return (
+    <JapaneseLoading 
+      type="hiragana" 
+      size="md" 
+      message="語彙を読み込み中..."
+      className="min-h-[120px]"
+    />
+  );
+}
+
+export function KanjiLoadingAnimation() {
+  return (
+    <JapaneseLoading 
+      type="kanji" 
+      size="md" 
+      message="漢字を読み込み中..."
+      className="min-h-[120px]"
+    />
+  );
+}
+
+export function GrammarLoadingAnimation() {
+  return (
+    <JapaneseLoading 
+      type="torii" 
+      size="md" 
+      message="文法を読み込み中..."
+      className="min-h-[120px]"
+    />
+  );
+}

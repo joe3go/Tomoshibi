@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Furigana } from "@/components/furigana";
+import { ReviewLoadingAnimation } from "@/components/ui/japanese-loading";
 
 interface ReviewCard {
   srsItem: {
@@ -87,8 +88,8 @@ export default function StudyFullscreenPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-2xl">Loading...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <ReviewLoadingAnimation />
       </div>
     );
   }
