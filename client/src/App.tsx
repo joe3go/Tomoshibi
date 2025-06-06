@@ -173,39 +173,30 @@ function ProfileDropdown({ user }: { user: any }) {
 
   const handleLogout = async () => {
     console.log("Initiating logout...");
+    setShowDropdown(false);
+    
+    // Immediately set user query to null to trigger UI change
+    queryClient.setQueryData(["/api/user"], null);
     
     try {
-      const response = await fetch("/api/logout", {
+      await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      console.log("Logout response:", response.status);
-      
-      if (response.ok) {
-        console.log("Logout successful, clearing cache...");
-      } else {
-        console.log("Logout failed on server, but proceeding with client cleanup");
-      }
+      console.log("Server logout completed");
     } catch (error) {
-      console.error("Logout request failed:", error);
+      console.error("Server logout failed:", error);
     }
     
-    // Always clear cache and redirect regardless of server response
-    console.log("Clearing query cache...");
+    // Comprehensive client cleanup
+    queryClient.removeQueries();
     queryClient.clear();
-    queryClient.invalidateQueries();
     
-    // Clear any local storage items
-    localStorage.clear();
-    sessionStorage.clear();
-    
-    console.log("Redirecting to landing page...");
-    // Force redirect to landing page
-    window.location.href = "/";
+    // Force page reload to ensure clean state
+    window.location.reload();
   };
 
   return (
@@ -364,6 +355,9 @@ function AppRouter() {
   const { data: user, isLoading } = useQuery<any>({
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   if (isLoading) {
