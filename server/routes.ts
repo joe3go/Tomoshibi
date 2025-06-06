@@ -643,6 +643,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get vocabulary data for preview
+  app.get("/api/vocabulary", async (req, res) => {
+    try {
+      const userId = req.session.userId || (req.isAuthenticated() ? (req.user as any)?.id : 1);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const jlptData = getJLPTData();
+      const levelData = jlptData.get(user.currentJLPTLevel) || [];
+      
+      // Return vocabulary items (first 20 for preview)
+      const vocabularyItems = levelData
+        .filter(item => item.theme !== 'grammar')
+        .slice(0, 20)
+        .map(item => ({
+          id: item.id,
+          japanese: item.japanese,
+          english: item.english,
+          reading: item.reading,
+          jlptLevel: item.jlptLevel
+        }));
+
+      res.json(vocabularyItems);
+    } catch (error) {
+      console.error("Error fetching vocabulary:", error);
+      res.status(500).json({ error: "Failed to fetch vocabulary" });
+    }
+  });
+
+  // Get kanji data for preview
+  app.get("/api/kanji", async (req, res) => {
+    try {
+      const userId = req.session.userId || (req.isAuthenticated() ? (req.user as any)?.id : 1);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const jlptData = getJLPTData();
+      const levelData = jlptData.get(user.currentJLPTLevel) || [];
+      
+      // Return kanji items (first 10 for preview)
+      const kanjiItems = levelData
+        .filter(item => /[\u4e00-\u9faf]/.test(item.japanese))
+        .slice(0, 10)
+        .map(item => ({
+          id: item.id,
+          character: item.japanese,
+          meaning: item.english,
+          reading: item.reading,
+          jlptLevel: item.jlptLevel
+        }));
+
+      res.json(kanjiItems);
+    } catch (error) {
+      console.error("Error fetching kanji:", error);
+      res.status(500).json({ error: "Failed to fetch kanji" });
+    }
+  });
+
+  // Get grammar data for preview
+  app.get("/api/grammar", async (req, res) => {
+    try {
+      const userId = req.session.userId || (req.isAuthenticated() ? (req.user as any)?.id : 1);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const jlptData = getJLPTData();
+      const levelData = jlptData.get(user.currentJLPTLevel) || [];
+      
+      // Return grammar items (first 10 for preview)
+      const grammarItems = levelData
+        .filter(item => item.theme === 'grammar')
+        .slice(0, 10)
+        .map(item => ({
+          id: item.id,
+          pattern: item.japanese,
+          meaning: item.english,
+          jlptLevel: item.jlptLevel
+        }));
+
+      res.json(grammarItems);
+    } catch (error) {
+      console.error("Error fetching grammar:", error);
+      res.status(500).json({ error: "Failed to fetch grammar" });
+    }
+  });
+
   // Get all achievements
   app.get("/api/achievements", async (req, res) => {
     try {

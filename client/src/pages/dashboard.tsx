@@ -11,19 +11,146 @@ import {
   Calendar,
   TrendingUp,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  X
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useJLPTLevelCheck } from "@/components/jlpt-level-selector";
+import { useState } from "react";
+
+// Study Session Preview Component
+function StudySessionPreview({ mode, studyOptions }: { mode: 'learn' | 'review', studyOptions: any }) {
+  const { data: vocabularyData } = useQuery({
+    queryKey: ["/api/vocabulary"],
+    enabled: mode === 'learn'
+  });
+
+  const { data: kanjiData } = useQuery({
+    queryKey: ["/api/kanji"],
+    enabled: mode === 'learn'
+  });
+
+  const { data: grammarData } = useQuery({
+    queryKey: ["/api/grammar"],
+    enabled: mode === 'learn'
+  });
+
+  const { data: reviewQueue } = useQuery({
+    queryKey: ["/api/review-queue"],
+    enabled: mode === 'review'
+  });
+
+  const getPreviewData = () => {
+    if (mode === 'review') {
+      const items = reviewQueue || [];
+      return {
+        total: items.length,
+        breakdown: {
+          kanji: items.filter((item: any) => item.srsItem?.contentType === 'kanji').length,
+          vocabulary: items.filter((item: any) => item.srsItem?.contentType === 'vocabulary').length,
+          grammar: items.filter((item: any) => item.srsItem?.contentType === 'grammar').length
+        },
+        items: items.slice(0, 5).map((item: any) => ({
+          type: item.srsItem?.contentType || 'vocabulary',
+          content: item.sentenceCard?.japanese || item.content?.japanese || 'Content item',
+          english: item.sentenceCard?.english || item.content?.english || 'Translation'
+        }))
+      };
+    } else {
+      const vocab = vocabularyData || [];
+      const kanji = kanjiData || [];
+      const grammar = grammarData || [];
+      
+      const allItems = [
+        ...vocab.slice(0, 3).map((item: any) => ({ type: 'vocabulary', content: item.japanese || item.kanji, english: item.english || item.meaning })),
+        ...kanji.slice(0, 2).map((item: any) => ({ type: 'kanji', content: item.character || item.kanji, english: item.meaning || item.english })),
+        ...grammar.slice(0, 2).map((item: any) => ({ type: 'grammar', content: item.pattern || item.japanese, english: item.meaning || item.english }))
+      ];
+
+      return {
+        total: vocab.length + kanji.length + grammar.length,
+        breakdown: {
+          vocabulary: vocab.length,
+          kanji: kanji.length,
+          grammar: grammar.length
+        },
+        items: allItems.slice(0, 5)
+      };
+    }
+  };
+
+  const previewData = getPreviewData();
+  const isReview = mode === 'review';
+
+  return (
+    <div className="space-y-4 max-h-96 overflow-y-auto">
+      <div className="grid grid-cols-3 gap-3">
+        <div className="text-center p-3 bg-red-50 dark:bg-red-900/10 rounded-lg">
+          <div className="text-lg font-bold text-red-600 dark:text-red-400">
+            {previewData.breakdown.kanji}
+          </div>
+          <div className="text-xs text-muted-foreground">Kanji</div>
+        </div>
+        <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+            {previewData.breakdown.vocabulary}
+          </div>
+          <div className="text-xs text-muted-foreground">Vocabulary</div>
+        </div>
+        <div className="text-center p-3 bg-green-50 dark:bg-green-900/10 rounded-lg">
+          <div className="text-lg font-bold text-green-600 dark:text-green-400">
+            {previewData.breakdown.grammar}
+          </div>
+          <div className="text-xs text-muted-foreground">Grammar</div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="font-medium text-sm">
+          {isReview ? 'Items Due for Review:' : 'New Items to Study:'}
+        </h4>
+        {previewData.items.length > 0 ? (
+          <div className="space-y-2">
+            {previewData.items.map((item: any, index: number) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {item.type}
+                  </Badge>
+                  <span className="font-medium">{item.content}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {item.english}
+                </span>
+              </div>
+            ))}
+            {previewData.total > 5 && (
+              <div className="text-center text-sm text-muted-foreground pt-2">
+                + {previewData.total - 5} more items
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-muted-foreground">
+            No {isReview ? 'reviews' : 'new items'} available
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Study All Button Component
 function StudyAllButton({ studyOptions }: { studyOptions: any }) {
   const [, setLocation] = useLocation();
+  const [showPreview, setShowPreview] = useState(false);
   
   const createStudySession = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/study-session", data),
@@ -37,6 +164,7 @@ function StudyAllButton({ studyOptions }: { studyOptions: any }) {
                   (studyOptions?.new?.grammar || 0);
 
   const handleStudyAll = () => {
+    setShowPreview(false);
     if (totalNew > 0) {
       createStudySession.mutate({
         sessionType: "study-all",
@@ -46,24 +174,53 @@ function StudyAllButton({ studyOptions }: { studyOptions: any }) {
   };
 
   return (
-    <Button 
-      onClick={handleStudyAll}
-      disabled={totalNew === 0 || createStudySession.isPending}
-      className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg"
-    >
-      <Play className="h-6 w-6 mr-3" />
-      <div className="flex flex-col items-start">
-        <span>Study All New</span>
-        <span className="text-sm opacity-90">{totalNew} items pending</span>
-      </div>
-      <ChevronRight className="h-5 w-5 ml-auto" />
-    </Button>
+    <div className="relative">
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogTrigger asChild>
+          <Button 
+            variant="outline"
+            className="absolute top-0 right-0 z-10 p-2"
+            disabled={totalNew === 0}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Study Session Preview</DialogTitle>
+          </DialogHeader>
+          <StudySessionPreview mode="learn" studyOptions={studyOptions} />
+          <div className="flex gap-2 pt-4">
+            <Button onClick={handleStudyAll} className="flex-1" disabled={createStudySession.isPending}>
+              {createStudySession.isPending ? "Starting..." : "Start Session"}
+            </Button>
+            <Button variant="outline" onClick={() => setShowPreview(false)}>
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Button 
+        onClick={handleStudyAll}
+        disabled={totalNew === 0 || createStudySession.isPending}
+        className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg pr-12"
+      >
+        <Play className="h-6 w-6 mr-3" />
+        <div className="flex flex-col items-start">
+          <span>Study All New</span>
+          <span className="text-sm opacity-90">{totalNew} items pending</span>
+        </div>
+        <ChevronRight className="h-5 w-5 ml-auto" />
+      </Button>
+    </div>
   );
 }
 
 // Review All Button Component  
 function ReviewAllButton({ studyOptions }: { studyOptions: any }) {
   const [, setLocation] = useLocation();
+  const [showPreview, setShowPreview] = useState(false);
   
   const createReviewSession = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/study-session", data),
@@ -77,6 +234,7 @@ function ReviewAllButton({ studyOptions }: { studyOptions: any }) {
                       (studyOptions?.reviews?.grammar || 0);
 
   const handleReviewAll = () => {
+    setShowPreview(false);
     if (totalReviews > 0) {
       createReviewSession.mutate({
         sessionType: "review-all",
@@ -86,18 +244,46 @@ function ReviewAllButton({ studyOptions }: { studyOptions: any }) {
   };
 
   return (
-    <Button 
-      onClick={handleReviewAll}
-      disabled={totalReviews === 0 || createReviewSession.isPending}
-      className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg"
-    >
-      <Target className="h-6 w-6 mr-3" />
-      <div className="flex flex-col items-start">
-        <span>Review All</span>
-        <span className="text-sm opacity-90">{totalReviews} items due</span>
-      </div>
-      <ChevronRight className="h-5 w-5 ml-auto" />
-    </Button>
+    <div className="relative">
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogTrigger asChild>
+          <Button 
+            variant="outline"
+            className="absolute top-0 right-0 z-10 p-2"
+            disabled={totalReviews === 0}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Review Session Preview</DialogTitle>
+          </DialogHeader>
+          <StudySessionPreview mode="review" studyOptions={studyOptions} />
+          <div className="flex gap-2 pt-4">
+            <Button onClick={handleReviewAll} className="flex-1" disabled={createReviewSession.isPending}>
+              {createReviewSession.isPending ? "Starting..." : "Start Review"}
+            </Button>
+            <Button variant="outline" onClick={() => setShowPreview(false)}>
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Button 
+        onClick={handleReviewAll}
+        disabled={totalReviews === 0 || createReviewSession.isPending}
+        className="w-full h-16 text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg pr-12"
+      >
+        <Target className="h-6 w-6 mr-3" />
+        <div className="flex flex-col items-start">
+          <span>Review All</span>
+          <span className="text-sm opacity-90">{totalReviews} items due</span>
+        </div>
+        <ChevronRight className="h-5 w-5 ml-auto" />
+      </Button>
+    </div>
   );
 }
 
