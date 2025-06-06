@@ -4,16 +4,21 @@ import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-import { 
-  Loader2, 
-  Menu, 
-  X, 
-  Sun, 
-  Moon, 
-  BarChart3, 
-  BookOpen, 
+import {
+  Loader2,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  BarChart3,
+  BookOpen,
   Search,
   Home,
   Trophy,
@@ -22,7 +27,7 @@ import {
   Target,
   Award,
   ChevronDown,
-  LogOut
+  LogOut,
 } from "lucide-react";
 import { VersionDisplay } from "@/components/version-display";
 import { MobileWrapper } from "@/components/mobile-wrapper";
@@ -168,9 +173,9 @@ function ProfileDropdown({ user }: { user: any }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded-full">
           {user.profileImageUrl ? (
-            <img 
-              src={user.profileImageUrl} 
-              alt="Profile" 
+            <img
+              src={user.profileImageUrl}
+              alt="Profile"
               className="h-6 w-6 rounded-full object-cover"
             />
           ) : (
@@ -213,12 +218,16 @@ function Header({ user }: { user: any }) {
             <LanternLogo size={36} className="text-primary drop-shadow-sm" />
             <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full blur-sm -z-10"></div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-primary tracking-wider">Tomoshibi</h1>
-            <p className="text-xs text-muted-foreground -mt-1 tracking-wide">Japanese Learning</p>
+          <div className="flex flex-col justify-center leading-tight">
+            <h1 className="text-2xl font-bold text-primary tracking-wider m-0">
+              Tomoshibi
+            </h1>
+            <p className="text-xs text-muted-foreground mt-0 tracking-wide">
+              Japanese Learning
+            </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-6">
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
@@ -228,9 +237,13 @@ function Header({ user }: { user: any }) {
 
               return (
                 <Link key={item.href} href={item.href}>
-                  <button className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                    isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
-                  }`}>
+                  <button
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-accent"
+                    }`}
+                  >
                     <Icon className="h-4 w-4" />
                     <span className="text-sm font-medium">{item.label}</span>
                   </button>
@@ -242,8 +255,11 @@ function Header({ user }: { user: any }) {
           {user && (
             <div className="hidden md:flex items-center gap-3 mr-2">
               <div className="flex items-center gap-3 px-3 py-1 bg-primary/10 rounded-full">
-                <Badge variant="secondary" className="bg-primary/20 text-primary font-semibold">
-                  {user.currentJLPTLevel || 'N5'}
+                <Badge
+                  variant="secondary"
+                  className="bg-primary/20 text-primary font-semibold"
+                >
+                  {user.currentJLPTLevel || "N5"}
                 </Badge>
                 <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">
                   {user.totalXP || 0} XP
@@ -256,9 +272,9 @@ function Header({ user }: { user: any }) {
           )}
 
           {/* Mobile Menu Toggle */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="p-2 md:hidden"
             onClick={() => setShowMobileNav(!showMobileNav)}
           >
@@ -266,7 +282,7 @@ function Header({ user }: { user: any }) {
           </Button>
 
           <ThemeToggle />
-          
+
           {/* Profile Dropdown */}
           {user && <ProfileDropdown user={user} />}
         </div>
@@ -282,9 +298,11 @@ function Header({ user }: { user: any }) {
 
               return (
                 <Link key={item.href} href={item.href}>
-                  <button 
+                  <button
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors w-full text-left ${
-                      isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-accent"
                     }`}
                     onClick={() => setShowMobileNav(false)}
                   >
@@ -371,7 +389,7 @@ function App() {
 
   const contextValue = {
     languageMode,
-    setLanguageMode
+    setLanguageMode,
   };
 
   return (
